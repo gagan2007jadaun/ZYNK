@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>ZYNK — Feed</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Theme -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            zynk: '#12E6E6',
+            dark: '#0A0A0A',
+            card: '#121212'
+          }
+        }
+      }
+    }
+  </script>
+</head>
+
+<body class="bg-dark text-white min-h-screen flex">
+
+  <!-- LEFT SIDEBAR -->
+  <aside class="hidden md:flex flex-col w-64 p-6 border-r border-gray-800">
+    <h1 class="text-2xl font-bold text-zynk mb-8">ZYNK</h1>
+
+    <nav class="space-y-4 text-gray-300">
+      <a class="block hover:text-zynk">Feed</a>
+      <a class="block hover:text-zynk">Explore</a>
+      <a class="block hover:text-zynk">Profile</a>
+      <a class="block hover:text-zynk">Settings</a>
+    </nav>
+  </aside>
+
+  <!-- MAIN FEED -->
+  <main class="flex-1 max-w-2xl mx-auto border-x border-gray-800">
+
+    <!-- CREATE POST -->
+    <div class="p-6 border-b border-gray-800">
+      <textarea
+        placeholder="Say something raw..."
+        class="w-full bg-dark resize-none outline-none text-lg
+               placeholder-gray-500"
+        rows="3"></textarea>
+
+      <div class="flex justify-between items-center mt-4">
+        <span class="text-sm text-gray-500">280 chars</span>
+        <button
+          class="bg-zynk text-black px-6 py-2 rounded-xl font-semibold
+                 hover:opacity-90 transition">
+          Post
+        </button>
+      </div>
+    </div>
+
+    <!-- POST -->
+    <div class="p-6 border-b border-gray-800">
+      <div class="flex gap-4">
+        <div class="w-10 h-10 rounded-full bg-gray-700"></div>
+
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-semibold">anonymous_01</span>
+            <span class="text-sm text-gray-500">@anon</span>
+          </div>
+
+          <p class="mt-2 text-gray-200">
+            ZYNK feels like what social media should have been.
+          </p>
+
+          <div class="flex gap-6 mt-4 text-gray-500 text-sm">
+            <span class="hover:text-zynk cursor-pointer">Reply</span>
+            <span class="hover:text-zynk cursor-pointer">Repost</span>
+            <span class="hover:text-zynk cursor-pointer">Like</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- POST -->
+    <div class="p-6 border-b border-gray-800">
+      <div class="flex gap-4">
+        <div class="w-10 h-10 rounded-full bg-gray-700"></div>
+
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-semibold">thinker_x</span>
+            <span class="text-sm text-gray-500">@tx</span>
+          </div>
+
+          <p class="mt-2 text-gray-200">
+            No filters. No noise. Just thoughts.
+          </p>
+
+          <div class="flex gap-6 mt-4 text-gray-500 text-sm">
+            <span class="hover:text-zynk cursor-pointer">Reply</span>
+            <span class="hover:text-zynk cursor-pointer">Repost</span>
+            <span class="hover:text-zynk cursor-pointer">Like</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- RIGHT SIDEBAR -->
+  <aside class="hidden lg:block w-64 p-6 border-l border-gray-800">
+    <h2 class="font-semibold mb-4">Trending</h2>
+
+    <ul class="space-y-3 text-gray-400">
+      <li>#ZYNK</li>
+      <li>#RawThoughts</li>
+      <li>#NoNoise</li>
+      <li>#MinimalSocial</li>
+    </ul>
+  </aside>
+
+</body>
+</html>

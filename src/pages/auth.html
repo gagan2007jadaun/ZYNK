@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>ZYNK — Login / Signup</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Theme -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            zynk: '#12E6E6',
+            dark: '#0A0A0A',
+            card: '#121212'
+          }
+        }
+      }
+    }
+  </script>
+</head>
+
+<body class="bg-dark min-h-screen flex items-center justify-center text-white">
+
+  <!-- AUTH CARD -->
+  <div class="bg-card w-full max-w-md p-8 rounded-2xl border border-gray-800">
+
+    <!-- LOGO / TITLE -->
+    <h1 class="text-3xl font-bold text-center mb-2">
+      <span class="text-zynk">ZYNK</span>
+    </h1>
+    <p class="text-center text-gray-400 mb-8">
+      Login or create your account
+    </p>
+
+    <!-- TOGGLE -->
+    <div class="flex mb-6 bg-dark rounded-xl p-1">
+      <button id="loginTab"
+        class="w-1/2 py-2 rounded-lg bg-zynk text-black font-semibold">
+        Login
+      </button>
+      <button id="signupTab"
+        class="w-1/2 py-2 rounded-lg text-gray-400">
+        Signup
+      </button>
+    </div>
+
+    <!-- FORM -->
+    <form id="authForm" class="space-y-4">
+
+      <input type="text" placeholder="Username"
+        class="w-full px-4 py-3 rounded-xl bg-dark border border-gray-700
+               focus:outline-none focus:border-zynk" />
+
+      <input type="password" placeholder="Password"
+        class="w-full px-4 py-3 rounded-xl bg-dark border border-gray-700
+               focus:outline-none focus:border-zynk" />
+
+      <button
+        class="w-full bg-zynk text-black py-3 rounded-xl font-semibold
+               hover:opacity-90 transition">
+        Continue
+      </button>
+
+    </form>
+
+    <!-- FOOTER TEXT -->
+    <p class="text-center text-sm text-gray-500 mt-6">
+      No email. No phone. Just your identity.
+    </p>
+
+  </div>
+
+  <!-- TOGGLE SCRIPT -->
+  <script>
+    const loginTab = document.getElementById('loginTab');
+    const signupTab = document.getElementById('signupTab');
+
+    loginTab.onclick = () => {
+      loginTab.classList.add('bg-zynk','text-black');
+      signupTab.classList.remove('bg-zynk','text-black');
+      signupTab.classList.add('text-gray-400');
+    };
+
+    signupTab.onclick = () => {
+      signupTab.classList.add('bg-zynk','text-black');
+      loginTab.classList.remove('bg-zynk','text-black');
+      loginTab.classList.add('text-gray-400');
+    };
+  </script>
+
+</body>
+</html>
