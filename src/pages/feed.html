@@ -43,15 +43,16 @@
 
     <!-- CREATE POST -->
     <div class="p-6 border-b border-gray-800">
-      <textarea
+      <textarea id="postInput"
         placeholder="Say something raw..."
         class="w-full bg-dark resize-none outline-none text-lg
                placeholder-gray-500"
         rows="3"></textarea>
 
       <div class="flex justify-between items-center mt-4">
-        <span class="text-sm text-gray-500">280 chars</span>
-        <button
+        <span id="charCount" class="text-sm text-gray-500">
+            0 / 280 chars</span>
+        <button id="postBtn"
           class="bg-zynk text-black px-6 py-2 rounded-xl font-semibold
                  hover:opacity-90 transition">
           Post
@@ -120,6 +121,27 @@
       <li>#MinimalSocial</li>
     </ul>
   </aside>
+<script>
+  const input = document.getElementById('postInput');
+  const counter = document.getElementById('charCount');
+  const postBtn = document.getElementById('postBtn');
+  const LIMIT = 280;
+
+  input.addEventListener('input', () => {
+    const length = input.value.length;
+    counter.textContent = `${length} / ${LIMIT}`;
+
+    if (length > LIMIT) {
+      counter.classList.add('text-red-500');
+      postBtn.disabled = true;
+      postBtn.classList.add('opacity-50', 'cursor-not-allowed');
+    } else {
+      counter.classList.remove('text-red-500');
+      postBtn.disabled = false;
+      postBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+    }
+  });
+</script>
 
 </body>
 </html>
