@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>ZYNK — Say it. Sync it.</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Custom theme -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            zynk: '#12E6E6',
+            dark: '#0A0A0A',
+            card: '#121212'
+          }
+        }
+      }
+    }
+  </script>
+</head>
+
+<body class="bg-dark text-white min-h-screen flex flex-col">
+
+  <!-- NAVBAR -->
+  <nav class="flex justify-between items-center px-8 py-6">
+    <div class="text-2xl font-bold text-zynk">ZYNK</div>
+    <a href="auth.html"
+       class="text-sm text-gray-300 hover:text-zynk transition">
+       Login
+    </a>
+  </nav>
+
+  <!-- HERO SECTION -->
+  <main class="flex-1 flex flex-col justify-center items-center text-center px-6">
+
+    <h1 class="text-5xl md:text-6xl font-bold leading-tight">
+      Say it. <span class="text-zynk">Sync</span> it.
+    </h1>
+
+    <p class="mt-6 max-w-xl text-gray-400 text-lg">
+      A minimal social space for raw thoughts, real conversations,
+      and instant expression.
+    </p>
+
+    <div class="mt-10 flex gap-4">
+      <a href="auth.html"
+         class="bg-zynk text-black px-8 py-3 rounded-xl font-semibold
+                hover:opacity-90 transition">
+        Get Started
+      </a>
+
+      <a href="#"
+         class="border border-gray-600 px-8 py-3 rounded-xl
+                text-gray-300 hover:border-zynk hover:text-zynk transition">
+        Learn More
+      </a>
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="py-6 text-center text-sm text-gray-500">
+    © 2025 ZYNK. Built for real voices.
+  </footer>
+
+</body>
+</html>

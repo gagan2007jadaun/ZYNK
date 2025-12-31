@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+body {
+  background:#0A0A0A;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
+
+polygon {
+  fill:#12E6E6;
+  animation: pulse 1.2s infinite ease-in-out;
+}
+
+#seg2 { animation-delay:.2s }
+#seg3 { animation-delay:.4s }
+
+@keyframes pulse {
+  0% { opacity:0; transform:translateX(-10px); }
+  50% { opacity:1; }
+  100% { opacity:0; transform:translateX(10px); }
+}
+</style>
+</head>
+
+<body>
+<svg width="120" viewBox="0 0 512 512">
+  <polygon id="seg1" points="120,120 360,120 320,160 160,160"/>
+  <polygon id="seg2" points="300,160 340,200 220,340 180,300"/>
+  <polygon id="seg3" points="160,340 320,340 360,380 120,380"/>
+</svg>
+</body>
+</html>
