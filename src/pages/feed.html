@@ -57,51 +57,53 @@
       </div>
     </div>
 
-    <!-- POST -->
-    <div
-      class="post-card p-6 border-b border-gray-800 transition-all duration-300 ease-out hover:bg-[#141414] hover:-translate-y-0.5">
-      <div class="flex gap-4">
-        <div class="w-10 h-10 rounded-full bg-gray-700"></div>
+    <div id="feedPosts">
+      <!-- POST -->
+      <div
+        class="post-card p-6 border-b border-gray-800 transition-all duration-300 ease-out hover:bg-[#141414] hover:-translate-y-0.5">
+        <div class="flex gap-4">
+          <div class="w-10 h-10 rounded-full bg-gray-700"></div>
 
-        <div>
-          <div class="flex items-center gap-2">
-            <span class="font-semibold">anonymous_01</span>
-            <span class="text-sm text-gray-500">@anon</span>
-          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="font-semibold">anonymous_01</span>
+              <span class="text-sm text-gray-500">@anon</span>
+            </div>
 
-          <p class="mt-2 text-gray-200">
-            ZYNK feels like what social media should have been.
-          </p>
+            <p class="mt-2 text-gray-200">
+              ZYNK feels like what social media should have been.
+            </p>
 
-          <div class="flex gap-6 mt-4 text-gray-500 text-sm">
-            <span class="hover:text-zynk transition transform hover:scale-105 cursor-pointer">Reply</span>
-            <span class="hover:text-zynk transition transform hover:scale-105 cursor-pointer">Repost</span>
-            <span class="hover:text-zynk transition transform hover:scale-105 cursor-pointer">Like</span>
+            <div class="flex gap-6 mt-4 text-gray-500 text-sm">
+              <span class="hover:text-zynk transition transform hover:scale-105 cursor-pointer">Reply</span>
+              <span class="hover:text-zynk transition transform hover:scale-105 cursor-pointer">Repost</span>
+              <span class="hover:text-zynk transition transform hover:scale-105 cursor-pointer">Like</span>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- POST -->
-    <div
-      class="post-card p-6 border-b border-gray-800 transition-all duration-300 ease-out hover:bg-[#141414] hover:-translate-y-0.5">
-      <div class="flex gap-4">
-        <div class="w-10 h-10 rounded-full bg-gray-700"></div>
+      <!-- POST -->
+      <div
+        class="post-card p-6 border-b border-gray-800 transition-all duration-300 ease-out hover:bg-[#141414] hover:-translate-y-0.5">
+        <div class="flex gap-4">
+          <div class="w-10 h-10 rounded-full bg-gray-700"></div>
 
-        <div>
-          <div class="flex items-center gap-2">
-            <span class="font-semibold">thinker_x</span>
-            <span class="text-sm text-gray-500">@tx</span>
-          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="font-semibold">thinker_x</span>
+              <span class="text-sm text-gray-500">@tx</span>
+            </div>
 
-          <p class="mt-2 text-gray-200">
-            No filters. No noise. Just thoughts.
-          </p>
+            <p class="mt-2 text-gray-200">
+              No filters. No noise. Just thoughts.
+            </p>
 
-          <div class="flex gap-6 mt-4 text-gray-500 text-sm">
-            <span class="hover:text-zynk transition transform hover:scale-105 cursor-pointer">Reply</span>
-            <span class="hover:text-zynk transition transform hover:scale-105 cursor-pointer">Repost</span>
-            <span class="hover:text-zynk transition transform hover:scale-105 cursor-pointer">Like</span>
+            <div class="flex gap-6 mt-4 text-gray-500 text-sm">
+              <span class="hover:text-zynk transition transform hover:scale-105 cursor-pointer">Reply</span>
+              <span class="hover:text-zynk transition transform hover:scale-105 cursor-pointer">Repost</span>
+              <span class="hover:text-zynk transition transform hover:scale-105 cursor-pointer">Like</span>
+            </div>
           </div>
         </div>
       </div>
@@ -139,6 +141,40 @@
         postBtn.disabled = false;
         postBtn.classList.remove('opacity-50', 'cursor-not-allowed');
       }
+    });
+
+    postBtn.addEventListener('click', () => {
+      const text = input.value.trim();
+      if (!text) return;
+
+      const postHTML = `
+    <div class="post-card p-6 border-b border-gray-800 transition-all duration-300 ease-out hover:bg-[#141414] hover:-translate-y-0.5 animate-post">
+      <div class="flex gap-4">
+        <div class="w-10 h-10 rounded-full bg-gray-700"></div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-semibold">You</span>
+            <span class="text-sm text-gray-500">@you</span>
+          </div>
+          <p class="mt-2 text-gray-200">${text.replace(/\n/g, '<br>')}</p>
+          <div class="flex gap-6 mt-4 text-gray-500 text-sm">
+            <span class="hover:text-zynk transition transform hover:scale-105 cursor-pointer">Reply</span>
+            <span class="hover:text-zynk transition transform hover:scale-105 cursor-pointer">Repost</span>
+            <span class="hover:text-zynk transition transform hover:scale-105 cursor-pointer">Like</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    `;
+
+      const feedPosts = document.getElementById('feedPosts');
+      feedPosts.insertAdjacentHTML('afterbegin', postHTML);
+
+      // Reset input
+      input.value = '';
+      counter.textContent = `0 / ${LIMIT}`;
+      postBtn.disabled = true;
+      postBtn.classList.add('opacity-50', 'cursor-not-allowed');
     });
 
     // Animate posts on load
