@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>ZYNK — Profile</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Theme -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        zynk: '#12E6E6',
+                        dark: '#0A0A0A',
+                        card: '#121212'
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="../utils/theme.js"></script>
+</head>
+
+<body class="bg-gray-50 text-gray-900 dark:bg-dark dark:text-white min-h-screen flex transition-colors duration-300">
+
+    <!-- LEFT SIDEBAR -->
+    <aside class="hidden md:flex flex-col w-64 p-6 border-r border-gray-200 dark:border-gray-800">
+        <h1 class="text-2xl font-bold text-zynk mb-8">ZYNK</h1>
+
+        <nav class="space-y-4 text-gray-300">
+            <a href="feed.html" class="block hover:text-zynk">Feed</a>
+            <a href="explore.html" class="block hover:text-zynk">Explore</a>
+            <a href="chat.html" class="block hover:text-zynk">Chat</a>
+            <a href="notifications.html" class="block hover:text-zynk">Notifications</a>
+            <a href="topics.html" class="block hover:text-zynk">Topics</a>
+            <a href="bookmarks.html" class="block hover:text-zynk">Bookmarks</a>
+            <a href="profile.html" class="block text-zynk font-semibold">Profile</a>
+            <a href="more.html" class="block hover:text-zynk">More</a>
+
+            <a href="settings.html" class="block hover:text-zynk">Settings</a>
+            <a href="auth.html" class="block hover:text-red-500 cursor-pointer transition text-red-400">Logout</a>
+            <button id="themeToggle" class="flex items-center gap-2 hover:text-zynk transition mt-4">
+                <span id="themeIcon">🌙</span>
+                <span>Theme</span>
+            </button>
+        </nav>
+    </aside>
+
+    <!-- MAIN AREA -->
+    <main class="flex-1 flex flex-col justify-center items-center p-6 text-center">
+        <div class="max-w-md">
+            <h2 class="text-3xl font-bold mb-4">Profile <span class="text-zynk">Coming Soon</span></h2>
+            <p class="text-gray-500 dark:text-gray-400 mb-8">
+                Your identity, your way. Custom profiles are in the works.
+            </p>
+
+            <a href="feed.html"
+                class="px-6 py-2 bg-gray-200 dark:bg-gray-800 rounded-xl hover:bg-gray-300 dark:hover:bg-gray-700 transition">
+                Back to Feed
+            </a>
+        </div>
+    </main>
+
+    <!-- SCRIPT FOR THEME TOGGLE (Reused) -->
+    <script>
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+
+        function updateIcon(isDark) {
+            themeIcon.textContent = isDark ? '🌙' : '☀️';
+        }
+
+        // Set initial icon
+        updateIcon(document.documentElement.classList.contains('dark'));
+
+        themeToggle.addEventListener('click', () => {
+            const isDark = theme.toggle();
+            updateIcon(isDark);
+        });
+    </script>
+
+</body>
+
+</html>
