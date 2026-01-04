@@ -72,6 +72,15 @@
               <option value="168">📅 7 Days</option>
             </select>
           </div>
+
+          <div class="relative group">
+            <select id="identitySelect"
+              class="bg-gray-100 dark:bg-[#1A1A1A] text-sm text-gray-700 dark:text-gray-300 rounded-lg px-2 py-1 outline-none border border-transparent focus:border-zynk appearance-none cursor-pointer">
+              <option value="public" selected>👤 Public</option>
+              <option value="semi">🎭 Semi-anon</option>
+              <option value="anon">👻 Fully anon</option>
+            </select>
+          </div>
         </div>
 
         <button id="postBtn"
@@ -152,6 +161,7 @@
     const counter = document.getElementById('charCount');
     const postBtn = document.getElementById('postBtn');
     const expirySelect = document.getElementById('expirySelect');
+    const identitySelect = document.getElementById('identitySelect');
     const feedPosts = document.getElementById('feedPosts');
     const LIMIT = 280;
 
@@ -176,16 +186,29 @@
       if (!text) return;
 
       const hours = parseInt(expirySelect.value);
+      const identity = identitySelect.value;
       const now = Date.now();
       const expiryTime = now + (hours * 60 * 60 * 1000);
+
+      let author = 'You';
+      let handle = '@you';
+
+      if (identity === 'semi') {
+        author = 'Zynk Member';
+        handle = '@hidden';
+      } else if (identity === 'anon') {
+        author = 'Anonymous';
+        handle = `@${Math.random().toString(36).substring(2, 7)}`;
+      }
 
       const post = {
         id: crypto.randomUUID(),
         text: text,
         timestamp: now,
         expiry: expiryTime,
-        author: 'You',
-        handle: '@you'
+        author: author,
+        handle: handle,
+        identity: identity
       };
 
       savePost(post);
