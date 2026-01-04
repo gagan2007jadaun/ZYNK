@@ -61,10 +61,22 @@
                placeholder-gray-500 text-gray-800 dark:text-white" rows="3"></textarea>
 
       <div class="flex justify-between items-center mt-4">
-        <span id="charCount" class="text-sm text-gray-500">
-          0 / 280 chars</span>
-        <button id="postBtn" class="bg-zynk text-black px-6 py-2 rounded-xl font-semibold
-                 hover:opacity-90 transition">
+        <div class="flex items-center gap-4">
+          <span id="charCount" class="text-sm text-gray-500">0 / 280 chars</span>
+
+          <div class="relative group">
+            <select id="expirySelect"
+              class="bg-gray-100 dark:bg-[#1A1A1A] text-sm text-gray-700 dark:text-gray-300 rounded-lg px-2 py-1 outline-none border border-transparent focus:border-zynk appearance-none cursor-pointer">
+              <option value="1">🔥 1 Hour</option>
+              <option value="24" selected>⏳ 24 Hours</option>
+              <option value="168">📅 7 Days</option>
+            </select>
+          </div>
+        </div>
+
+        <button id="postBtn"
+          class="bg-zynk text-black px-6 py-2 rounded-xl font-semibold hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled>
           Post
         </button>
       </div>
@@ -139,7 +151,12 @@
     const input = document.getElementById('postInput');
     const counter = document.getElementById('charCount');
     const postBtn = document.getElementById('postBtn');
+    const expirySelect = document.getElementById('expirySelect');
+    const feedPosts = document.getElementById('feedPosts');
     const LIMIT = 280;
+
+    // Load posts on startup
+    loadPosts();
 
     input.addEventListener('input', () => {
       const length = input.value.length;
@@ -148,11 +165,9 @@
       if (length > LIMIT) {
         counter.classList.add('text-red-500');
         postBtn.disabled = true;
-        postBtn.classList.add('opacity-50', 'cursor-not-allowed');
       } else {
         counter.classList.remove('text-red-500');
-        postBtn.disabled = false;
-        postBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        postBtn.disabled = length === 0;
       }
     });
 
@@ -160,42 +175,127 @@
       const text = input.value.trim();
       if (!text) return;
 
-      const postHTML = `
-    <div class="post-card p-6 border-b border-gray-200 dark:border-gray-800 transition-all duration-300 ease-out hover:bg-gray-100 dark:hover:bg-[#141414] hover:-translate-y-0.5 animate-post">
-      <div class="flex gap-4">
-        <div class="w-10 h-10 rounded-full bg-gray-700"></div>
-        <div>
-          <div class="flex items-center gap-2">
-            <span class="font-semibold">You</span>
-            <span class="text-sm text-gray-500">@you</span>
-          </div>
-          <p class="mt-2 text-gray-800 dark:text-gray-200">${text.replace(/\n/g, '<br>')}</p>
-          <div class="flex gap-6 mt-4 text-gray-500 text-sm">
-            <span class="hover:text-zynk transition transform hover:scale-105 cursor-pointer">Reply</span>
-            <span class="hover:text-zynk transition transform hover:scale-105 cursor-pointer">Repost</span>
-            <span class="hover:text-zynk transition transform hover:scale-105 cursor-pointer">Like</span>
-          </div>
-        </div>
-      </div>
-    </div>
-    `;
+      const hours = parseInt(expirySelect.value);
+      const now = Date.now();
+      const expiryTime = now + (hours * 60 * 60 * 1000);
 
-      const feedPosts = document.getElementById('feedPosts');
-      feedPosts.insertAdjacentHTML('afterbegin', postHTML);
+      const post = {
+        id: crypto.randomUUID(),
+        text: text,
+        timestamp: now,
+        expiry: expiryTime,
+        author: 'You',
+        handle: '@you'
+      };
+
+      savePost(post);
+      renderPost(post, true);
 
       // Reset input
       input.value = '';
       counter.textContent = `0 / ${LIMIT}`;
       postBtn.disabled = true;
-      postBtn.classList.add('opacity-50', 'cursor-not-allowed');
     });
 
-    // Animate posts on load
-    document.querySelectorAll('.post-card').forEach((post, index) => {
-      setTimeout(() => {
-        post.classList.add('animate-post');
-      }, index * 80);
-    });
+    function savePost(post) {
+      const posts = JSON.parse(localStorage.getItem('zynk_posts') || '[]');
+      posts.unshift(post);
+      localStorage.setItem('zynk_posts', JSON.stringify(posts));
+    }
+
+    function loadPosts() {
+      const posts = JSON.parse(localStorage.getItem('zynk_posts') || '[]');
+      const now = Date.now();
+      const validPosts = posts.filter(p => p.expiry > now);
+
+      // Update storage if we filtered out expired posts
+      if (posts.length !== validPosts.length) {
+        localStorage.setItem('zynk_posts', JSON.stringify(validPosts));
+      }
+
+      // Add static dummy posts if storage is empty (optional, for demo feel)
+      // For now we just keep the static HTML ones or prepend user posts
+
+      validPosts.forEach(post => renderPost(post, false));
+    }
+
+    function renderPost(post, animate) {
+      const timeLeft = getTimeLeft(post.expiry);
+
+      const postHTML = `
+        <div id="post-${post.id}" class="post-card p-6 border-b border-gray-200 dark:border-gray-800 transition-all duration-300 ease-out hover:bg-gray-100 dark:hover:bg-[#141414] hover:-translate-y-0.5 ${animate ? 'animate-post' : ''}">
+          <div class="flex gap-4">
+            <div class="w-10 h-10 rounded-full bg-gray-700"></div>
+            <div class="flex-1">
+              <div class="flex justify-between items-start">
+                <div class="flex items-center gap-2">
+                  <span class="font-semibold">${post.author}</span>
+                  <span class="text-sm text-gray-500">${post.handle}</span>
+                </div>
+                <span class="text-xs font-mono text-orange-500 bg-orange-500/10 px-2 py-0.5 rounded-full" title="Exports at ${new Date(post.expiry).toLocaleString()}">
+                  🔥 ${timeLeft}
+                </span>
+              </div>
+              
+              <p class="mt-2 text-gray-800 dark:text-gray-200 whitespace-pre-wrap">${post.text}</p>
+              
+              <div class="flex gap-6 mt-4 text-gray-500 text-sm">
+                <span class="hover:text-zynk transition transform hover:scale-105 cursor-pointer">Reply</span>
+                <span class="hover:text-zynk transition transform hover:scale-105 cursor-pointer">Repost</span>
+                <span class="hover:text-zynk transition transform hover:scale-105 cursor-pointer">Like</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      if (animate) {
+        feedPosts.insertAdjacentHTML('afterbegin', postHTML);
+      } else {
+        // Find where to insert (simple prepend for now)
+        feedPosts.insertAdjacentHTML('afterbegin', postHTML);
+      }
+    }
+
+    function getTimeLeft(expiry) {
+      const now = Date.now();
+      const diff = expiry - now;
+
+      if (diff <= 0) return 'Expired';
+
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+      if (days > 0) return `${days}d left`;
+      if (hours > 0) return `${hours}h left`;
+      return `${minutes}m left`;
+    }
+
+    // Checking for expired posts every minute
+    setInterval(() => {
+      const posts = JSON.parse(localStorage.getItem('zynk_posts') || '[]');
+      const now = Date.now();
+      const validPosts = posts.filter(p => {
+        if (p.expiry <= now) {
+          // Remove from UI
+          const el = document.getElementById(`post-${p.id}`);
+          if (el) {
+            el.style.opacity = '0';
+            setTimeout(() => el.remove(), 500);
+          }
+          return false;
+        }
+        return true;
+      });
+
+      if (posts.length !== validPosts.length) {
+        localStorage.setItem('zynk_posts', JSON.stringify(validPosts));
+      }
+
+      // Update timer texts (optional optimization: only update visible)
+      // For simplicity in this v1, checking logic is enough
+    }, 60000); // Check every minute
 
     // Theme Toggle Logic
     const themeToggle = document.getElementById('themeToggle');
