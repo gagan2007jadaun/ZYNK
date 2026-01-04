@@ -269,7 +269,12 @@
                 </span>
               </div>
               
-              <p class="mt-2 text-gray-800 dark:text-gray-200 whitespace-pre-wrap">${post.text}</p>
+              </div>
+              
+              <div class="mt-2 text-gray-800 dark:text-gray-200">
+                <p id="text-${post.id}" class="${post.text.length > 150 ? 'line-clamp-3' : ''} whitespace-pre-wrap transition-all">${post.text}</p>
+                ${post.text.length > 150 ? `<button onclick="toggleExpand('${post.id}')" class="text-xs text-zynk hover:underline mt-1">Show more</button>` : ''}
+              </div>
               
               <div class="flex gap-6 mt-4 text-gray-500 text-sm">
                 <span class="hover:text-zynk transition transform hover:scale-105 cursor-pointer">Reply</span>
@@ -343,6 +348,13 @@
       if (days > 0) return `${days}d left`;
       if (hours > 0) return `${hours}h left`;
       return `${minutes}m left`;
+    }
+
+    function toggleExpand(id) {
+      const p = document.getElementById(`text-${id}`);
+      const btn = p.nextElementSibling;
+      p.classList.remove('line-clamp-3');
+      if (btn) btn.remove();
     }
 
     // Checking for expired posts every minute
