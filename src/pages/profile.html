@@ -215,7 +215,7 @@
               
               <div class="flex gap-6 mt-4 text-gray-500 text-sm">
                 <span class="hover:text-zynk transition cursor-pointer">Reply</span>
-                <span class="hover:text-zynk transition cursor-pointer">Repost</span>
+                <span class="${post.allowReposts !== false ? 'hover:text-zynk transition cursor-pointer' : 'opacity-50 cursor-not-allowed'}" title="${post.allowReposts !== false ? 'Repost' : 'Reposts disabled'}">Repost</span>
                 <div class="like-container relative">
                    <button class="like-btn flex items-center gap-1 hover:text-zynk transition cursor-pointer select-none" onmousedown="startLike(this)" onmouseup="cancelLike(this)" onmouseleave="cancelLike(this)" ontouchstart="startLike(this)" ontouchend="cancelLike(this)">
                      <span class="like-fill"></span>
