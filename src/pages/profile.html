@@ -52,6 +52,37 @@
         </nav>
     </aside>
 
+    <style>
+        /* Slow Like Animation */
+        .like-btn {
+            position: relative;
+            overflow: hidden;
+            transition: color 0.3s;
+        }
+
+        .like-fill {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 100%;
+            background-color: rgba(18, 230, 230, 0.2);
+            /* Zynk color with opacity */
+            transition: width 0s linear;
+            z-index: -1;
+            border-radius: 4px;
+        }
+
+        .like-btn.holding .like-fill {
+            width: 100%;
+            transition: width 2s linear;
+        }
+
+        .like-btn.liked {
+            color: #12E6E6;
+        }
+    </style>
+
     <!-- MAIN AREA -->
     <main class="flex-1 max-w-2xl mx-auto border-x border-gray-200 dark:border-gray-800 min-h-screen">
 
@@ -185,13 +216,49 @@
               <div class="flex gap-6 mt-4 text-gray-500 text-sm">
                 <span class="hover:text-zynk transition cursor-pointer">Reply</span>
                 <span class="hover:text-zynk transition cursor-pointer">Repost</span>
-                <span class="hover:text-zynk transition cursor-pointer">Like</span>
+                <div class="like-container relative">
+                   <button class="like-btn flex items-center gap-1 hover:text-zynk transition cursor-pointer select-none" onmousedown="startLike(this)" onmouseup="cancelLike(this)" onmouseleave="cancelLike(this)" ontouchstart="startLike(this)" ontouchend="cancelLike(this)">
+                     <span class="like-fill"></span>
+                     <span class="like-icon">Like</span>
+                   </button>
+                </div>
               </div>
             </div>
           </div>
         </div>
         `;
             }).join('');
+        }
+
+        // SLOW LIKE LOGIC
+        let likeTimer;
+
+        function startLike(btn) {
+            if (btn.classList.contains('liked')) {
+                btn.classList.remove('liked');
+                btn.querySelector('.like-icon').textContent = 'Like';
+                return;
+            }
+
+            btn.classList.add('holding');
+
+            likeTimer = setTimeout(() => {
+                completeLike(btn);
+            }, 2000);
+        }
+
+        function cancelLike(btn) {
+            if (likeTimer) clearTimeout(likeTimer);
+            btn.classList.remove('holding');
+        }
+
+        function completeLike(btn) {
+            btn.classList.remove('holding');
+            btn.classList.add('liked');
+            btn.querySelector('.like-icon').textContent = 'Liked ❤️';
+
+            // Haptic feedback
+            if (navigator.vibrate) navigator.vibrate(50);
         }
 
         function getTimeLeft(expiry) {
