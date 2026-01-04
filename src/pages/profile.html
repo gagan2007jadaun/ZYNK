@@ -30,7 +30,7 @@
 <body class="bg-gray-50 text-gray-900 dark:bg-dark dark:text-white min-h-screen flex transition-colors duration-300">
 
     <!-- LEFT SIDEBAR -->
-    <aside class="hidden md:flex flex-col w-64 p-6 border-r border-gray-200 dark:border-gray-800">
+    <aside class="hidden md:flex flex-col w-64 p-6 border-r border-gray-200 dark:border-gray-800 sticky top-0 h-screen">
         <h1 class="text-2xl font-bold text-zynk mb-8">ZYNK</h1>
 
         <nav class="space-y-4 text-gray-300">
@@ -53,36 +53,160 @@
     </aside>
 
     <!-- MAIN AREA -->
-    <main class="flex-1 flex flex-col justify-center items-center p-6 text-center">
-        <div class="max-w-md">
-            <h2 class="text-3xl font-bold mb-4">Profile <span class="text-zynk">Coming Soon</span></h2>
-            <p class="text-gray-500 dark:text-gray-400 mb-8">
-                Your identity, your way. Custom profiles are in the works.
+    <main class="flex-1 max-w-2xl mx-auto border-x border-gray-200 dark:border-gray-800 min-h-screen">
+
+        <!-- PROFILE HEADER -->
+        <div class="p-6 border-b border-gray-200 dark:border-gray-800">
+            <div class="flex justify-between items-start">
+                <div class="w-24 h-24 rounded-full bg-gray-700 border-4 border-white dark:border-dark object-cover">
+                </div>
+                <button
+                    class="border border-gray-300 dark:border-gray-600 px-4 py-1.5 rounded-full font-semibold text-sm hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+                    Edit Profile
+                </button>
+            </div>
+
+            <div class="mt-4">
+                <h2 class="text-xl font-bold">You</h2>
+                <p class="text-gray-500">@you</p>
+            </div>
+
+            <p class="mt-4 text-gray-800 dark:text-gray-200">
+                Living in the moment. No stats, just vibes. 🌊
             </p>
 
-            <a href="feed.html"
-                class="px-6 py-2 bg-gray-200 dark:bg-gray-800 rounded-xl hover:bg-gray-300 dark:hover:bg-gray-700 transition">
-                Back to Feed
-            </a>
+            <!-- METRICS (NO FOLLOWERS) -->
+            <div class="flex gap-6 mt-4 text-gray-500 text-sm">
+                <div class="flex gap-1">
+                    <span id="postCount" class="font-bold text-gray-900 dark:text-white">0</span>
+                    <span>Thoughts</span>
+                </div>
+                <!-- Followers/Following Hidden as per philosophy -->
+            </div>
         </div>
+
+        <!-- TABS -->
+        <div class="flex border-b border-gray-200 dark:border-gray-800">
+            <div
+                class="flex-1 text-center py-4 font-semibold border-b-2 border-zynk text-gray-900 dark:text-white cursor-pointer hover:bg-gray-50 dark:hover:bg-white/5 transition">
+                Thoughts
+            </div>
+            <div
+                class="flex-1 text-center py-4 font-semibold text-gray-500 cursor-pointer hover:bg-gray-50 dark:hover:bg-white/5 transition">
+                Replies
+            </div>
+            <div
+                class="flex-1 text-center py-4 font-semibold text-gray-500 cursor-pointer hover:bg-gray-50 dark:hover:bg-white/5 transition">
+                Media
+            </div>
+        </div>
+
+        <!-- POSTS FEED -->
+        <div id="profilePosts">
+            <!-- Posts will be injected here -->
+        </div>
+
+        <div id="noPostsMsg" class="hidden p-8 text-center text-gray-500">
+            No thoughts yet. <a href="feed.html" class="text-zynk hover:underline">Start thinking.</a>
+        </div>
+
     </main>
 
-    <!-- SCRIPT FOR THEME TOGGLE (Reused) -->
+    <!-- RIGHT SIDEBAR (Optional) -->
+    <aside class="hidden lg:block w-64 p-6 border-l border-gray-200 dark:border-gray-800 sticky top-0 h-screen">
+        <h2 class="font-semibold mb-4">Trending</h2>
+        <ul class="space-y-3 text-gray-400">
+            <li>#ZYNK</li>
+            <li>#RawThoughts</li>
+            <li>#NoMetricLife</li>
+        </ul>
+    </aside>
+
+    <!-- SCRIPT -->
     <script>
+        // Theme Toggle Logic
         const themeToggle = document.getElementById('themeToggle');
         const themeIcon = document.getElementById('themeIcon');
-
         function updateIcon(isDark) {
             themeIcon.textContent = isDark ? '🌙' : '☀️';
         }
-
-        // Set initial icon
         updateIcon(document.documentElement.classList.contains('dark'));
-
         themeToggle.addEventListener('click', () => {
             const isDark = theme.toggle();
             updateIcon(isDark);
         });
+
+        // Load Posts
+        function loadProfilePosts() {
+            const posts = JSON.parse(localStorage.getItem('zynk_posts') || '[]');
+            const now = Date.now();
+
+            // Filter valid posts (not expired)
+            const validPosts = posts.filter(p => p.expiry > now);
+
+            // Update Count
+            document.getElementById('postCount').textContent = validPosts.length;
+
+            const profilePosts = document.getElementById('profilePosts');
+            const noPostsMsg = document.getElementById('noPostsMsg');
+
+            if (validPosts.length === 0) {
+                noPostsMsg.classList.remove('hidden');
+                return;
+            }
+
+            profilePosts.innerHTML = validPosts.map(post => {
+                const timeLeft = getTimeLeft(post.expiry);
+
+                // Identity Badge Logic
+                let identityBadge = '';
+                if (post.identity === 'semi') identityBadge = '🎭 Semi';
+                else if (post.identity === 'anon') identityBadge = '👻 Anon';
+                else identityBadge = '👤 Public';
+
+                return `
+        <div class="p-6 border-b border-gray-200 dark:border-gray-800 transition-all hover:bg-gray-50 dark:hover:bg-white/5">
+          <div class="flex gap-4">
+            <div class="w-10 h-10 rounded-full bg-gray-700"></div>
+            <div class="flex-1">
+              <div class="flex justify-between items-start">
+                <div class="flex items-center gap-2">
+                  <span class="font-semibold">${post.author}</span>
+                  <span class="text-sm text-gray-500">${post.handle}</span>
+                  <span class="text-xs bg-gray-200 dark:bg-gray-800 px-1.5 py-0.5 rounded text-gray-500">${identityBadge}</span>
+                </div>
+                <span class="text-xs font-mono text-orange-500 bg-orange-500/10 px-2 py-0.5 rounded-full">
+                  🔥 ${timeLeft}
+                </span>
+              </div>
+              
+              <p class="mt-2 text-gray-800 dark:text-gray-200 whitespace-pre-wrap">${post.text}</p>
+              
+              <div class="flex gap-6 mt-4 text-gray-500 text-sm">
+                <span class="hover:text-zynk transition cursor-pointer">Reply</span>
+                <span class="hover:text-zynk transition cursor-pointer">Repost</span>
+                <span class="hover:text-zynk transition cursor-pointer">Like</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        `;
+            }).join('');
+        }
+
+        function getTimeLeft(expiry) {
+            const now = Date.now();
+            const diff = expiry - now;
+            if (diff <= 0) return 'Expired';
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            if (days > 0) return `${days}d left`;
+            if (hours > 0) return `${hours}h left`;
+            return `${minutes}m left`;
+        }
+
+        loadProfilePosts();
     </script>
 
 </body>
