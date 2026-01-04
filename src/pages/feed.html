@@ -186,6 +186,8 @@
         counter.classList.remove('text-red-500');
         postBtn.disabled = length === 0;
       }
+
+      detectMood(input.value);
     });
 
     postBtn.addEventListener('click', () => {
@@ -357,6 +359,48 @@
       if (btn) btn.remove();
     }
 
+    // MOOD DETECTION (Local AI)
+    function detectMood(text) {
+      const lowerText = text.toLowerCase();
+
+      // Keywords
+      const angryWords = ['hate', 'stupid', 'garbage', 'furious', 'annoy', 'worst', 'bad', 'angry', 'hell', 'damn'];
+      const sadWords = ['lonely', 'depressed', 'sad', 'cry', 'miss', 'hurt', 'pain', 'sorry', 'alone', 'blue'];
+      const happyWords = ['love', 'happy', 'great', 'peace', 'chill', 'amazing', 'good', 'best', 'bless', 'joy'];
+
+      let mood = 'neutral';
+
+      if (angryWords.some(w => lowerText.includes(w))) mood = 'angry';
+      else if (sadWords.some(w => lowerText.includes(w))) mood = 'sad';
+      else if (happyWords.some(w => lowerText.includes(w))) mood = 'happy';
+
+      const root = document.documentElement;
+      const postArea = document.querySelector('.post-card-container') || input.parentElement.parentElement; // Target wrapper
+
+      if (mood === 'angry') {
+        root.style.setProperty('--mood-color', '#ff4d4d'); // Red
+        root.style.setProperty('--mood-speed', '0.1s');
+        postBtn.classList.add('mood-btn');
+        input.parentElement.classList.add('mood-glow'); // Suggest adding glow to container
+      } else if (mood === 'sad') {
+        root.style.setProperty('--mood-color', '#4da6ff'); // Blue
+        root.style.setProperty('--mood-speed', '1.5s');
+        postBtn.classList.add('mood-btn');
+        input.parentElement.classList.add('mood-glow');
+      } else if (mood === 'happy') {
+        root.style.setProperty('--mood-color', '#00ffaa'); // Greenish Teal
+        root.style.setProperty('--mood-speed', '0.4s');
+        postBtn.classList.add('mood-btn');
+        input.parentElement.classList.add('mood-glow');
+      } else {
+        // Reset
+        root.style.setProperty('--mood-color', '#12E6E6');
+        root.style.setProperty('--mood-speed', '0.3s');
+        postBtn.classList.remove('mood-btn');
+        input.parentElement.classList.remove('mood-glow');
+      }
+    }
+
     // Checking for expired posts every minute
     setInterval(() => {
       const posts = JSON.parse(localStorage.getItem('zynk_posts') || '[]');
@@ -410,6 +454,30 @@
         opacity: 1;
         transform: translateY(0);
       }
+    }
+
+    /* Mood Variables */
+    :root {
+      --mood-color: #12E6E6;
+      /* Default Zynk */
+      --mood-speed: 0.3s;
+    }
+
+    /* Mood Styles applied to Post Area */
+    #postInput {
+      caret-color: var(--mood-color);
+      transition: color 1s ease;
+    }
+
+    .mood-glow {
+      box-shadow: 0 0 20px -5px var(--mood-color);
+      transition: box-shadow 1s ease, border-color 1s ease;
+      border-color: var(--mood-color) !important;
+    }
+
+    .mood-btn {
+      background-color: var(--mood-color) !important;
+      transition: background-color 1s ease, transform var(--mood-speed);
     }
 
     .animate-post {
