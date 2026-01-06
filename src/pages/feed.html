@@ -269,7 +269,8 @@
         handle: handle,
         identity: identity,
         intent: intent,
-        allowReposts: allowReposts
+        allowReposts: allowReposts,
+        frozen: false
       };
 
       savePost(post);
@@ -320,8 +321,14 @@
       const timeLeft = getTimeLeft(post.expiry);
       const intentStyle = getIntentBadge(post.intent || 'vent');
 
+      const replyAction = post.frozen
+        ? `<span class="opacity-50 cursor-not-allowed text-gray-400" title="Replies disabled">Locked 🔒</span>`
+        : `<span class="hover:text-zynk transition transform hover:scale-105 cursor-pointer" onclick="openReply('${post.handle}', '${post.text.replace(/'/g, "\\'")}')">Reply</span>`;
+
+      const freezeAction = `<span onclick="toggleFreeze('${post.id}')" class="cursor-pointer hover:text-blue-500 transition select-none">${post.frozen ? 'Unfreeze ❄️' : 'Freeze 🧊'}</span>`;
+
       const postHTML = `
-        <div id="post-${post.id}" class="post-card p-6 border-b border-gray-200 dark:border-gray-800 transition-all duration-300 ease-out hover:bg-gray-100 dark:hover:bg-[#141414] hover:-translate-y-0.5 ${animate ? 'animate-post' : ''}">
+        <div id="post-${post.id}" class="post-card p-6 border-b border-gray-200 dark:border-gray-800 transition-all duration-300 ease-out hover:bg-gray-100 dark:hover:bg-[#141414] hover:-translate-y-0.5 ${animate ? 'animate-post' : ''} ${post.frozen ? 'bg-blue-50/30 dark:bg-blue-900/10' : ''}">
           <div class="flex gap-4">
             <div class="w-10 h-10 rounded-full bg-gray-700"></div>
             <div class="flex-1">
@@ -330,6 +337,7 @@
                   <span class="font-semibold">${post.author}</span>
                   <span class="text-sm text-gray-500">${post.handle}</span>
                   <span class="text-xs ${intentStyle.class} px-2 py-0.5 rounded-full">${intentStyle.label}</span>
+                  ${post.frozen ? '<span class="text-xs bg-gray-200 dark:bg-gray-800 text-gray-500 px-2 py-0.5 rounded-full border border-gray-300 dark:border-gray-700">Frozen ❄️</span>' : ''}
                 </div>
                 <span class="text-xs font-mono text-orange-500 bg-orange-500/10 px-2 py-0.5 rounded-full" title="Exports at ${new Date(post.expiry).toLocaleString()}">
                   🔥 ${timeLeft}
@@ -342,7 +350,7 @@
               </div>
               
               <div class="flex gap-6 mt-4 text-gray-500 text-sm">
-                <span class="hover:text-zynk transition transform hover:scale-105 cursor-pointer" onclick="openReply('${post.handle}', '${post.text.replace(/'/g, "\\'")}')">Reply</span>
+                ${replyAction}
                 <span class="${post.allowReposts !== false ? 'hover:text-zynk transition transform hover:scale-105 cursor-pointer' : 'opacity-50 cursor-not-allowed'}" title="${post.allowReposts !== false ? 'Repost' : 'Reposts disabled'}">Repost</span>
                 <div class="like-container relative">
                    <button class="like-btn flex items-center gap-1 hover:text-zynk transition cursor-pointer select-none" onmousedown="startLike(this)" onmouseup="cancelLike(this)" onmouseleave="cancelLike(this)" ontouchstart="startLike(this)" ontouchend="cancelLike(this)">
@@ -350,6 +358,7 @@
                      <span class="like-icon">Like</span>
                    </button>
                 </div>
+                ${freezeAction}
               </div>
             </div>
           </div>
@@ -423,6 +432,31 @@
       const btn = p.nextElementSibling;
       p.classList.remove('line-clamp-3');
       if (btn) btn.remove();
+    }
+
+    function toggleFreeze(postId) {
+      const posts = JSON.parse(localStorage.getItem('zynk_posts') || '[]');
+      const postIndex = posts.findIndex(p => p.id === postId);
+
+      if (postIndex !== -1) {
+        posts[postIndex].frozen = !posts[postIndex].frozen;
+        localStorage.setItem('zynk_posts', JSON.stringify(posts));
+
+        // Re-render specifically or reload? 
+        // Simple reload for now to reflect UI changes across components if needed, 
+        // OR find the element and replace it. Replacing is smoother.
+        const oldElement = document.getElementById(`post-${postId}`);
+        if (oldElement) {
+          oldElement.remove(); // Remove old
+
+          // We need to re-render in place? 
+          // renderPost appends to list. 
+          // Let's reload page for simplicity to ensure lists are correct? 
+          // No, user experience.
+          // Let's just reload logic.
+          location.reload();
+        }
+      }
     }
 
     // MOOD DETECTION (Local AI)
