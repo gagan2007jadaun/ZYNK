@@ -74,6 +74,19 @@
           </div>
 
           <div class="relative group">
+            <select id="intentSelect"
+              class="bg-gray-100 dark:bg-[#1A1A1A] text-sm text-gray-700 dark:text-gray-300 rounded-lg px-2 py-1 outline-none border border-transparent focus:border-zynk appearance-none cursor-pointer">
+              <option value="vent" selected>😤 Just Venting</option>
+              <option value="thoughts">💭 Thoughts</option>
+              <option value="question">❓ Ask Question</option>
+              <option value="advice">🆘 Advice</option>
+              <option value="debate">⚔️ Debate</option>
+              <option value="teach">🎓 Teach</option>
+              <option value="showcase">🌟 Showcase</option>
+            </select>
+          </div>
+
+          <div class="relative group">
             <select id="identitySelect"
               class="bg-gray-100 dark:bg-[#1A1A1A] text-sm text-gray-700 dark:text-gray-300 rounded-lg px-2 py-1 outline-none border border-transparent focus:border-zynk appearance-none cursor-pointer">
               <option value="public" selected>👤 Public</option>
@@ -108,6 +121,7 @@
             <div class="flex items-center gap-2">
               <span class="font-semibold">anonymous_01</span>
               <span class="text-sm text-gray-500">@anon</span>
+              <span class="text-xs bg-red-500/10 text-red-500 px-2 py-0.5 rounded-full">😤 Just Venting</span>
             </div>
 
             <p class="mt-2 text-gray-800 dark:text-gray-200">
@@ -133,6 +147,7 @@
             <div class="flex items-center gap-2">
               <span class="font-semibold">thinker_x</span>
               <span class="text-sm text-gray-500">@tx</span>
+              <span class="text-xs bg-blue-500/10 text-blue-500 px-2 py-0.5 rounded-full">💭 Thoughts</span>
             </div>
 
             <p class="mt-2 text-gray-800 dark:text-gray-200">
@@ -168,6 +183,7 @@
     const postBtn = document.getElementById('postBtn');
 
     const identitySelect = document.getElementById('identitySelect');
+    const intentSelect = document.getElementById('intentSelect');
     const allowRepostsCheckbox = document.getElementById('allowReposts');
     const feedPosts = document.getElementById('feedPosts');
     const LIMIT = 280;
@@ -196,6 +212,7 @@
 
       const hours = parseInt(expirySelect.value);
       const identity = identitySelect.value;
+      const intent = intentSelect.value;
       const allowReposts = allowRepostsCheckbox.checked;
       const now = Date.now();
       const expiryTime = now + (hours * 60 * 60 * 1000);
@@ -219,6 +236,7 @@
         author: author,
         handle: handle,
         identity: identity,
+        intent: intent,
         allowReposts: allowReposts
       };
 
@@ -253,8 +271,22 @@
       validPosts.forEach(post => renderPost(post, false));
     }
 
+    function getIntentBadge(intent) {
+      const intents = {
+        'vent': { label: '😤 Just Venting', class: 'bg-red-500/10 text-red-500' },
+        'thoughts': { label: '💭 Thoughts', class: 'bg-blue-500/10 text-blue-500' },
+        'question': { label: '❓ Question', class: 'bg-yellow-500/10 text-yellow-500' },
+        'advice': { label: '🆘 Advice', class: 'bg-orange-500/10 text-orange-500' },
+        'debate': { label: '⚔️ Debate', class: 'bg-purple-500/10 text-purple-500' },
+        'teach': { label: '🎓 Teach', class: 'bg-green-500/10 text-green-500' },
+        'showcase': { label: '🌟 Showcase', class: 'bg-pink-500/10 text-pink-500' }
+      };
+      return intents[intent] || intents['vent'];
+    }
+
     function renderPost(post, animate) {
       const timeLeft = getTimeLeft(post.expiry);
+      const intentStyle = getIntentBadge(post.intent || 'vent');
 
       const postHTML = `
         <div id="post-${post.id}" class="post-card p-6 border-b border-gray-200 dark:border-gray-800 transition-all duration-300 ease-out hover:bg-gray-100 dark:hover:bg-[#141414] hover:-translate-y-0.5 ${animate ? 'animate-post' : ''}">
@@ -265,12 +297,11 @@
                 <div class="flex items-center gap-2">
                   <span class="font-semibold">${post.author}</span>
                   <span class="text-sm text-gray-500">${post.handle}</span>
+                  <span class="text-xs ${intentStyle.class} px-2 py-0.5 rounded-full">${intentStyle.label}</span>
                 </div>
                 <span class="text-xs font-mono text-orange-500 bg-orange-500/10 px-2 py-0.5 rounded-full" title="Exports at ${new Date(post.expiry).toLocaleString()}">
                   🔥 ${timeLeft}
                 </span>
-              </div>
-              
               </div>
               
               <div class="mt-2 text-gray-800 dark:text-gray-200">
