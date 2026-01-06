@@ -116,7 +116,13 @@
             </div>
 
             <div class="mt-4">
-                <h2 class="text-xl font-bold">You</h2>
+                <div class="flex items-center gap-2">
+                    <h2 class="text-xl font-bold">You</h2>
+                    <span id="streakBadge"
+                        class="hidden text-xs bg-orange-500/10 text-orange-500 px-2 py-0.5 rounded-full border border-orange-500/20">
+                        Thought Streak 🔥
+                    </span>
+                </div>
                 <p class="text-gray-500">@you</p>
             </div>
 
@@ -189,8 +195,10 @@
             // Filter valid posts (not expired)
             const validPosts = posts.filter(p => p.expiry > now);
 
-            // Update Count - Removed for No Metrics Philosophy
-            // document.getElementById('postCount').textContent = validPosts.length;
+            checkThoughtStreak(posts); // Check streak based on ALL posts (history) or valid? Usually history matters for streaks. Let's use valid (active) for now to encourage keeping thoughts alive, or all? 
+            // User said "7 din me 3 meaningful posts". Let's check last 7 days of ALL posts (even if expired/deleted? Logic says active or history. LocalStorage has 'zynk_posts' which might be cleaned up. Let's use what we have.)
+            // Current storage logic only keeps valid posts? No, loadPosts in feed filters but only updates if expiry.
+            // Let's check all available posts.
 
             const profilePosts = document.getElementById('profilePosts');
             const noPostsMsg = document.getElementById('noPostsMsg');
@@ -300,6 +308,31 @@
             const btn = p.nextElementSibling;
             p.classList.remove('line-clamp-3');
             if (btn) btn.remove();
+        }
+
+        function checkThoughtStreak(posts) {
+            const now = Date.now();
+            const oneWeekMs = 7 * 24 * 60 * 60 * 1000;
+            const streakBadge = document.getElementById('streakBadge');
+
+            // Filter posts from last 7 days
+            const recentPosts = posts.filter(p => (now - p.timestamp) < oneWeekMs);
+
+            // Count meaningful posts
+            // Meaningful: Length > 50 OR Intent is 'thoughts', 'teach', 'debate'
+            const deepIntents = ['thoughts', 'teach', 'debate'];
+
+            const meaningfulCount = recentPosts.reduce((count, post) => {
+                const isLong = post.text.length > 50;
+                const isDeep = deepIntents.includes(post.intent);
+                return (isLong || isDeep) ? count + 1 : count;
+            }, 0);
+
+            if (meaningfulCount >= 3) {
+                streakBadge.classList.remove('hidden');
+            } else {
+                streakBadge.classList.add('hidden');
+            }
         }
 
         loadProfilePosts();
