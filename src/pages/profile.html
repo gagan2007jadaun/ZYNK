@@ -54,6 +54,24 @@
 
     <style>
         /* Slow Like Animation */
+        @keyframes likePop {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.2);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .like-pop {
+            animation: likePop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
         .like-btn {
             position: relative;
             overflow: hidden;
@@ -106,13 +124,9 @@
                 Living in the moment. No stats, just vibes. 🌊
             </p>
 
-            <!-- METRICS (NO FOLLOWERS) -->
+            <!-- METRICS (NO FOLLOWERS OR COUNTS) -->
             <div class="flex gap-6 mt-4 text-gray-500 text-sm">
-                <div class="flex gap-1">
-                    <span id="postCount" class="font-bold text-gray-900 dark:text-white">0</span>
-                    <span>Thoughts</span>
-                </div>
-                <!-- Followers/Following Hidden as per philosophy -->
+                <!-- All metrics hidden as per philosophy -->
             </div>
         </div>
 
@@ -175,8 +189,8 @@
             // Filter valid posts (not expired)
             const validPosts = posts.filter(p => p.expiry > now);
 
-            // Update Count
-            document.getElementById('postCount').textContent = validPosts.length;
+            // Update Count - Removed for No Metrics Philosophy
+            // document.getElementById('postCount').textContent = validPosts.length;
 
             const profilePosts = document.getElementById('profilePosts');
             const noPostsMsg = document.getElementById('noPostsMsg');
@@ -260,7 +274,10 @@
         function completeLike(btn) {
             btn.classList.remove('holding');
             btn.classList.add('liked');
+            btn.classList.add('like-pop');
             btn.querySelector('.like-icon').textContent = 'Liked ❤️';
+
+            setTimeout(() => btn.classList.remove('like-pop'), 300);
 
             // Haptic feedback
             if (navigator.vibrate) navigator.vibrate(50);

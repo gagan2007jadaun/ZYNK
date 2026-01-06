@@ -362,7 +362,10 @@
     function completeLike(btn) {
       btn.classList.remove('holding');
       btn.classList.add('liked');
+      btn.classList.add('like-pop');
       btn.querySelector('.like-icon').textContent = 'Liked ❤️';
+
+      setTimeout(() => btn.classList.remove('like-pop'), 300);
 
       // Haptic feedback if available
       if (navigator.vibrate) navigator.vibrate(50);
@@ -516,6 +519,24 @@
     }
 
     /* Slow Like Animation */
+    @keyframes likePop {
+      0% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.2);
+      }
+
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    .like-pop {
+      animation: likePop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
     .like-btn {
       position: relative;
       overflow: hidden;
