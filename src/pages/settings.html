@@ -53,17 +53,146 @@
     </aside>
 
     <!-- MAIN AREA -->
-    <main class="flex-1 flex flex-col justify-center items-center p-6 text-center">
-        <div class="max-w-md">
-            <h2 class="text-3xl font-bold mb-4">Settings <span class="text-zynk">Coming Soon</span></h2>
-            <p class="text-gray-500 dark:text-gray-400 mb-8">
-                Manage your account, privacy, and preferences. We're adding more controls soon.
-            </p>
+    <main class="flex-1 flex flex-col max-w-2xl mx-auto w-full p-6">
+        <h2 class="text-3xl font-bold mb-8 text-center md:text-left">Settings</h2>
 
-            <a href="feed.html"
-                class="px-6 py-2 bg-gray-200 dark:bg-gray-800 rounded-xl hover:bg-gray-300 dark:hover:bg-gray-700 transition">
-                Back to Feed
-            </a>
+        <div class="space-y-2">
+            <!-- Settings Item -->
+            <button
+                class="w-full flex items-center justify-between p-4 rounded-xl hover:bg-white dark:hover:bg-[#121212] border border-transparent hover:border-gray-200 dark:hover:border-gray-800 transition group text-left">
+                <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 rounded-full bg-zynk/10 flex items-center justify-center text-zynk">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                            <circle cx="12" cy="7" r="4" />
+                        </svg>
+                    </div>
+                    <span class="font-medium text-lg">My Account</span>
+                </div>
+                <svg class="text-gray-400 group-hover:text-zynk transition" xmlns="http://www.w3.org/2000/svg"
+                    width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 18 15 12 9 6" />
+                </svg>
+            </button>
+
+            <button
+                class="w-full flex items-center justify-between p-4 rounded-xl hover:bg-white dark:hover:bg-[#121212] border border-transparent hover:border-gray-200 dark:hover:border-gray-800 transition group text-left">
+                <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 rounded-full bg-zynk/10 flex items-center justify-center text-zynk">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                        </svg>
+                    </div>
+                    <span class="font-medium text-lg">Privacy and Safety</span>
+                </div>
+                <svg class="text-gray-400 group-hover:text-zynk transition" xmlns="http://www.w3.org/2000/svg"
+                    width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 18 15 12 9 6" />
+                </svg>
+            </button>
+
+            <button
+                class="w-full flex items-center justify-between p-4 rounded-xl hover:bg-white dark:hover:bg-[#121212] border border-transparent hover:border-gray-200 dark:hover:border-gray-800 transition group text-left">
+                <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 rounded-full bg-zynk/10 flex items-center justify-center text-zynk">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                        </svg>
+                    </div>
+                    <span class="font-medium text-lg">Security and Account Access</span>
+                </div>
+                <svg class="text-gray-400 group-hover:text-zynk transition" xmlns="http://www.w3.org/2000/svg"
+                    width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 18 15 12 9 6" />
+                </svg>
+            </button>
+
+            <button
+                class="w-full flex items-center justify-between p-4 rounded-xl hover:bg-white dark:hover:bg-[#121212] border border-transparent hover:border-gray-200 dark:hover:border-gray-800 transition group text-left">
+                <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 rounded-full bg-zynk/10 flex items-center justify-center text-zynk">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                        </svg>
+                    </div>
+                    <span class="font-medium text-lg">Notifications</span>
+                </div>
+                <svg class="text-gray-400 group-hover:text-zynk transition" xmlns="http://www.w3.org/2000/svg"
+                    width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 18 15 12 9 6" />
+                </svg>
+            </button>
+
+            <button
+                class="w-full flex items-center justify-between p-4 rounded-xl hover:bg-white dark:hover:bg-[#121212] border border-transparent hover:border-gray-200 dark:hover:border-gray-800 transition group text-left">
+                <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 rounded-full bg-zynk/10 flex items-center justify-center text-zynk">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10" />
+                            <line x1="2" y1="12" x2="22" y2="12" />
+                            <path
+                                d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                        </svg>
+                    </div>
+                    <span class="font-medium text-lg">Accessibility, Display and Languages</span>
+                </div>
+                <svg class="text-gray-400 group-hover:text-zynk transition" xmlns="http://www.w3.org/2000/svg"
+                    width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 18 15 12 9 6" />
+                </svg>
+            </button>
+
+            <button
+                class="w-full flex items-center justify-between p-4 rounded-xl hover:bg-white dark:hover:bg-[#121212] border border-transparent hover:border-gray-200 dark:hover:border-gray-800 transition group text-left">
+                <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 rounded-full bg-zynk/10 flex items-center justify-center text-zynk">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10" />
+                            <line x1="12" y1="8" x2="12" y2="12" />
+                            <line x1="12" y1="16" x2="12.01" y2="16" />
+                        </svg>
+                    </div>
+                    <span class="font-medium text-lg">Additional Features</span>
+                </div>
+                <svg class="text-gray-400 group-hover:text-zynk transition" xmlns="http://www.w3.org/2000/svg"
+                    width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 18 15 12 9 6" />
+                </svg>
+            </button>
+
+            <button
+                class="w-full flex items-center justify-between p-4 rounded-xl hover:bg-white dark:hover:bg-[#121212] border border-transparent hover:border-gray-200 dark:hover:border-gray-800 transition group text-left">
+                <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 rounded-full bg-zynk/10 flex items-center justify-center text-zynk">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10" />
+                            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+                            <line x1="12" y1="17" x2="12.01" y2="17" />
+                        </svg>
+                    </div>
+                    <span class="font-medium text-lg">Help Center</span>
+                </div>
+                <svg class="text-gray-400 group-hover:text-zynk transition" xmlns="http://www.w3.org/2000/svg"
+                    width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 18 15 12 9 6" />
+                </svg>
+            </button>
         </div>
     </main>
 
