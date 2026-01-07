@@ -79,7 +79,7 @@
                 </svg>
             </button>
 
-            <button
+            <button onclick="showSubmenu('settingsPrivacy')"
                 class="w-full flex items-center justify-between p-4 rounded-xl hover:bg-white dark:hover:bg-[#121212] border border-transparent hover:border-gray-200 dark:hover:border-gray-800 transition group text-left">
                 <div class="flex items-center gap-4">
                     <div class="w-10 h-10 rounded-full bg-zynk/10 flex items-center justify-center text-zynk">
@@ -382,7 +382,7 @@
                     </div>
                     <div>
                         <div class="font-medium text-lg">Connected accounts</div>
-                        <div class="text-sm text-gray-500">Manage Google or Apple accounts connected to X to log in.
+                        <div class="text-sm text-gray-500">Manage Google or Apple accounts connected to Zynk to log in.
                         </div>
                     </div>
                 </div>
@@ -416,6 +416,341 @@
                     <polyline points="9 18 15 12 9 6" />
                 </svg>
             </button>
+        </div>
+
+        <!-- PRIVACY SUBMENU (Initially Hidden) -->
+        <div id="settingsPrivacy" class="hidden space-y-2 transition-opacity duration-300">
+            <div class="flex items-center gap-4 mb-2">
+                <button onclick="goBack('settingsPrivacy')"
+                    class="p-2 -ml-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="19" y1="12" x2="5" y2="12" />
+                        <polyline points="12 19 5 12 12 5" />
+                    </svg>
+                </button>
+                <h2 class="text-2xl font-bold">Privacy and safety</h2>
+            </div>
+            <p class="text-gray-500 mb-6 ml-14">Manage what information you see and share on Zynk.</p>
+
+            <!-- Section 1: Your Zynk activity -->
+            <h3 class="text-xl font-bold mb-4 ml-2">Your Zynk activity</h3>
+
+            <button
+                class="w-full flex items-center justify-between p-4 rounded-xl hover:bg-white dark:hover:bg-[#121212] border border-transparent hover:border-gray-200 dark:hover:border-gray-800 transition group text-left">
+                <div class="flex items-start gap-4">
+                    <div class="mt-1 text-gray-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                            <circle cx="9" cy="7" r="4" />
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="font-medium text-lg">Audience, media and tagging</div>
+                        <div class="text-sm text-gray-500">Manage what information you allow other people on Zynk to
+                            see.
+                        </div>
+                    </div>
+                </div>
+                <svg class="text-gray-400 group-hover:text-zynk transition" xmlns="http://www.w3.org/2000/svg"
+                    width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 18 15 12 9 6" />
+                </svg>
+            </button>
+
+            <button
+                class="w-full flex items-center justify-between p-4 rounded-xl hover:bg-white dark:hover:bg-[#121212] border border-transparent hover:border-gray-200 dark:hover:border-gray-800 transition group text-left">
+                <div class="flex items-start gap-4">
+                    <div class="mt-1 text-gray-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 19l7-7 3 3-7 7-3-3z" />
+                            <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z" />
+                            <path d="M2 2l7.586 7.586" />
+                            <circle cx="11" cy="11" r="2" />
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="font-medium text-lg">Your posts</div>
+                        <div class="text-sm text-gray-500">Manage the information associated with your posts.</div>
+                    </div>
+                </div>
+                <svg class="text-gray-400 group-hover:text-zynk transition" xmlns="http://www.w3.org/2000/svg"
+                    width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 18 15 12 9 6" />
+                </svg>
+            </button>
+
+            <button
+                class="w-full flex items-center justify-between p-4 rounded-xl hover:bg-white dark:hover:bg-[#121212] border border-transparent hover:border-gray-200 dark:hover:border-gray-800 transition group text-left">
+                <div class="flex items-start gap-4">
+                    <div class="mt-1 text-gray-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                            <line x1="3" y1="9" x2="21" y2="9" />
+                            <line x1="9" y1="21" x2="9" y2="9" />
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="font-medium text-lg">Content you see</div>
+                        <div class="text-sm text-gray-500">Decide what you see on Zynk based on your preferences like
+                            Topics and interests</div>
+                    </div>
+                </div>
+                <svg class="text-gray-400 group-hover:text-zynk transition" xmlns="http://www.w3.org/2000/svg"
+                    width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 18 15 12 9 6" />
+                </svg>
+            </button>
+
+            <button
+                class="w-full flex items-center justify-between p-4 rounded-xl hover:bg-white dark:hover:bg-[#121212] border border-transparent hover:border-gray-200 dark:hover:border-gray-800 transition group text-left">
+                <div class="flex items-start gap-4">
+                    <div class="mt-1 text-gray-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                            <path d="M18.63 13A17.89 17.89 0 0 1 18 8" />
+                            <path d="M6.26 6.26A5.86 5.86 0 0 0 6 8c0 7-3 9-3 9h14" />
+                            <path d="M18 8a6 6 0 0 0-9.33-5" />
+                            <line x1="1" y1="1" x2="23" y2="23" />
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="font-medium text-lg">Mute and block</div>
+                        <div class="text-sm text-gray-500">Manage the accounts, words, and notifications that you’ve
+                            muted or blocked.</div>
+                    </div>
+                </div>
+                <svg class="text-gray-400 group-hover:text-zynk transition" xmlns="http://www.w3.org/2000/svg"
+                    width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 18 15 12 9 6" />
+                </svg>
+            </button>
+
+            <button
+                class="w-full flex items-center justify-between p-4 rounded-xl hover:bg-white dark:hover:bg-[#121212] border border-transparent hover:border-gray-200 dark:hover:border-gray-800 transition group text-left">
+                <div class="flex items-start gap-4">
+                    <div class="mt-1 text-gray-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                            <polyline points="22,6 12,13 2,6" />
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="font-medium text-lg">Direct Messages</div>
+                        <div class="text-sm text-gray-500">Manage who can message you directly.</div>
+                    </div>
+                </div>
+                <svg class="text-gray-400 group-hover:text-zynk transition" xmlns="http://www.w3.org/2000/svg"
+                    width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 18 15 12 9 6" />
+                </svg>
+            </button>
+
+            <button
+                class="w-full flex items-center justify-between p-4 rounded-xl hover:bg-white dark:hover:bg-[#121212] border border-transparent hover:border-gray-200 dark:hover:border-gray-800 transition group text-left">
+                <div class="flex items-start gap-4">
+                    <div class="mt-1 text-gray-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
+                            <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+                            <line x1="12" y1="19" x2="12" y2="23" />
+                            <line x1="8" y1="23" x2="16" y2="23" />
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="font-medium text-lg">Spaces</div>
+                        <div class="text-sm text-gray-500">Manage who can see your Spaces listening activity</div>
+                    </div>
+                </div>
+                <svg class="text-gray-400 group-hover:text-zynk transition" xmlns="http://www.w3.org/2000/svg"
+                    width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 18 15 12 9 6" />
+                </svg>
+            </button>
+
+            <button
+                class="w-full flex items-center justify-between p-4 rounded-xl hover:bg-white dark:hover:bg-[#121212] border border-transparent hover:border-gray-200 dark:hover:border-gray-800 transition group text-left">
+                <div class="flex items-start gap-4">
+                    <div class="mt-1 text-gray-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8" />
+                            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="font-medium text-lg">Discoverability and contacts</div>
+                        <div class="text-sm text-gray-500">Control your discoverability settings and manage contacts
+                            you’ve imported.</div>
+                    </div>
+                </div>
+                <svg class="text-gray-400 group-hover:text-zynk transition" xmlns="http://www.w3.org/2000/svg"
+                    width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 18 15 12 9 6" />
+                </svg>
+            </button>
+
+            <!-- Section 2: Data sharing and personalization -->
+            <h3 class="text-xl font-bold mt-6 mb-4 ml-2">Data sharing and personalization</h3>
+
+            <button
+                class="w-full flex items-center justify-between p-4 rounded-xl hover:bg-white dark:hover:bg-[#121212] border border-transparent hover:border-gray-200 dark:hover:border-gray-800 transition group text-left">
+                <div class="flex items-start gap-4">
+                    <div class="mt-1 text-gray-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                            <polyline points="15 3 21 3 21 9" />
+                            <line x1="10" y1="14" x2="21" y2="3" />
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="font-medium text-lg">Ads preferences</div>
+                        <div class="text-sm text-gray-500">Manage your ads experience on Zynk.</div>
+                    </div>
+                </div>
+                <svg class="text-gray-400 group-hover:text-zynk transition" xmlns="http://www.w3.org/2000/svg"
+                    width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 18 15 12 9 6" />
+                </svg>
+            </button>
+
+            <button
+                class="w-full flex items-center justify-between p-4 rounded-xl hover:bg-white dark:hover:bg-[#121212] border border-transparent hover:border-gray-200 dark:hover:border-gray-800 transition group text-left">
+                <div class="flex items-start gap-4">
+                    <div class="mt-1 text-gray-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="font-medium text-lg">Inferred identity</div>
+                        <div class="text-sm text-gray-500">Allow Zynk to personalize your experience with your inferred
+                            activity, e.g. activity on devices you haven’t used to log in to Zynk.</div>
+                    </div>
+                </div>
+                <svg class="text-gray-400 group-hover:text-zynk transition" xmlns="http://www.w3.org/2000/svg"
+                    width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 18 15 12 9 6" />
+                </svg>
+            </button>
+
+            <button
+                class="w-full flex items-center justify-between p-4 rounded-xl hover:bg-white dark:hover:bg-[#121212] border border-transparent hover:border-gray-200 dark:hover:border-gray-800 transition group text-left">
+                <div class="flex items-start gap-4">
+                    <div class="mt-1 text-gray-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="16 3 21 3 21 8" />
+                            <line x1="4" y1="20" x2="21" y2="3" />
+                            <polyline points="21 16 21 21 16 21" />
+                            <line x1="15" y1="15" x2="21" y2="21" />
+                            <line x1="4" y1="4" x2="9" y2="9" />
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="font-medium text-lg">Data sharing with business partners</div>
+                        <div class="text-sm text-gray-500">Allow sharing of additional information with Zynk’s business
+                            partners.</div>
+                    </div>
+                </div>
+                <svg class="text-gray-400 group-hover:text-zynk transition" xmlns="http://www.w3.org/2000/svg"
+                    width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 18 15 12 9 6" />
+                </svg>
+            </button>
+
+            <button
+                class="w-full flex items-center justify-between p-4 rounded-xl hover:bg-white dark:hover:bg-[#121212] border border-transparent hover:border-gray-200 dark:hover:border-gray-800 transition group text-left">
+                <div class="flex items-start gap-4">
+                    <div class="mt-1 text-gray-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                            <circle cx="12" cy="10" r="3" />
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="font-medium text-lg">Location information</div>
+                        <div class="text-sm text-gray-500">Manage the location information Zynk uses to personalize your
+                            experience.</div>
+                    </div>
+                </div>
+                <svg class="text-gray-400 group-hover:text-zynk transition" xmlns="http://www.w3.org/2000/svg"
+                    width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 18 15 12 9 6" />
+                </svg>
+            </button>
+
+            <button
+                class="w-full flex items-center justify-between p-4 rounded-xl hover:bg-white dark:hover:bg-[#121212] border border-transparent hover:border-gray-200 dark:hover:border-gray-800 transition group text-left">
+                <div class="flex items-start gap-4">
+                    <div class="mt-1 text-gray-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10" />
+                            <line x1="4.93" y1="4.93" x2="19.07" y2="19.07" />
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="font-medium text-lg">Grok & Third-party Collaborators</div>
+                        <div class="text-sm text-gray-500">Allow your public data as well as your interactions, inputs,
+                            and results with Grok and xAI to be used for training and fine-tuning</div>
+                    </div>
+                </div>
+                <svg class="text-gray-400 group-hover:text-zynk transition" xmlns="http://www.w3.org/2000/svg"
+                    width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 18 15 12 9 6" />
+                </svg>
+            </button>
+
+            <!-- Footer -->
+            <div class="mt-8 pt-4 border-t border-gray-200 dark:border-gray-800">
+                <h4 class="text-xl font-bold mb-4">Learn more about privacy on Zynk</h4>
+                <a href="#" class="block py-2 text-gray-500 hover:text-white flex justify-between">
+                    <span>Privacy center</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M7 17l9.2-9.2M17 17V7H7" />
+                    </svg>
+                </a>
+                <a href="#" class="block py-2 text-gray-500 hover:text-white flex justify-between">
+                    <span>Privacy policy</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M7 17l9.2-9.2M17 17V7H7" />
+                    </svg>
+                </a>
+                <a href="#" class="block py-2 text-gray-500 hover:text-white flex justify-between">
+                    <span>Contact us</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M7 17l9.2-9.2M17 17V7H7" />
+                    </svg>
+                </a>
+            </div>
+
         </div>
     </main>
 
