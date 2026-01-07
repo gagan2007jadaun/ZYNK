@@ -54,11 +54,13 @@
 
     <!-- MAIN AREA -->
     <main class="flex-1 flex flex-col max-w-2xl mx-auto w-full p-6">
-        <h2 class="text-3xl font-bold mb-8 text-center md:text-left">Settings</h2>
 
-        <div class="space-y-2">
-            <!-- Settings Item -->
-            <button
+        <!-- MAIN SETTINGS LIST -->
+        <div id="settingsMain" class="space-y-2 transition-opacity duration-300">
+            <h2 class="text-3xl font-bold mb-8 text-center md:text-left">Settings</h2>
+
+            <!-- Settings Item: My Account -->
+            <button onclick="showSubmenu('settingsMyAccount')"
                 class="w-full flex items-center justify-between p-4 rounded-xl hover:bg-white dark:hover:bg-[#121212] border border-transparent hover:border-gray-200 dark:hover:border-gray-800 transition group text-left">
                 <div class="flex items-center gap-4">
                     <div class="w-10 h-10 rounded-full bg-zynk/10 flex items-center justify-center text-zynk">
@@ -96,7 +98,7 @@
                 </svg>
             </button>
 
-            <button
+            <button onclick="showSubmenu('settingsSecurity')"
                 class="w-full flex items-center justify-between p-4 rounded-xl hover:bg-white dark:hover:bg-[#121212] border border-transparent hover:border-gray-200 dark:hover:border-gray-800 transition group text-left">
                 <div class="flex items-center gap-4">
                     <div class="w-10 h-10 rounded-full bg-zynk/10 flex items-center justify-center text-zynk">
@@ -194,7 +196,241 @@
                 </svg>
             </button>
         </div>
+
+        <!-- MY ACCOUNT SUBMENU (Initially Hidden) -->
+        <div id="settingsMyAccount" class="hidden space-y-2 transition-opacity duration-300">
+            <div class="flex items-center gap-4 mb-6">
+                <button onclick="goBack('settingsMyAccount')"
+                    class="p-2 -ml-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="19" y1="12" x2="5" y2="12" />
+                        <polyline points="12 19 5 12 12 5" />
+                    </svg>
+                </button>
+                <h2 class="text-2xl font-bold">Account information</h2>
+            </div>
+
+            <!-- Items -->
+            <button
+                class="w-full flex items-center justify-between p-4 rounded-xl hover:bg-white dark:hover:bg-[#121212] border border-transparent hover:border-gray-200 dark:hover:border-gray-800 transition group text-left">
+                <div class="flex items-start gap-4">
+                    <div class="mt-1 text-gray-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                            <circle cx="12" cy="7" r="4" />
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="font-medium text-lg">Account information</div>
+                        <div class="text-sm text-gray-500">See your account information like your phone number and email
+                            address.</div>
+                    </div>
+                </div>
+                <svg class="text-gray-400 group-hover:text-zynk transition" xmlns="http://www.w3.org/2000/svg"
+                    width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 18 15 12 9 6" />
+                </svg>
+            </button>
+
+            <button
+                class="w-full flex items-center justify-between p-4 rounded-xl hover:bg-white dark:hover:bg-[#121212] border border-transparent hover:border-gray-200 dark:hover:border-gray-800 transition group text-left">
+                <div class="flex items-start gap-4">
+                    <div class="mt-1 text-gray-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="font-medium text-lg">Change your password</div>
+                        <div class="text-sm text-gray-500">Change your password at any time.</div>
+                    </div>
+                </div>
+                <svg class="text-gray-400 group-hover:text-zynk transition" xmlns="http://www.w3.org/2000/svg"
+                    width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 18 15 12 9 6" />
+                </svg>
+            </button>
+
+            <button
+                class="w-full flex items-center justify-between p-4 rounded-xl hover:bg-white dark:hover:bg-[#121212] border border-transparent hover:border-gray-200 dark:hover:border-gray-800 transition group text-left">
+                <div class="flex items-start gap-4">
+                    <div class="mt-1 text-gray-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                            <polyline points="7 10 12 15 17 10" />
+                            <line x1="12" y1="15" x2="12" y2="3" />
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="font-medium text-lg">Download an archive of your data</div>
+                        <div class="text-sm text-gray-500">Get insights into the type of information stored for your
+                            account.</div>
+                    </div>
+                </div>
+                <svg class="text-gray-400 group-hover:text-zynk transition" xmlns="http://www.w3.org/2000/svg"
+                    width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 18 15 12 9 6" />
+                </svg>
+            </button>
+
+            <button
+                class="w-full flex items-center justify-between p-4 rounded-xl hover:bg-white dark:hover:bg-[#121212] border border-transparent hover:border-gray-200 dark:hover:border-gray-800 transition group text-left">
+                <div class="flex items-start gap-4">
+                    <div class="mt-1 text-gray-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path
+                                d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
+                            </path>
+                            <line x1="2" y1="2" x2="22" y2="22" />
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="font-medium text-lg">Deactivate your account</div>
+                        <div class="text-sm text-gray-500">Find out how you can deactivate your account.</div>
+                    </div>
+                </div>
+                <svg class="text-gray-400 group-hover:text-zynk transition" xmlns="http://www.w3.org/2000/svg"
+                    width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 18 15 12 9 6" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- SECURITY SUBMENU (Initially Hidden) -->
+        <div id="settingsSecurity" class="hidden space-y-2 transition-opacity duration-300">
+            <div class="flex items-center gap-4 mb-2">
+                <button onclick="goBack('settingsSecurity')"
+                    class="p-2 -ml-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="19" y1="12" x2="5" y2="12" />
+                        <polyline points="12 19 5 12 12 5" />
+                    </svg>
+                </button>
+                <h2 class="text-2xl font-bold">Security and account access</h2>
+            </div>
+            <p class="text-gray-500 mb-6 ml-14">Manage your account’s security and keep track of your account’s usage
+                including apps that you have connected to your account.</p>
+
+            <!-- Items -->
+            <button
+                class="w-full flex items-center justify-between p-4 rounded-xl hover:bg-white dark:hover:bg-[#121212] border border-transparent hover:border-gray-200 dark:hover:border-gray-800 transition group text-left">
+                <div class="flex items-start gap-4">
+                    <div class="mt-1 text-gray-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="font-medium text-lg">Security</div>
+                        <div class="text-sm text-gray-500">Manage your account's security.</div>
+                    </div>
+                </div>
+                <svg class="text-gray-400 group-hover:text-zynk transition" xmlns="http://www.w3.org/2000/svg"
+                    width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 18 15 12 9 6" />
+                </svg>
+            </button>
+
+            <button
+                class="w-full flex items-center justify-between p-4 rounded-xl hover:bg-white dark:hover:bg-[#121212] border border-transparent hover:border-gray-200 dark:hover:border-gray-800 transition group text-left">
+                <div class="flex items-start gap-4">
+                    <div class="mt-1 text-gray-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="5" y="2" width="14" height="20" rx="2" ry="2" />
+                            <line x1="12" y1="18" x2="12.01" y2="18" />
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="font-medium text-lg">Apps and sessions</div>
+                        <div class="text-sm text-gray-500">See information about when you logged into your account and
+                            the apps you connected to your account.</div>
+                    </div>
+                </div>
+                <svg class="text-gray-400 group-hover:text-zynk transition" xmlns="http://www.w3.org/2000/svg"
+                    width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 18 15 12 9 6" />
+                </svg>
+            </button>
+
+            <button
+                class="w-full flex items-center justify-between p-4 rounded-xl hover:bg-white dark:hover:bg-[#121212] border border-transparent hover:border-gray-200 dark:hover:border-gray-800 transition group text-left">
+                <div class="flex items-start gap-4">
+                    <div class="mt-1 text-gray-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="17 1 21 5 17 9" />
+                            <path d="M3 11V9a4 4 0 0 1 4-4h14" />
+                            <polyline points="7 23 3 19 7 15" />
+                            <path d="M21 13v2a4 4 0 0 1-4 4H3" />
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="font-medium text-lg">Connected accounts</div>
+                        <div class="text-sm text-gray-500">Manage Google or Apple accounts connected to X to log in.
+                        </div>
+                    </div>
+                </div>
+                <svg class="text-gray-400 group-hover:text-zynk transition" xmlns="http://www.w3.org/2000/svg"
+                    width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 18 15 12 9 6" />
+                </svg>
+            </button>
+
+            <button
+                class="w-full flex items-center justify-between p-4 rounded-xl hover:bg-white dark:hover:bg-[#121212] border border-transparent hover:border-gray-200 dark:hover:border-gray-800 transition group text-left">
+                <div class="flex items-start gap-4">
+                    <div class="mt-1 text-gray-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                            <circle cx="9" cy="7" r="4" />
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="font-medium text-lg">Delegate</div>
+                        <div class="text-sm text-gray-500">Manage your shared accounts.</div>
+                    </div>
+                </div>
+                <svg class="text-gray-400 group-hover:text-zynk transition" xmlns="http://www.w3.org/2000/svg"
+                    width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 18 15 12 9 6" />
+                </svg>
+            </button>
+        </div>
     </main>
+
+    <!-- SCRIPT FOR SETTINGS NAVIGATION -->
+    <script>
+        function showSubmenu(id) {
+            document.getElementById('settingsMain').classList.add('hidden');
+            document.getElementById(id).classList.remove('hidden');
+        }
+
+        function goBack(id) {
+            document.getElementById(id).classList.add('hidden');
+            document.getElementById('settingsMain').classList.remove('hidden');
+        }
+    </script>
 
     <!-- SCRIPT FOR THEME TOGGLE (Reused) -->
     <script>
