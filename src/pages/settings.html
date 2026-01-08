@@ -116,7 +116,7 @@
                 </svg>
             </button>
 
-            <button
+            <button onclick="switchMenu('settingsNotifications', 'settingsMain')"
                 class="w-full flex items-center justify-between p-4 rounded-xl hover:bg-white dark:hover:bg-[#121212] border border-transparent hover:border-gray-200 dark:hover:border-gray-800 transition group text-left">
                 <div class="flex items-center gap-4">
                     <div class="w-10 h-10 rounded-full bg-zynk/10 flex items-center justify-center text-zynk">
@@ -752,7 +752,151 @@
             </div>
 
         </div>
+
+        <!-- NOTIFICATIONS SUBMENU -->
+        <div id="settingsNotifications" class="hidden space-y-2 transition-opacity duration-300 w-full max-w-2xl">
+            <div class="flex items-center gap-4 mb-2">
+                <button onclick="switchMenu('settingsMain', 'settingsNotifications')"
+                    class="p-2 -ml-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="19" y1="12" x2="5" y2="12" />
+                        <polyline points="12 19 5 12 12 5" />
+                    </svg>
+                </button>
+                <h2 class="text-2xl font-bold">Notifications</h2>
+            </div>
+            <p class="text-gray-500 mb-6 ml-14">Select the kinds of notifications you get about your activities,
+                interests,
+                and recommendations.</p>
+
+            <!-- Link to Filters -->
+            <button onclick="switchMenu('settingsNotificationsFilters', 'settingsNotifications')"
+                class="w-full flex items-center justify-between p-4 rounded-xl hover:bg-white dark:hover:bg-[#121212] border border-transparent hover:border-gray-200 dark:hover:border-gray-800 transition group text-left">
+                <div class="flex items-start gap-4">
+                    <div class="mt-1 text-gray-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="4" y1="21" x2="4" y2="14" />
+                            <line x1="4" y1="10" x2="4" y2="3" />
+                            <line x1="12" y1="21" x2="12" y2="12" />
+                            <line x1="12" y1="8" x2="12" y2="3" />
+                            <line x1="20" y1="21" x2="20" y2="16" />
+                            <line x1="20" y1="12" x2="20" y2="3" />
+                            <line x1="1" y1="14" x2="7" y2="14" />
+                            <line x1="9" y1="8" x2="15" y2="8" />
+                            <line x1="17" y1="16" x2="23" y2="16" />
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="font-medium text-lg">Filters</div>
+                        <div class="text-sm text-gray-500">Choose the notifications you’d like to see — and those you
+                            don’t.
+                        </div>
+                    </div>
+                </div>
+                <svg class="text-gray-400 group-hover:text-zynk transition" xmlns="http://www.w3.org/2000/svg"
+                    width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 18 15 12 9 6" />
+                </svg>
+            </button>
+
+            <!-- Link to Preferences -->
+            <button onclick="switchMenu('settingsNotificationsPreferences', 'settingsNotifications')"
+                class="w-full flex items-center justify-between p-4 rounded-xl hover:bg-white dark:hover:bg-[#121212] border border-transparent hover:border-gray-200 dark:hover:border-gray-800 transition group text-left">
+                <div class="flex items-start gap-4">
+                    <div class="mt-1 text-gray-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="5" y="2" width="14" height="20" rx="2" ry="2" />
+                            <path d="M12 18h.01" />
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="font-medium text-lg">Preferences</div>
+                        <div class="text-sm text-gray-500">Select your preferences by notification type.</div>
+                    </div>
+                </div>
+                <svg class="text-gray-400 group-hover:text-zynk transition" xmlns="http://www.w3.org/2000/svg"
+                    width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 18 15 12 9 6" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- NOTIFICATIONS > FILTERS SUBMENU -->
+        <div id="settingsNotificationsFilters"
+            class="hidden space-y-2 transition-opacity duration-300 w-full max-w-2xl">
+            <div class="flex items-center gap-4 mb-2">
+                <button onclick="switchMenu('settingsNotifications', 'settingsNotificationsFilters')"
+                    class="p-2 -ml-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="19" y1="12" x2="5" y2="12" />
+                        <polyline points="12 19 5 12 12 5" />
+                    </svg>
+                </button>
+                <h2 class="text-2xl font-bold">Filters</h2>
+            </div>
+            <p class="text-gray-500 mb-6 ml-14">Control details about the content you see.</p>
+
+            <!-- Placeholder Items -->
+            <button
+                class="w-full flex items-center justify-between p-4 rounded-xl hover:bg-white dark:hover:bg-[#121212] border border-transparent transition text-left">
+                <span class="font-medium text-lg">Muted notifications</span>
+                <svg class="text-gray-400" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 18 15 12 9 6" />
+                </svg>
+            </button>
+            <button
+                class="w-full flex items-center justify-between p-4 rounded-xl hover:bg-white dark:hover:bg-[#121212] border border-transparent transition text-left">
+                <span class="font-medium text-lg">Quality filter</span>
+                <input type="checkbox" checked class="w-5 h-5 accent-zynk">
+            </button>
+        </div>
+
+        <!-- NOTIFICATIONS > PREFERENCES SUBMENU -->
+        <div id="settingsNotificationsPreferences"
+            class="hidden space-y-2 transition-opacity duration-300 w-full max-w-2xl">
+            <div class="flex items-center gap-4 mb-2">
+                <button onclick="switchMenu('settingsNotifications', 'settingsNotificationsPreferences')"
+                    class="p-2 -ml-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="19" y1="12" x2="5" y2="12" />
+                        <polyline points="12 19 5 12 12 5" />
+                    </svg>
+                </button>
+                <h2 class="text-2xl font-bold">Preferences</h2>
+            </div>
+            <p class="text-gray-500 mb-6 ml-14">Manage message delivery and push notifications.</p>
+
+            <!-- Placeholder Items -->
+            <button
+                class="w-full flex items-center justify-between p-4 rounded-xl hover:bg-white dark:hover:bg-[#121212] border border-transparent transition text-left">
+                <span class="font-medium text-lg">Push notifications</span>
+                <svg class="text-gray-400" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 18 15 12 9 6" />
+                </svg>
+            </button>
+            <button
+                class="w-full flex items-center justify-between p-4 rounded-xl hover:bg-white dark:hover:bg-[#121212] border border-transparent transition text-left">
+                <span class="font-medium text-lg">Email notifications</span>
+                <svg class="text-gray-400" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 18 15 12 9 6" />
+                </svg>
+            </button>
+        </div>
     </main>
+
+
+
+
 
     <!-- SCRIPT FOR SETTINGS NAVIGATION -->
     <script>
@@ -764,6 +908,11 @@
         function goBack(id) {
             document.getElementById(id).classList.add('hidden');
             document.getElementById('settingsMain').classList.remove('hidden');
+        }
+
+        function switchMenu(showId, hideId) {
+            document.getElementById(hideId).classList.add('hidden');
+            document.getElementById(showId).classList.remove('hidden');
         }
     </script>
 
