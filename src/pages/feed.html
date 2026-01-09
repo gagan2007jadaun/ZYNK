@@ -55,6 +55,22 @@
   <!-- MAIN FEED -->
   <main class="flex-1 max-w-2xl mx-auto border-x border-gray-200 dark:border-gray-800">
 
+    <!-- FEED TABS -->
+    <div
+      class="sticky top-0 z-10 bg-white/80 dark:bg-dark/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 flex">
+      <button onclick="switchFeed('foryou')" id="tab-foryou"
+        class="flex-1 p-4 hover:bg-gray-100 dark:hover:bg-white/5 transition relative group">
+        <span class="font-bold text-gray-900 dark:text-white">For you</span>
+        <div class="absolute bottom-0 left-0 w-full h-1 bg-zynk rounded-full"></div>
+      </button>
+      <button onclick="switchFeed('following')" id="tab-following"
+        class="flex-1 p-4 hover:bg-gray-100 dark:hover:bg-white/5 transition relative group">
+        <span
+          class="font-medium text-gray-500 group-hover:text-gray-900 dark:text-gray-500 dark:group-hover:text-gray-300">Following</span>
+        <div class="absolute bottom-0 left-0 w-full h-1 bg-transparent rounded-full"></div>
+      </button>
+    </div>
+
     <!-- CREATE POST -->
     <div class="p-6 border-b border-gray-200 dark:border-gray-800">
       <textarea id="postInput" placeholder="Say something raw..." class="w-full bg-transparent resize-none outline-none text-lg
@@ -597,6 +613,37 @@
     });
 
     // REPLY LOGIC
+
+    // Feed Switching Logic
+    function switchFeed(type) {
+      const forYouTab = document.getElementById('tab-foryou');
+      const followingTab = document.getElementById('tab-following');
+
+      const forYouSpan = forYouTab.querySelector('span');
+      const followingSpan = followingTab.querySelector('span');
+
+      const forYouLine = forYouTab.querySelector('div');
+      const followingLine = followingTab.querySelector('div');
+
+      if (type === 'foryou') {
+        // Active: For You
+        forYouSpan.className = 'font-bold text-gray-900 dark:text-white';
+        forYouLine.className = 'absolute bottom-0 left-0 w-full h-1 bg-zynk rounded-full';
+
+        // Inactive: Following
+        followingSpan.className = 'font-medium text-gray-500 group-hover:text-gray-900 dark:text-gray-500 dark:group-hover:text-gray-300';
+        followingLine.className = 'absolute bottom-0 left-0 w-full h-1 bg-transparent rounded-full';
+      } else {
+        // Active: Following
+        followingSpan.className = 'font-bold text-gray-900 dark:text-white';
+        followingLine.className = 'absolute bottom-0 left-0 w-full h-1 bg-zynk rounded-full';
+
+        // Inactive: For You
+        forYouSpan.className = 'font-medium text-gray-500 group-hover:text-gray-900 dark:text-gray-500 dark:group-hover:text-gray-300';
+        forYouLine.className = 'absolute bottom-0 left-0 w-full h-1 bg-transparent rounded-full';
+      }
+    }
+
     const replyModal = document.getElementById('replyModal');
     const replyModalContent = document.getElementById('replyModalContent');
     const closeReplyBtn = document.getElementById('closeReplyBtn');
