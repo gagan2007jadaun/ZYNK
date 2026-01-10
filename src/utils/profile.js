@@ -130,4 +130,26 @@ function saveProfile() {
 }
 
 // Initial Load
-document.addEventListener("DOMContentLoaded", loadProfile);
+document.addEventListener("DOMContentLoaded", () => {
+    loadProfile();
+
+    // Load cover image
+    const coverImage = localStorage.getItem("zynkCover");
+    if (coverImage) {
+        document.getElementById("coverPreview").src = coverImage;
+    }
+});
+
+// Upload & save cover image
+window.uploadCover = function (event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function () {
+        const base64Image = reader.result;
+        document.getElementById("coverPreview").src = base64Image;
+        localStorage.setItem("zynkCover", base64Image);
+    };
+    reader.readAsDataURL(file);
+}
