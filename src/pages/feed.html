@@ -182,27 +182,66 @@
 
     <div id="feedPosts">
       <!-- POST -->
-      <div
-        class="post-card p-6 border-b border-gray-200 dark:border-gray-800 transition-all duration-300 ease-out hover:bg-gray-100 dark:hover:bg-[#141414] hover:-translate-y-0.5">
-        <div class="flex gap-4">
-          <div class="w-10 h-10 rounded-full bg-gray-700"></div>
+      <!-- POST CARD -->
+      <div class="post-card px-6 py-4 border-b border-gray-800
+                  transition-all duration-200 hover:bg-[#141414]">
 
-          <div>
-            <div class="flex items-center gap-2">
-              <span class="font-semibold">anonymous_01</span>
-              <span class="text-sm text-gray-500">@anon</span>
-              <span class="text-xs bg-red-500/10 text-red-500 px-2 py-0.5 rounded-full">😤 Just Venting</span>
+        <div class="flex gap-4">
+
+          <!-- Avatar -->
+          <div class="w-10 h-10 rounded-full bg-gray-700 flex-shrink-0"></div>
+
+          <!-- Content -->
+          <div class="flex-1">
+
+            <!-- TOP META ROW -->
+            <div class="flex items-center gap-2 text-sm flex-wrap">
+
+              <span class="font-semibold text-white">You</span>
+              <span class="text-gray-500">@you</span>
+
+              <!-- Privacy badge -->
+              <span class="flex items-center gap-1
+                           text-xs bg-[#1a1a1a] text-gray-300
+                           px-2 py-0.5 rounded-full">
+                <svg width="12" height="12" fill="currentColor">
+                  <circle cx="6" cy="6" r="5" />
+                </svg>
+                Public
+              </span>
+
+              <!-- Expiry badge -->
+              <span class="flex items-center gap-1
+                           text-xs bg-orange-500/10 text-orange-400
+                           px-2 py-0.5 rounded-full">
+                � 4d left
+              </span>
+
             </div>
 
-            <p class="mt-2 text-gray-800 dark:text-gray-200">
-              ZYNK feels like what social media should have been.
+            <!-- POST TEXT -->
+            <p class="mt-2 text-[15px] leading-relaxed text-gray-100">
+              Go with smile and come with smile and sleep with smile
+              and again do same process daily......
             </p>
 
-            <div class="flex gap-6 mt-4 text-gray-500 text-sm">
-              <span class="hover:text-zynk transition transform hover:scale-105 cursor-pointer">Reply</span>
-              <span class="hover:text-zynk transition transform hover:scale-105 cursor-pointer">Repost</span>
-              <span class="hover:text-zynk transition transform hover:scale-105 cursor-pointer">Like</span>
+            <!-- ACTIONS -->
+            <div class="flex gap-6 mt-3 text-sm text-gray-500">
+
+              <span class="flex items-center gap-1 hover:text-zynk cursor-pointer">
+                Reply
+              </span>
+
+              <span class="flex items-center gap-1 hover:text-green-400 cursor-pointer">
+                Repost
+              </span>
+
+              <span class="flex items-center gap-1 hover:text-pink-400 cursor-pointer">
+                Like
+              </span>
+
             </div>
+
           </div>
         </div>
       </div>
