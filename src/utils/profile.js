@@ -116,6 +116,7 @@ function saveProfile() {
         // Also save avatar separately for easier access in feed
         if (currentImage) {
             localStorage.setItem("zynkAvatar", currentImage);
+            localStorage.setItem("zynkAvatarUpdated", Date.now()); // Signal change for live updates
         }
 
         // Refresh UI

@@ -455,7 +455,7 @@
           <div class="flex gap-4">
              <!-- Avatar (Dynamic) -->
              <img src="${post.avatar || 'https://via.placeholder.com/40'}" 
-                  class="w-10 h-10 rounded-full object-cover bg-gray-700 flex-shrink-0" 
+                  class="${(post.author === 'You' || post.handle === '@you' || post.identity === 'public') ? 'post-avatar' : ''} w-10 h-10 rounded-full object-cover bg-gray-700 flex-shrink-0" 
                   alt="${post.author}">
             <div class="flex-1">
               <div class="flex justify-between items-start">
@@ -899,6 +899,60 @@
     } else if (postAvatar) {
       postAvatar.src = "https://via.placeholder.com/40";
     }
+
+    function updatePostAvatars() {
+      const avatar = localStorage.getItem("zynkAvatar");
+      if (!avatar) return;
+
+      document.querySelectorAll(".post-avatar").forEach(img => {
+        // Only update if it's currently a 'You' avatar or we want to force update all 'You' posts?
+        // The request says "Feed page me LIVE update logic".
+        // It blindly updates ALL .post-avatar. 
+        // CAUTION: This might overwrite other users' avatars if they also use .post-avatar class.
+        // But currently strict class usage in renderPost applies it to ALL posts.
+        // Wait, renderPost is used for EVERY post, including "Anonymous" or "Zynk Member".
+        // If we update ALL .post-avatar, we will overwrite Anon avatars too!
+        // The user's request: "Feed page – avatar ko dynamic rakho... Ensure har post avatar class-based ho... document.querySelectorAll('.post-avatar').forEach(img => { img.src = avatar; });"
+        // This logic IS flawed if it updates everyone. But adhering to user instruction strictly?
+        // "Feed page me LIVE update logic (🔥 CORE) ... document.querySelectorAll('.post-avatar').forEach..."
+        // I should probably add a check or only add the class to "You" posts.
+        // But for now, I will implement as requested but maybe refine the selector or the class application in renderPost.
+        // Better: In renderPost, ONLY add `post-avatar` class if `post.author === 'You'`.
+        // Let's modify the previous step or just do it here.
+        // Actually, the previous step added `post-avatar` to ALL posts in `renderPost`.
+        // I should update `renderPost` to conditionally add the class.
+        // BUT, the static "You" post (if any) and the new dynamic "You" posts need it.
+        // Let's refine `renderPost` first or right now.
+        // Wait, I can't refine renderPost in this block.
+        // I will use a smarter selector in the JS:
+        // Or just let it update all for now and see? No, that breaks the app logic (Anon becomes You).
+        // I will trust the user wants "You" posts updated.
+        // Let's Assume the user implicitly meant "My posts".
+        // I'll update renderPost to only add `post-avatar` class to "You" posts.
+        // Re-reading step 2: "Ensure har post avatar class-based ho, id-based nahi (kyunki multiple posts honge)".
+        // It doesn't explicitly say "only for my posts".
+        // But functionally, overwriting Anon is bad.
+        // I will modify `renderPost` to output `<img class="${post.author === 'You' ? 'post-avatar' : ''} ...">`
+        // I need to redo the renderPost replacement to be conditional.
+
+        img.src = avatar;
+      });
+    }
+
+    // Initial load
+    updatePostAvatars();
+
+    // 🔥 Listen for profile image updates
+    window.addEventListener("storage", (event) => {
+      if (event.key === "zynkAvatarUpdated") {
+        updatePostAvatars();
+      }
+    });
+
+    // Also listen for local custom event if on same page (unlikely for profile->feed but good practice)
+    window.addEventListener("zynkAvatarUpdated", () => {
+      updatePostAvatars();
+    });
   </script>
 </body>
 
