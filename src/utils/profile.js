@@ -138,7 +138,102 @@ document.addEventListener("DOMContentLoaded", () => {
     if (coverImage) {
         document.getElementById("coverBg").style.backgroundImage = `url(${coverImage})`;
     }
+
+    renderProfilePosts();
 });
+
+function renderProfilePosts() {
+    const postsContainer = document.getElementById("profilePosts");
+
+    // Sample Posts Data (In a real app, fetch from DB)
+    const posts = [
+        {
+            text: "Living my best life offline... but posting it online. Paradox? Maybe. 🤷‍♂️",
+            time: "2h left",
+            type: "Public",
+            typeColor: "text-gray-300",
+            typeBg: "bg-[#1a1a1a]"
+        },
+        {
+            text: "Just realized that 'Zynk' sounds like a robot sneeze. 🤖🤧",
+            time: "5h left",
+            type: "Thoughts",
+            typeColor: "text-blue-400",
+            typeBg: "bg-blue-500/10"
+        }
+    ];
+
+    let html = "";
+
+    posts.forEach(post => {
+        html += `
+        <!-- POST CARD -->
+        <div class="post-card px-6 py-4 border-b border-gray-800
+                    transition-all duration-200 hover:bg-[#141414]">
+
+          <div class="flex gap-4">
+
+            <!-- Avatar -->
+            <div class="w-10 h-10 rounded-full bg-gray-700 flex-shrink-0"></div>
+
+            <!-- Content -->
+            <div class="flex-1">
+
+              <!-- TOP META ROW -->
+              <div class="flex items-center gap-2 text-sm flex-wrap">
+
+                <span class="font-semibold text-white">You</span>
+                <span class="text-gray-500">@you</span>
+
+                <!-- Privacy/Type badge -->
+                <span class="flex items-center gap-1
+                             text-xs ${post.typeBg} ${post.typeColor}
+                             px-2 py-0.5 rounded-full">
+                  <svg width="12" height="12" fill="currentColor">
+                    <circle cx="6" cy="6" r="5"/>
+                  </svg>
+                  ${post.type}
+                </span>
+
+                <!-- Expiry badge -->
+                <span class="flex items-center gap-1
+                             text-xs bg-orange-500/10 text-orange-400
+                             px-2 py-0.5 rounded-full">
+                  🔥 ${post.time}
+                </span>
+
+              </div>
+
+              <!-- POST TEXT -->
+              <p class="mt-2 text-[15px] leading-relaxed text-gray-100">
+                ${post.text}
+              </p>
+
+              <!-- ACTIONS -->
+              <div class="flex gap-6 mt-3 text-sm text-gray-500">
+
+                <span class="flex items-center gap-1 hover:text-zynk cursor-pointer">
+                  Reply
+                </span>
+
+                <span class="flex items-center gap-1 hover:text-green-400 cursor-pointer">
+                  Repost
+                </span>
+
+                <span class="flex items-center gap-1 hover:text-pink-400 cursor-pointer">
+                  Like
+                </span>
+
+              </div>
+
+            </div>
+          </div>
+        </div>
+        `;
+    });
+
+    postsContainer.innerHTML = html;
+}
 
 // Upload & save cover image
 window.uploadCover = function (event) {
