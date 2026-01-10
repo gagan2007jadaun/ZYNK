@@ -209,14 +209,6 @@
                 </svg>
                 Public
               </span>
-
-              <!-- Expiry badge -->
-              <span class="flex items-center gap-1
-                           text-xs bg-orange-500/10 text-orange-400
-                           px-2 py-0.5 rounded-full">
-                � 4d left
-              </span>
-
             </div>
 
             <!-- POST TEXT -->
@@ -360,13 +352,23 @@
 
       let author = 'You';
       let handle = '@you';
+      let avatar = localStorage.getItem("zynkAvatar") || ""; // Get current avatar
+
+      // Fetch real profile if available
+      const savedProfile = JSON.parse(localStorage.getItem("zynkProfile"));
+      if (savedProfile) {
+        author = savedProfile.name || 'You';
+        handle = savedProfile.username || '@you';
+      }
 
       if (identity === 'semi') {
         author = 'Zynk Member';
         handle = '@hidden';
+        avatar = ""; // Hide avatar for semi-anon
       } else if (identity === 'anon') {
         author = 'Anonymous';
         handle = `@${Math.random().toString(36).substring(2, 7)}`;
+        avatar = ""; // Hide avatar for anon
       }
 
       const post = {
@@ -376,6 +378,7 @@
         expiry: expiryTime,
         author: author,
         handle: handle,
+        avatar: avatar, // Save avatar snapshot
         identity: identity,
         intent: intent,
         allowReposts: allowReposts,
@@ -410,7 +413,18 @@
       // Add static dummy posts if storage is empty (optional, for demo feel)
       // For now we just keep the static HTML ones or prepend user posts
 
-      validPosts.forEach(post => renderPost(post, false));
+      // Add current avatar to old posts if missing (migration fix)
+      // Actually renderPost handles missing avatar by showing placeholder.
+      // But we could force "You" posts to use current avatar if we wanted live sync for old posts.
+
+      validPosts.forEach(post => {
+        // Quick fix: if it's "You" and has no avatar, try to use current one
+        if ((post.author === 'You' || post.handle === '@you') && !post.avatar) {
+          const currentAvatar = localStorage.getItem("zynkAvatar");
+          if (currentAvatar) post.avatar = currentAvatar;
+        }
+        renderPost(post, false)
+      });
     }
 
     function getIntentBadge(intent) {
@@ -439,7 +453,10 @@
       const postHTML = `
         <div id="post-${post.id}" class="post-card p-6 border-b border-gray-200 dark:border-gray-800 transition-all duration-300 ease-out hover:bg-gray-100 dark:hover:bg-[#141414] hover:-translate-y-0.5 ${animate ? 'animate-post' : ''} ${post.frozen ? 'bg-blue-50/30 dark:bg-blue-900/10' : ''}">
           <div class="flex gap-4">
-            <div class="w-10 h-10 rounded-full bg-gray-700"></div>
+             <!-- Avatar (Dynamic) -->
+             <img src="${post.avatar || 'https://via.placeholder.com/40'}" 
+                  class="w-10 h-10 rounded-full object-cover bg-gray-700 flex-shrink-0" 
+                  alt="${post.author}">
             <div class="flex-1">
               <div class="flex justify-between items-start">
                 <div class="flex items-center gap-2">
