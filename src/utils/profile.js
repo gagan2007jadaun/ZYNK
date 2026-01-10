@@ -112,6 +112,7 @@ function saveProfile() {
 
     try {
         localStorage.setItem("zynkProfile", JSON.stringify(newProfile));
+        localStorage.setItem("zynkProfileUpdated", Date.now()); // Signal change
 
         // Also save avatar separately for easier access in feed
         if (currentImage) {
@@ -146,6 +147,20 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     renderProfilePosts();
+
+    // Listen for profile updates from other tabs
+    window.addEventListener("storage", (event) => {
+        if (event.key === "zynkProfileUpdated") {
+            loadProfile();
+        }
+        if (event.key === "zynkAvatarUpdated") {
+            // Also reload profile to get new avatar if saved in profile object (though we use separate key now)
+            // But loadProfile uses zynkProfile object which includes image.
+            // If zynkAvatarUpdated changed, zynkProfile might have too. 
+            // Just strictly reloading on profile update is enough usually, but let's be safe.
+            loadProfile();
+        }
+    });
 });
 
 function renderProfilePosts() {

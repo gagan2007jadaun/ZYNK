@@ -460,8 +460,8 @@
             <div class="flex-1">
               <div class="flex justify-between items-start">
                 <div class="flex items-center gap-2">
-                  <span class="font-semibold">${post.author}</span>
-                  <span class="text-sm text-gray-500">${post.handle}</span>
+                  <span class="${(post.author === 'You' || post.handle === '@you' || post.identity === 'public') ? 'post-name' : ''} font-semibold">${post.author}</span>
+                  <span class="${(post.author === 'You' || post.handle === '@you' || post.identity === 'public') ? 'post-handle' : ''} text-sm text-gray-500">${post.handle}</span>
                   <span class="text-xs ${intentStyle.class} px-2 py-0.5 rounded-full">${intentStyle.label}</span>
                   ${post.frozen ? '<span class="text-xs bg-gray-200 dark:bg-gray-800 text-gray-500 px-2 py-0.5 rounded-full border border-gray-300 dark:border-gray-700">Frozen ❄️</span>' : ''}
                 </div>
@@ -952,6 +952,34 @@
     // Also listen for local custom event if on same page (unlikely for profile->feed but good practice)
     window.addEventListener("zynkAvatarUpdated", () => {
       updatePostAvatars();
+    });
+
+    // Live Profile Text Updates (Name/Username)
+    function updatePostIdentity() {
+      const savedProfile = JSON.parse(localStorage.getItem("zynkProfile"));
+      if (!savedProfile) return;
+
+      const newName = savedProfile.name || "You";
+      const newHandle = savedProfile.username || "@you";
+
+      document.querySelectorAll(".post-name").forEach(el => el.textContent = newName);
+      document.querySelectorAll(".post-handle").forEach(el => el.textContent = newHandle);
+    }
+
+    // Initial check (optional, renderPost handles it, but ensures sync if page was cached)
+    updatePostIdentity();
+
+    window.addEventListener("storage", (event) => {
+      if (event.key === "zynkAvatarUpdated") {
+        updatePostAvatars();
+      }
+      if (event.key === "zynkProfileUpdated") {
+        updatePostIdentity();
+      }
+    });
+
+    window.addEventListener("zynkProfileUpdated", () => {
+      updatePostIdentity();
     });
   </script>
 </body>
