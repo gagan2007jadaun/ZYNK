@@ -113,6 +113,11 @@ function saveProfile() {
     try {
         localStorage.setItem("zynkProfile", JSON.stringify(newProfile));
 
+        // Also save avatar separately for easier access in feed
+        if (currentImage) {
+            localStorage.setItem("zynkAvatar", currentImage);
+        }
+
         // Refresh UI
         loadProfile();
         closeEditModal();

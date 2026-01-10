@@ -189,7 +189,7 @@
         <div class="flex gap-4">
 
           <!-- Avatar -->
-          <div class="w-10 h-10 rounded-full bg-gray-700 flex-shrink-0"></div>
+          <img id="postAvatar" class="w-10 h-10 rounded-full object-cover" src="" alt="avatar">
 
           <!-- Content -->
           <div class="flex-1">
@@ -872,6 +872,17 @@
       /* Reset fill */
     }
   </style>
+  <script>
+    // Load user avatar for posts
+    const avatar = localStorage.getItem("zynkAvatar");
+    const postAvatar = document.getElementById("postAvatar");
+
+    if (avatar && postAvatar) {
+      postAvatar.src = avatar;
+    } else if (postAvatar) {
+      postAvatar.src = "https://via.placeholder.com/40";
+    }
+  </script>
 </body>
 
 </html>
