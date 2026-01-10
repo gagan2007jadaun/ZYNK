@@ -136,7 +136,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Load cover image
     const coverImage = localStorage.getItem("zynkCover");
     if (coverImage) {
-        document.getElementById("coverPreview").src = coverImage;
+        document.getElementById("coverBg").style.backgroundImage = `url(${coverImage})`;
     }
 });
 
@@ -148,7 +148,7 @@ window.uploadCover = function (event) {
     const reader = new FileReader();
     reader.onload = function () {
         const base64Image = reader.result;
-        document.getElementById("coverPreview").src = base64Image;
+        document.getElementById("coverBg").style.backgroundImage = `url(${base64Image})`;
         localStorage.setItem("zynkCover", base64Image);
     };
     reader.readAsDataURL(file);
