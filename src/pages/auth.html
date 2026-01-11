@@ -89,18 +89,26 @@
     <script>
         const loginTab = document.getElementById('loginTab');
         const signupTab = document.getElementById('signupTab');
+        let isLogin = true;
 
         loginTab.onclick = () => {
+            isLogin = true;
             loginTab.classList.add('bg-zynk', 'text-black');
             signupTab.classList.remove('bg-zynk', 'text-black');
             signupTab.classList.add('text-gray-400');
+            document.getElementById('continueBtn').textContent = "Login";
         };
 
         signupTab.onclick = () => {
+            isLogin = false;
             signupTab.classList.add('bg-zynk', 'text-black');
             loginTab.classList.remove('bg-zynk', 'text-black');
             loginTab.classList.add('text-gray-400');
+            document.getElementById('continueBtn').textContent = "Create Account";
         };
+
+        // Initialize as Login
+        loginTab.click();
     </script>
 
     <style>
@@ -175,23 +183,52 @@
         continueBtn.addEventListener('click', function (e) {
             e.preventDefault();
 
-            // Save to localStorage
             const username = usernameInput.value.trim();
             const password = passwordInput.value.trim();
 
-            if (username) localStorage.setItem('zynkUsername', username);
-            if (password) localStorage.setItem('zynkPassword', password);
+            if (!username || !password) {
+                alert("Please enter both username and password.");
+                return;
+            }
 
-            // Show loader
-            loaderOverlay.classList.add('active');
+            if (isLogin) {
+                // LOGIN LOGIC
+                const storedUser = localStorage.getItem('zynkUsername');
+                const storedPass = localStorage.getItem('zynkPassword');
 
-            // Delay for 2 seconds then redirect
-            setTimeout(() => {
-                window.location.href = "feed.html";
-            }, 2000);
+                if (username === storedUser && password === storedPass) {
+                    sessionStorage.setItem("zynkVerified", "true"); // Auto verify for this session
+                    proceed();
+                } else {
+                    alert("Invalid username or password.");
+                    return;
+                }
+            } else {
+                // SIGNUP LOGIC
+                localStorage.setItem('zynkUsername', username);
+                localStorage.setItem('zynkPassword', password);
+
+                // Initialize profile if not exists
+                if (!localStorage.getItem('zynkProfile')) {
+                    localStorage.setItem('zynkProfile', JSON.stringify({
+                        name: username,
+                        username: '@' + username.toLowerCase().replace(/\s+/g, ''),
+                        bio: 'New Zynk user'
+                    }));
+                }
+
+                sessionStorage.setItem("zynkVerified", "true");
+                proceed();
+            }
+
+            function proceed() {
+                // Show loader
+                loaderOverlay.classList.add('active');
+                // Delay for 2 seconds then redirect
+                setTimeout(() => {
+                    window.location.href = "feed.html";
+                }, 2000);
+            }
         });
     </script>
-
 </body>
-
-</html>
