@@ -25,6 +25,13 @@
         }
     </script>
     <script src="../utils/theme.js"></script>
+
+    <!-- Protected Page Check -->
+    <script>
+        if (sessionStorage.getItem("zynkVerified") !== "true") {
+            window.location.href = "confirm-password.html";
+        }
+    </script>
 </head>
 
 <body class="bg-gray-50 text-gray-900 dark:bg-dark dark:text-white min-h-screen flex transition-colors duration-300">
