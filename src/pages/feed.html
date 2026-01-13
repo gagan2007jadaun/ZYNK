@@ -134,13 +134,27 @@
         <div class="flex items-center gap-4">
           <span id="charCount" class="text-sm text-gray-500">0 / 280 chars</span>
 
-          <div class="relative group">
+          <div class="relative group flex items-center gap-2">
             <select id="expirySelect"
               class="bg-gray-100 dark:bg-[#1A1A1A] text-sm text-gray-700 dark:text-gray-300 rounded-lg px-2 py-1 outline-none border border-transparent focus:border-zynk appearance-none cursor-pointer">
               <option value="1">🔥 1 Hour</option>
               <option value="24" selected>⏳ 24 Hours</option>
               <option value="168">📅 7 Days</option>
+              <option value="custom">⚙️ Custom...</option>
+              <option value="never">♾️ Never</option>
             </select>
+
+            <!-- Custom Expiry Input (Hidden by default) -->
+            <div id="customExpiryContainer"
+              class="hidden flex items-center gap-1 bg-gray-100 dark:bg-[#1A1A1A] rounded-lg px-2 py-1">
+              <input type="number" id="customTimeInput" value="2" min="1" max="365"
+                class="w-12 bg-transparent text-sm text-center outline-none border-b border-gray-500 focus:border-zynk text-gray-800 dark:text-white">
+              <select id="customUnitSelect"
+                class="bg-transparent text-sm outline-none text-gray-600 dark:text-gray-400 cursor-pointer">
+                <option value="hours">Hours</option>
+                <option value="days">Days</option>
+              </select>
+            </div>
           </div>
 
           <div class="relative group">
@@ -403,7 +417,8 @@
     function loadPosts() {
       const posts = JSON.parse(localStorage.getItem('zynk_posts') || '[]');
       const now = Date.now();
-      const validPosts = posts.filter(p => p.expiry > now);
+      // Keep if expiry is null (Never) OR expiry is in future
+      const validPosts = posts.filter(p => !p.expiry || p.expiry > now);
 
       // Update storage if we filtered out expired posts
       if (posts.length !== validPosts.length) {
@@ -449,6 +464,7 @@
         : `<span class="hover:text-zynk transition transform hover:scale-105 cursor-pointer" onclick="openReply('${post.handle}', '${post.text.replace(/'/g, "\\'")}')">Reply</span>`;
 
       const freezeAction = `<span onclick="toggleFreeze('${post.id}')" class="cursor-pointer hover:text-blue-500 transition select-none">${post.frozen ? 'Unfreeze ❄️' : 'Freeze 🧊'}</span>`;
+      const expiryTitle = post.expiry ? `Exports at ${new Date(post.expiry).toLocaleString()}` : 'Never expires';
 
       const postHTML = `
         <div id="post-${post.id}" class="post-card p-6 border-b border-gray-200 dark:border-gray-800 transition-all duration-300 ease-out hover:bg-gray-100 dark:hover:bg-[#141414] hover:-translate-y-0.5 ${animate ? 'animate-post' : ''} ${post.frozen ? 'bg-blue-50/30 dark:bg-blue-900/10' : ''}">
@@ -465,7 +481,7 @@
                   <span class="text-xs ${intentStyle.class} px-2 py-0.5 rounded-full">${intentStyle.label}</span>
                   ${post.frozen ? '<span class="text-xs bg-gray-200 dark:bg-gray-800 text-gray-500 px-2 py-0.5 rounded-full border border-gray-300 dark:border-gray-700">Frozen ❄️</span>' : ''}
                 </div>
-                <span class="text-xs font-mono text-orange-500 bg-orange-500/10 px-2 py-0.5 rounded-full" title="Exports at ${new Date(post.expiry).toLocaleString()}">
+                <span class="text-xs font-mono text-orange-500 bg-orange-500/10 px-2 py-0.5 rounded-full" title="${expiryTitle}">
                   🔥 ${timeLeft}
                 </span>
               </div>
@@ -539,6 +555,7 @@
     }
 
     function getTimeLeft(expiry) {
+      if (!expiry) return 'Forever ♾️';
       const now = Date.now();
       const diff = expiry - now;
 

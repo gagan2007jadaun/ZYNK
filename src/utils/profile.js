@@ -163,97 +163,139 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
+// Helper to format time left
+function getTimeLeft(expiry) {
+    if (!expiry) return 'Forever ♾️';
+    const now = Date.now();
+    const diff = expiry - now;
+    if (diff <= 0) return 'Expired';
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    if (days > 0) return `${days}d left`;
+    if (hours > 0) return `${hours}h left`;
+    return `${minutes}m left`;
+}
+
 function renderProfilePosts() {
     const postsContainer = document.getElementById("profilePosts");
+    const noPostsMsg = document.getElementById("noPostsMsg");
 
-    // Sample Posts Data (In a real app, fetch from DB)
-    const posts = [
-        {
-            text: "Living my best life offline... but posting it online. Paradox? Maybe. 🤷‍♂️",
-            time: "2h left",
-            type: "Public",
-            typeColor: "text-gray-300",
-            typeBg: "bg-[#1a1a1a]"
-        },
-        {
-            text: "Just realized that 'Zynk' sounds like a robot sneeze. 🤖🤧",
-            time: "5h left",
-            type: "Thoughts",
-            typeColor: "text-blue-400",
-            typeBg: "bg-blue-500/10"
-        }
-    ];
+    // Fetch posts from localStorage
+    const posts = JSON.parse(localStorage.getItem('zynk_posts') || '[]');
+    const now = Date.now();
 
-    let html = "";
+    // Filter valid posts (not expired)
+    // Since this is a local-only app, all posts in 'zynk_posts' are considered "My Posts"
+    const validPosts = posts.filter(p => !p.expiry || p.expiry > now);
 
-    posts.forEach(post => {
-        html += `
-        <!-- POST CARD -->
-        <div class="post-card px-6 py-4 border-b border-gray-800
-                    transition-all duration-200 hover:bg-[#141414]">
+    if (validPosts.length === 0) {
+        postsContainer.innerHTML = '';
+        if (noPostsMsg) noPostsMsg.classList.remove('hidden');
+        return;
+    }
 
+    if (noPostsMsg) noPostsMsg.classList.add('hidden');
+
+    postsContainer.innerHTML = validPosts.map(post => {
+        const timeLeft = getTimeLeft(post.expiry);
+
+        // Identity Badge Logic
+        let identityBadge = '';
+        if (post.identity === 'semi') identityBadge = '🎭 Semi';
+        else if (post.identity === 'anon') identityBadge = '👻 Anon';
+        else identityBadge = '👤 Public';
+
+        // Intent styling (matching Feed)
+        const intent = post.intent || 'vent';
+        const intents = {
+            'vent': { label: '😤 Just Venting', class: 'bg-red-500/10 text-red-500' },
+            'thoughts': { label: '💭 Thoughts', class: 'bg-blue-500/10 text-blue-500' },
+            'question': { label: '❓ Question', class: 'bg-yellow-500/10 text-yellow-500' },
+            'advice': { label: '🆘 Advice', class: 'bg-orange-500/10 text-orange-500' },
+            'debate': { label: '⚔️ Debate', class: 'bg-purple-500/10 text-purple-500' },
+            'teach': { label: '🎓 Teach', class: 'bg-green-500/10 text-green-500' },
+            'showcase': { label: '🌟 Showcase', class: 'bg-pink-500/10 text-pink-500' }
+        };
+        const intentStyle = intents[intent] || intents['vent'];
+
+        return `
+        <div class="p-6 border-b border-gray-200 dark:border-gray-800 transition-all hover:bg-gray-50 dark:hover:bg-white/5">
           <div class="flex gap-4">
-
             <!-- Avatar -->
-            <div class="w-10 h-10 rounded-full bg-gray-700 flex-shrink-0"></div>
-
-            <!-- Content -->
+             <img src="${post.avatar || 'https://via.placeholder.com/40'}" 
+                  class="${(post.author === 'You' || post.handle === '@you' || post.identity === 'public') ? 'post-avatar' : ''} w-10 h-10 rounded-full object-cover bg-gray-700 flex-shrink-0" 
+                  alt="${post.author}">
+            
             <div class="flex-1">
-
-              <!-- TOP META ROW -->
-              <div class="flex items-center gap-2 text-sm flex-wrap">
-
-                <span class="font-semibold text-white">You</span>
-                <span class="text-gray-500">@you</span>
-
-                <!-- Privacy/Type badge -->
-                <span class="flex items-center gap-1
-                             text-xs ${post.typeBg} ${post.typeColor}
-                             px-2 py-0.5 rounded-full">
-                  <svg width="12" height="12" fill="currentColor">
-                    <circle cx="6" cy="6" r="5"/>
-                  </svg>
-                  ${post.type}
+              <div class="flex justify-between items-start">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <span class="font-semibold">${post.author}</span>
+                  <span class="text-sm text-gray-500">${post.handle}</span>
+                  <span class="text-xs bg-gray-200 dark:bg-gray-800 px-1.5 py-0.5 rounded text-gray-500">${identityBadge}</span>
+                   <span class="text-xs ${intentStyle.class} px-2 py-0.5 rounded-full">${intentStyle.label}</span>
+                </div>
+                <span class="text-xs font-mono text-orange-500 bg-orange-500/10 px-2 py-0.5 rounded-full">
+                  🔥 ${timeLeft}
                 </span>
-
-                <!-- Expiry badge -->
-                <span class="flex items-center gap-1
-                             text-xs bg-orange-500/10 text-orange-400
-                             px-2 py-0.5 rounded-full">
-                  🔥 ${post.time}
-                </span>
-
               </div>
-
-              <!-- POST TEXT -->
-              <p class="mt-2 text-[15px] leading-relaxed text-gray-100">
-                ${post.text}
-              </p>
-
-              <!-- ACTIONS -->
-              <div class="flex gap-6 mt-3 text-sm text-gray-500">
-
-                <span class="flex items-center gap-1 hover:text-zynk cursor-pointer">
-                  Reply
-                </span>
-
-                <span class="flex items-center gap-1 hover:text-green-400 cursor-pointer">
-                  Repost
-                </span>
-
-                <span class="flex items-center gap-1 hover:text-pink-400 cursor-pointer">
-                  Like
-                </span>
-
+              
+              <div class="mt-2 text-gray-800 dark:text-gray-200">
+                <p id="text-${post.id}" class="${post.text.length > 150 ? 'line-clamp-3' : ''} whitespace-pre-wrap transition-all">${post.text}</p>
+                ${post.text.length > 150 ? `<button onclick="toggleExpand('${post.id}')" class="text-xs text-zynk hover:underline mt-1">Show more</button>` : ''}
               </div>
-
+              
+              <div class="flex gap-6 mt-4 text-gray-500 text-sm">
+                <span class="hover:text-zynk transition cursor-pointer">Reply</span>
+                <span class="${post.allowReposts !== false ? 'hover:text-zynk transition cursor-pointer' : 'opacity-50 cursor-not-allowed'}" title="${post.allowReposts !== false ? 'Repost' : 'Reposts disabled'}">Repost</span>
+                <div class="like-container relative">
+                   <button class="like-btn flex items-center gap-1 hover:text-zynk transition cursor-pointer select-none" onmousedown="startLike(this)" onmouseup="cancelLike(this)" onmouseleave="cancelLike(this)" ontouchstart="startLike(this)" ontouchend="cancelLike(this)">
+                     <span class="like-fill"></span>
+                     <span class="like-icon">Like</span>
+                   </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
         `;
-    });
+    }).join('');
 
-    postsContainer.innerHTML = html;
+    // Check for "Thought Streak"
+    checkThoughtStreak(posts);
+}
+
+function checkThoughtStreak(posts) {
+    const now = Date.now();
+    const oneWeekMs = 7 * 24 * 60 * 60 * 1000;
+    const streakBadge = document.getElementById('streakBadge');
+    if (!streakBadge) return;
+
+    // Filter posts from last 7 days from ALL posts (history matters for streaks)
+    const recentPosts = posts.filter(p => (now - p.timestamp) < oneWeekMs);
+
+    // Meaningful: Length > 50 OR Intent is 'thoughts', 'teach', 'debate'
+    const deepIntents = ['thoughts', 'teach', 'debate'];
+
+    const meaningfulCount = recentPosts.reduce((count, post) => {
+        const isLong = post.text.length > 50;
+        const isDeep = deepIntents.includes(post.intent);
+        return (isLong || isDeep) ? count + 1 : count;
+    }, 0);
+
+    if (meaningfulCount >= 3) {
+        streakBadge.classList.remove('hidden');
+    } else {
+        streakBadge.classList.add('hidden');
+    }
+}
+
+// Add toggleExpand global needed for the onclick
+window.toggleExpand = function (id) {
+    const p = document.getElementById(`text-${id}`);
+    const btn = p.nextElementSibling;
+    p.classList.remove('line-clamp-3');
+    if (btn) btn.remove();
 }
 
 // Upload & save cover image
