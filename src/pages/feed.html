@@ -276,18 +276,42 @@
       const text = input.value.trim();
       if (!text) return;
 
-      const hours = parseInt(expirySelect.value);
+      const expiryVal = expirySelect.value;
       const identity = identitySelect.value;
       const intent = intentSelect.value;
       const allowReposts = allowRepostsCheckbox.checked;
       const now = Date.now();
-      const expiryTime = now + (hours * 60 * 60 * 1000);
+
+      let expiryTime = null; // Default to never/null
+
+      if (expiryVal !== 'never') {
+        let hours = 0;
+        if (expiryVal === 'custom') {
+          const val = parseFloat(document.getElementById('customTimeInput').value) || 0;
+          const unit = document.getElementById('customUnitSelect').value;
+          hours = unit === 'days' ? val * 24 : val;
+        } else {
+          hours = parseFloat(expiryVal);
+        }
+
+        if (hours > 0) {
+          expiryTime = now + (hours * 60 * 60 * 1000);
+        } else {
+          // Fallback if 0 or invalid (e.g. user typed 0) - treat as 1 hour or error? 
+          // Let's default to 1 hour if invalid custom, or maybe just 0 means expired immediately?
+          // Let's treat 0 as "Never" or prevent posting? 
+          // For now, let's assume valid > 0. If 0, it expires instantly.
+          if (expiryVal === 'custom' && hours <= 0) {
+            alert("Please enter a valid time");
+            return;
+          }
+        }
+      }
 
       let author = 'You';
       let handle = '@you';
-      let avatar = localStorage.getItem("zynkAvatar") || ""; // Get current avatar
+      let avatar = localStorage.getItem("zynkAvatar") || "";
 
-      // Fetch real profile if available
       const savedProfile = JSON.parse(localStorage.getItem("zynkProfile"));
       if (savedProfile) {
         author = savedProfile.name || 'You';
@@ -297,11 +321,11 @@
       if (identity === 'semi') {
         author = 'Zynk Member';
         handle = '@hidden';
-        avatar = ""; // Hide avatar for semi-anon
+        avatar = "";
       } else if (identity === 'anon') {
         author = 'Anonymous';
         handle = `@${Math.random().toString(36).substring(2, 7)}`;
-        avatar = ""; // Hide avatar for anon
+        avatar = "";
       }
 
       const post = {
@@ -311,7 +335,7 @@
         expiry: expiryTime,
         author: author,
         handle: handle,
-        avatar: avatar, // Save avatar snapshot
+        avatar: avatar,
         identity: identity,
         intent: intent,
         allowReposts: allowReposts,
@@ -321,7 +345,6 @@
       savePost(post);
       renderPost(post, true);
 
-      // Reset input
       input.value = '';
       counter.textContent = `0 / ${LIMIT}`;
       postBtn.disabled = true;
@@ -400,7 +423,9 @@
                   <span class="text-xs ${intentStyle.class} px-2 py-0.5 rounded-full">${intentStyle.label}</span>
                   ${post.frozen ? '<span class="text-xs bg-gray-200 dark:bg-gray-800 text-gray-500 px-2 py-0.5 rounded-full border border-gray-300 dark:border-gray-700">Frozen ❄️</span>' : ''}
                 </div>
-                <span class="text-xs font-mono text-orange-500 bg-orange-500/10 px-2 py-0.5 rounded-full" title="${expiryTitle}">
+                <span class="expiry-countdown text-xs font-mono text-orange-500 bg-orange-500/10 px-2 py-0.5 rounded-full transition-colors duration-500" 
+                      title="${expiryTitle}"
+                      data-expiry="${post.expiry || ''}">
                   🔥 ${timeLeft}
                 </span>
               </div>
@@ -563,30 +588,84 @@
       }
     }
 
-    // Checking for expired posts every minute
-    setInterval(() => {
-      const posts = JSON.parse(localStorage.getItem('zynk_posts') || '[]');
+    // LIVE COUNTDOWN LOGIC
+    // Update every second
+    setInterval(updateCountdowns, 1000);
+
+    function updateCountdowns() {
+      const badges = document.querySelectorAll('.expiry-countdown');
       const now = Date.now();
-      const validPosts = posts.filter(p => {
-        if (p.expiry <= now) {
-          // Remove from UI
-          const el = document.getElementById(`post-${p.id}`);
-          if (el) {
-            el.style.opacity = '0';
-            setTimeout(() => el.remove(), 500);
-          }
-          return false;
+      const postsToRemove = [];
+
+      badges.forEach(badge => {
+        const expiryStr = badge.getAttribute('data-expiry');
+
+        // Handle Never/Null
+        if (!expiryStr || expiryStr === 'null' || expiryStr === 'undefined') {
+          badge.innerText = 'Forever ♾️';
+          badge.classList.remove('animate-pulse', 'text-red-500', 'bg-red-500/10');
+          badge.classList.add('text-orange-500', 'bg-orange-500/10');
+          return;
         }
-        return true;
+
+        const expiry = parseInt(expiryStr);
+        if (isNaN(expiry)) { // Handle invalid parse
+          badge.innerText = 'Forever ♾️';
+          return;
+        }
+
+        const diff = expiry - now;
+
+        if (diff <= 0) {
+          badge.innerText = 'Expired';
+          badge.classList.remove('animate-pulse', 'text-red-500', 'bg-red-500/10', 'text-orange-500', 'bg-orange-500/10');
+          badge.classList.add('text-gray-500', 'bg-gray-500/10');
+
+          // Mark for removal
+          const postCard = badge.closest('.post-card');
+          if (postCard && !postCard.classList.contains('fading-out')) {
+            postCard.classList.add('fading-out');
+            postCard.style.transition = 'opacity 1s';
+            postCard.style.opacity = '0';
+            setTimeout(() => postCard.remove(), 1000);
+            // Also removal from storage should happen via loadPosts or check logic
+          }
+          return;
+        }
+
+        // URGENCY EFFECT (< 5 mins)
+        if (diff < 5 * 60 * 1000) {
+          badge.classList.add('animate-pulse', 'text-red-500', 'bg-red-500/10');
+          badge.classList.remove('text-orange-500', 'bg-orange-500/10');
+        } else {
+          badge.classList.remove('animate-pulse', 'text-red-500', 'bg-red-500/10');
+          badge.classList.add('text-orange-500', 'bg-orange-500/10');
+        }
+
+        badge.innerText = '🔥 ' + formatTimeLeft(diff);
       });
+    }
 
-      if (posts.length !== validPosts.length) {
-        localStorage.setItem('zynk_posts', JSON.stringify(validPosts));
-      }
+    function formatTimeLeft(diff) {
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
-      // Update timer texts (optional optimization: only update visible)
-      // For simplicity in this v1, checking logic is enough
-    }, 60000); // Check every minute
+      if (days > 0) return `${days}d ${hours}h left`;
+      if (hours > 0) return `${hours}h ${minutes}m left`;
+      // Show seconds if under an hour
+      return `${minutes}m ${seconds}s left`;
+    }
+
+    // Helper to format time left (initial)
+    function getTimeLeft(expiry) {
+      if (!expiry) return 'Forever ♾️';
+      const now = Date.now();
+      const diff = expiry - now;
+      if (diff <= 0) return 'Expired';
+      return formatTimeLeft(diff);
+    }
 
     // Theme Toggle Logic
     const themeToggle = document.getElementById('themeToggle');

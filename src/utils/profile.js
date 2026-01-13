@@ -163,18 +163,72 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
-// Helper to format time left
+// Helper to format time left string
+function formatTimeLeft(diff) {
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+    if (days > 0) return `${days}d ${hours}h left`;
+    if (hours > 0) return `${hours}h ${minutes}m left`;
+    // Show seconds if under an hour
+    return `${minutes}m ${seconds}s left`;
+}
+
+// Helper to format time left (initial)
 function getTimeLeft(expiry) {
     if (!expiry) return 'Forever ♾️';
     const now = Date.now();
     const diff = expiry - now;
     if (diff <= 0) return 'Expired';
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    if (days > 0) return `${days}d left`;
-    if (hours > 0) return `${hours}h left`;
-    return `${minutes}m left`;
+    return formatTimeLeft(diff);
+}
+
+// Live Countdown Logic
+setInterval(updateCountdowns, 1000);
+
+function updateCountdowns() {
+    const badges = document.querySelectorAll('.expiry-countdown');
+    const now = Date.now();
+
+    badges.forEach(badge => {
+        const expiryStr = badge.getAttribute('data-expiry');
+
+        // Handle Never/Null
+        if (!expiryStr || expiryStr === 'null' || expiryStr === 'undefined') {
+            badge.innerText = 'Forever ♾️';
+            badge.classList.remove('animate-pulse', 'text-red-500', 'bg-red-500/10');
+            badge.classList.add('text-orange-500', 'bg-orange-500/10');
+            return;
+        }
+
+        const expiry = parseInt(expiryStr);
+        if (isNaN(expiry)) { // Handle invalid parse
+            badge.innerText = 'Forever ♾️';
+            return;
+        }
+
+        const diff = expiry - now;
+
+        if (diff <= 0) {
+            badge.innerText = 'Expired';
+            badge.classList.remove('animate-pulse', 'text-red-500', 'bg-red-500/10', 'text-orange-500', 'bg-orange-500/10');
+            badge.classList.add('text-gray-500', 'bg-gray-500/10');
+            return;
+        }
+
+        // URGENCY EFFECT (< 5 mins)
+        if (diff < 5 * 60 * 1000) {
+            badge.classList.add('animate-pulse', 'text-red-500', 'bg-red-500/10');
+            badge.classList.remove('text-orange-500', 'bg-orange-500/10');
+        } else {
+            badge.classList.remove('animate-pulse', 'text-red-500', 'bg-red-500/10');
+            badge.classList.add('text-orange-500', 'bg-orange-500/10');
+        }
+
+        badge.innerText = '🔥 ' + formatTimeLeft(diff);
+    });
 }
 
 function renderProfilePosts() {
@@ -199,14 +253,15 @@ function renderProfilePosts() {
 
     postsContainer.innerHTML = validPosts.map(post => {
         const timeLeft = getTimeLeft(post.expiry);
-
         // Identity Badge Logic
         let identityBadge = '';
         if (post.identity === 'semi') identityBadge = '🎭 Semi';
         else if (post.identity === 'anon') identityBadge = '👻 Anon';
         else identityBadge = '👤 Public';
 
-        // Intent styling (matching Feed)
+        const expiryTitle = post.expiry ? `Exports at ${new Date(post.expiry).toLocaleString()}` : 'Never expires';
+
+        // Intent styling
         const intent = post.intent || 'vent';
         const intents = {
             'vent': { label: '😤 Just Venting', class: 'bg-red-500/10 text-red-500' },
@@ -220,13 +275,13 @@ function renderProfilePosts() {
         const intentStyle = intents[intent] || intents['vent'];
 
         return `
-        <div class="p-6 border-b border-gray-200 dark:border-gray-800 transition-all hover:bg-gray-50 dark:hover:bg-white/5">
+        <div id="post-${post.id}" class="p-6 border-b border-gray-200 dark:border-gray-800 transition-all hover:bg-gray-50 dark:hover:bg-white/5">
           <div class="flex gap-4">
-            <!-- Avatar -->
+             <!-- Avatar -->
              <img src="${post.avatar || 'https://via.placeholder.com/40'}" 
                   class="${(post.author === 'You' || post.handle === '@you' || post.identity === 'public') ? 'post-avatar' : ''} w-10 h-10 rounded-full object-cover bg-gray-700 flex-shrink-0" 
                   alt="${post.author}">
-            
+
             <div class="flex-1">
               <div class="flex justify-between items-start">
                 <div class="flex items-center gap-2 flex-wrap">
@@ -235,7 +290,9 @@ function renderProfilePosts() {
                   <span class="text-xs bg-gray-200 dark:bg-gray-800 px-1.5 py-0.5 rounded text-gray-500">${identityBadge}</span>
                    <span class="text-xs ${intentStyle.class} px-2 py-0.5 rounded-full">${intentStyle.label}</span>
                 </div>
-                <span class="text-xs font-mono text-orange-500 bg-orange-500/10 px-2 py-0.5 rounded-full">
+                <span class="expiry-countdown text-xs font-mono text-orange-500 bg-orange-500/10 px-2 py-0.5 rounded-full transition-colors duration-500" 
+                      title="${expiryTitle}"
+                      data-expiry="${post.expiry || ''}">
                   🔥 ${timeLeft}
                 </span>
               </div>
