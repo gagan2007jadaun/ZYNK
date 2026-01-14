@@ -259,38 +259,39 @@
     <!-- SCRIPT -->
     <script src="../utils/profile.js"></script>
 
-    function loadProfilePosts() {
-    const posts = JSON.parse(localStorage.getItem('zynk_posts') || '[]');
-    const now = Date.now();
+    <script>
+        function loadProfilePosts() {
+            const posts = JSON.parse(localStorage.getItem('zynk_posts') || '[]');
+            const now = Date.now();
 
-    // Filter valid posts (not expired)
-    const validPosts = posts.filter(p => p.expiry > now);
+            // Filter valid posts (not expired)
+            const validPosts = posts.filter(p => p.expiry > now);
 
-    checkThoughtStreak(posts); // Check streak based on ALL posts (history) or valid? Usually history matters for
-    streaks. Let's use valid (active) for now to encourage keeping thoughts alive, or all?
-    // User said "7 din me 3 meaningful posts". Let's check last 7 days of ALL posts (even if expired/deleted? Logic
-    says active or history. LocalStorage has 'zynk_posts' which might be cleaned up. Let's use what we have.)
-    // Current storage logic only keeps valid posts? No, loadPosts in feed filters but only updates if expiry.
-    // Let's check all available posts.
+            checkThoughtStreak(posts); // Check streak based on ALL posts (history) or valid? Usually history matters for
+            // streaks. Let's use valid (active) for now to encourage keeping thoughts alive, or all?
+            // User said "7 din me 3 meaningful posts". Let's check last 7 days of ALL posts (even if expired/deleted? Logic
+            // says active or history. LocalStorage has 'zynk_posts' which might be cleaned up. Let's use what we have.)
+            // Current storage logic only keeps valid posts? No, loadPosts in feed filters but only updates if expiry.
+            // Let's check all available posts.
 
-    const profilePosts = document.getElementById('profilePosts');
-    const noPostsMsg = document.getElementById('noPostsMsg');
+            const profilePosts = document.getElementById('profilePosts');
+            const noPostsMsg = document.getElementById('noPostsMsg');
 
-    if (validPosts.length === 0) {
-    noPostsMsg.classList.remove('hidden');
-    return;
-    }
+            if (validPosts.length === 0) {
+                noPostsMsg.classList.remove('hidden');
+                return;
+            }
 
-    profilePosts.innerHTML = validPosts.map(post => {
-    const timeLeft = getTimeLeft(post.expiry);
+            profilePosts.innerHTML = validPosts.map(post => {
+                const timeLeft = getTimeLeft(post.expiry);
 
-    // Identity Badge Logic
-    let identityBadge = '';
-    if (post.identity === 'semi') identityBadge = '🎭 Semi';
-    else if (post.identity === 'anon') identityBadge = '👻 Anon';
-    else identityBadge = '👤 Public';
+                // Identity Badge Logic
+                let identityBadge = '';
+                if (post.identity === 'semi') identityBadge = '🎭 Semi';
+                else if (post.identity === 'anon') identityBadge = '👻 Anon';
+                else identityBadge = '👤 Public';
 
-    return `
+                return `
     <div
         class="p-6 border-b border-gray-200 dark:border-gray-800 transition-all hover:bg-gray-50 dark:hover:bg-white/5">
         <div class="flex gap-4">
@@ -336,85 +337,85 @@
         </div>
     </div>
     `;
-    }).join('');
-    }
+            }).join('');
+        }
 
-    // SLOW LIKE LOGIC
-    let likeTimer;
+        // SLOW LIKE LOGIC
+        let likeTimer;
 
-    function startLike(btn) {
-    if (btn.classList.contains('liked')) {
-    btn.classList.remove('liked');
-    btn.querySelector('.like-icon').textContent = 'Like';
-    return;
-    }
+        function startLike(btn) {
+            if (btn.classList.contains('liked')) {
+                btn.classList.remove('liked');
+                btn.querySelector('.like-icon').textContent = 'Like';
+                return;
+            }
 
-    btn.classList.add('holding');
+            btn.classList.add('holding');
 
-    likeTimer = setTimeout(() => {
-    completeLike(btn);
-    }, 1000);
-    }
+            likeTimer = setTimeout(() => {
+                completeLike(btn);
+            }, 1000);
+        }
 
-    function cancelLike(btn) {
-    if (likeTimer) clearTimeout(likeTimer);
-    btn.classList.remove('holding');
-    }
+        function cancelLike(btn) {
+            if (likeTimer) clearTimeout(likeTimer);
+            btn.classList.remove('holding');
+        }
 
-    function completeLike(btn) {
-    btn.classList.remove('holding');
-    btn.classList.add('liked');
-    btn.classList.add('like-pop');
-    btn.querySelector('.like-icon').textContent = 'Liked ❤️';
+        function completeLike(btn) {
+            btn.classList.remove('holding');
+            btn.classList.add('liked');
+            btn.classList.add('like-pop');
+            btn.querySelector('.like-icon').textContent = 'Liked ❤️';
 
-    setTimeout(() => btn.classList.remove('like-pop'), 300);
+            setTimeout(() => btn.classList.remove('like-pop'), 300);
 
-    // Haptic feedback
-    if (navigator.vibrate) navigator.vibrate(50);
-    }
+            // Haptic feedback
+            if (navigator.vibrate) navigator.vibrate(50);
+        }
 
-    function getTimeLeft(expiry) {
-    const now = Date.now();
-    const diff = expiry - now;
-    if (diff <= 0) return 'Expired' ; const days=Math.floor(diff / (1000 * 60 * 60 * 24)); const hours=Math.floor((diff
-        % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)); const minutes=Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-        if (days> 0) return `${days}d left`;
-        if (hours > 0) return `${hours}h left`;
-        return `${minutes}m left`;
+        function getTimeLeft(expiry) {
+            const now = Date.now();
+            const diff = expiry - now;
+            if (diff <= 0) return 'Expired'; const days = Math.floor(diff / (1000 * 60 * 60 * 24)); const hours = Math.floor((diff
+                % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)); const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            if (days > 0) return `${days}d left`;
+            if (hours > 0) return `${hours}h left`;
+            return `${minutes}m left`;
         }
 
         function toggleExpand(id) {
-        const p = document.getElementById(`text-${id}`);
-        const btn = p.nextElementSibling;
-        p.classList.remove('line-clamp-3');
-        if (btn) btn.remove();
+            const p = document.getElementById(`text-${id}`);
+            const btn = p.nextElementSibling;
+            p.classList.remove('line-clamp-3');
+            if (btn) btn.remove();
         }
 
         function checkThoughtStreak(posts) {
-        const now = Date.now();
-        const oneWeekMs = 7 * 24 * 60 * 60 * 1000;
-        const streakBadge = document.getElementById('streakBadge');
+            const now = Date.now();
+            const oneWeekMs = 7 * 24 * 60 * 60 * 1000;
+            const streakBadge = document.getElementById('streakBadge');
 
-        // Filter posts from last 7 days
-        const recentPosts = posts.filter(p => (now - p.timestamp) < oneWeekMs); // Count meaningful posts // Meaningful:
-            Length> 50 OR Intent is 'thoughts', 'teach', 'debate'
+            // Filter posts from last 7 days
+            const recentPosts = posts.filter(p => (now - p.timestamp) < oneWeekMs); // Count meaningful posts // Meaningful:
+            Length > 50 OR Intent is 'thoughts', 'teach', 'debate'
             const deepIntents = ['thoughts', 'teach', 'debate'];
 
             const meaningfulCount = recentPosts.reduce((count, post) => {
-            const isLong = post.text.length > 50;
-            const isDeep = deepIntents.includes(post.intent);
-            return (isLong || isDeep) ? count + 1 : count;
+                const isLong = post.text.length > 50;
+                const isDeep = deepIntents.includes(post.intent);
+                return (isLong || isDeep) ? count + 1 : count;
             }, 0);
 
             if (meaningfulCount >= 3) {
-            streakBadge.classList.remove('hidden');
+                streakBadge.classList.remove('hidden');
             } else {
-            streakBadge.classList.add('hidden');
+                streakBadge.classList.add('hidden');
             }
-            }
+        }
 
-            loadProfilePosts();
-            </script>
+        loadProfilePosts();
+    </script>
 
 </body>
 
