@@ -55,256 +55,161 @@
     <!-- MAIN AREA -->
     <main class="flex-1 flex flex-col max-w-2xl mx-auto w-full p-6">
 
-        <!-- MAIN SETTINGS LIST -->
-        <div id="settingsMain" class="space-y-2 transition-opacity duration-300">
-            <h2 class="text-3xl font-bold mb-8 text-center md:text-left">Settings</h2>
+        <!-- DYNAMIC CONTENT CONTAINER -->
+        <div id="centerContent" class="h-full"></div>
 
-            <!-- Settings Item: My Account -->
-            <button onclick="showSubmenu('settingsMyAccount')"
-                class="w-full flex items-center justify-between p-4 rounded-xl hover:bg-white dark:hover:bg-[#121212] border border-transparent hover:border-gray-200 dark:hover:border-gray-800 transition group text-left">
-                <div class="flex items-center gap-4">
-                    <div class="w-10 h-10 rounded-full bg-zynk/10 flex items-center justify-center text-zynk">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                            <circle cx="12" cy="7" r="4" />
-                        </svg>
+        <!-- TEMPLATE: MAIN SETTINGS LIST (Hidden) -->
+        <div id="mainSettingsListTemplate" class="hidden">
+            <div id="settingsMain" class="space-y-2 transition-opacity duration-300">
+                <h2 class="text-3xl font-bold mb-8 text-center md:text-left">Settings</h2>
+
+                <!-- Settings Item: My Account (Triggers Dynamic Injection) -->
+                <button onclick="openAccountInformation()"
+                    class="w-full flex items-center justify-between p-4 rounded-xl hover:bg-white dark:hover:bg-[#121212] border border-transparent hover:border-gray-200 dark:hover:border-gray-800 transition group text-left">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-full bg-zynk/10 flex items-center justify-center text-zynk">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                                <circle cx="12" cy="7" r="4" />
+                            </svg>
+                        </div>
+                        <span class="font-medium text-lg">My Account</span>
                     </div>
-                    <span class="font-medium text-lg">My Account</span>
-                </div>
-                <svg class="text-gray-400 group-hover:text-zynk transition" xmlns="http://www.w3.org/2000/svg"
-                    width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="9 18 15 12 9 6" />
-                </svg>
-            </button>
-
-            <button onclick="showSubmenu('settingsPrivacy')"
-                class="w-full flex items-center justify-between p-4 rounded-xl hover:bg-white dark:hover:bg-[#121212] border border-transparent hover:border-gray-200 dark:hover:border-gray-800 transition group text-left">
-                <div class="flex items-center gap-4">
-                    <div class="w-10 h-10 rounded-full bg-zynk/10 flex items-center justify-center text-zynk">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-                            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-                        </svg>
-                    </div>
-                    <span class="font-medium text-lg">Privacy and Safety</span>
-                </div>
-                <svg class="text-gray-400 group-hover:text-zynk transition" xmlns="http://www.w3.org/2000/svg"
-                    width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="9 18 15 12 9 6" />
-                </svg>
-            </button>
-
-            <button onclick="showSubmenu('settingsSecurity')"
-                class="w-full flex items-center justify-between p-4 rounded-xl hover:bg-white dark:hover:bg-[#121212] border border-transparent hover:border-gray-200 dark:hover:border-gray-800 transition group text-left">
-                <div class="flex items-center gap-4">
-                    <div class="w-10 h-10 rounded-full bg-zynk/10 flex items-center justify-center text-zynk">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                        </svg>
-                    </div>
-                    <span class="font-medium text-lg">Security and Account Access</span>
-                </div>
-                <svg class="text-gray-400 group-hover:text-zynk transition" xmlns="http://www.w3.org/2000/svg"
-                    width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="9 18 15 12 9 6" />
-                </svg>
-            </button>
-
-            <button onclick="switchMenu('settingsNotifications', 'settingsMain')"
-                class="w-full flex items-center justify-between p-4 rounded-xl hover:bg-white dark:hover:bg-[#121212] border border-transparent hover:border-gray-200 dark:hover:border-gray-800 transition group text-left">
-                <div class="flex items-center gap-4">
-                    <div class="w-10 h-10 rounded-full bg-zynk/10 flex items-center justify-center text-zynk">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-                            <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-                        </svg>
-                    </div>
-                    <span class="font-medium text-lg">Notifications</span>
-                </div>
-                <svg class="text-gray-400 group-hover:text-zynk transition" xmlns="http://www.w3.org/2000/svg"
-                    width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="9 18 15 12 9 6" />
-                </svg>
-            </button>
-
-            <button onclick="switchMenu('settingsAccessibility', 'settingsMain')"
-                class="w-full flex items-center justify-between p-4 rounded-xl hover:bg-white dark:hover:bg-[#121212] border border-transparent hover:border-gray-200 dark:hover:border-gray-800 transition group text-left">
-                <div class="flex items-center gap-4">
-                    <div class="w-10 h-10 rounded-full bg-zynk/10 flex items-center justify-center text-zynk">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="12" r="10" />
-                            <line x1="2" y1="12" x2="22" y2="12" />
-                            <path
-                                d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-                        </svg>
-                    </div>
-                    <span class="font-medium text-lg">Accessibility, display and languages</span>
-                </div>
-                <svg class="text-gray-400 group-hover:text-zynk transition" xmlns="http://www.w3.org/2000/svg"
-                    width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="9 18 15 12 9 6" />
-                </svg>
-            </button>
-
-            <button
-                class="w-full flex items-center justify-between p-4 rounded-xl hover:bg-white dark:hover:bg-[#121212] border border-transparent hover:border-gray-200 dark:hover:border-gray-800 transition group text-left">
-                <div class="flex items-center gap-4">
-                    <div class="w-10 h-10 rounded-full bg-zynk/10 flex items-center justify-center text-zynk">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="12" r="10" />
-                            <line x1="12" y1="8" x2="12" y2="12" />
-                            <line x1="12" y1="16" x2="12.01" y2="16" />
-                        </svg>
-                    </div>
-                    <span class="font-medium text-lg">Additional Features</span>
-                </div>
-                <svg class="text-gray-400 group-hover:text-zynk transition" xmlns="http://www.w3.org/2000/svg"
-                    width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="9 18 15 12 9 6" />
-                </svg>
-            </button>
-
-            <button
-                class="w-full flex items-center justify-between p-4 rounded-xl hover:bg-white dark:hover:bg-[#121212] border border-transparent hover:border-gray-200 dark:hover:border-gray-800 transition group text-left">
-                <div class="flex items-center gap-4">
-                    <div class="w-10 h-10 rounded-full bg-zynk/10 flex items-center justify-center text-zynk">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="12" r="10" />
-                            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
-                            <line x1="12" y1="17" x2="12.01" y2="17" />
-                        </svg>
-                    </div>
-                    <span class="font-medium text-lg">Help Center</span>
-                </div>
-                <svg class="text-gray-400 group-hover:text-zynk transition" xmlns="http://www.w3.org/2000/svg"
-                    width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="9 18 15 12 9 6" />
-                </svg>
-            </button>
-        </div>
-
-        <!-- MY ACCOUNT SUBMENU (Initially Hidden) -->
-        <div id="settingsMyAccount" class="hidden space-y-2 transition-opacity duration-300">
-            <div class="flex items-center gap-4 mb-6">
-                <button onclick="goBack('settingsMyAccount')"
-                    class="p-2 -ml-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="19" y1="12" x2="5" y2="12" />
-                        <polyline points="12 19 5 12 12 5" />
+                    <svg class="text-gray-400 group-hover:text-zynk transition" xmlns="http://www.w3.org/2000/svg"
+                        width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="9 18 15 12 9 6" />
                     </svg>
                 </button>
-                <h2 class="text-2xl font-bold">Account information</h2>
+
+                <button onclick="showSubmenu('settingsPrivacy')"
+                    class="w-full flex items-center justify-between p-4 rounded-xl hover:bg-white dark:hover:bg-[#121212] border border-transparent hover:border-gray-200 dark:hover:border-gray-800 transition group text-left">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-full bg-zynk/10 flex items-center justify-center text-zynk">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                            </svg>
+                        </div>
+                        <span class="font-medium text-lg">Privacy and Safety</span>
+                    </div>
+                    <svg class="text-gray-400 group-hover:text-zynk transition" xmlns="http://www.w3.org/2000/svg"
+                        width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="9 18 15 12 9 6" />
+                    </svg>
+                </button>
+
+                <button onclick="showSubmenu('settingsSecurity')"
+                    class="w-full flex items-center justify-between p-4 rounded-xl hover:bg-white dark:hover:bg-[#121212] border border-transparent hover:border-gray-200 dark:hover:border-gray-800 transition group text-left">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-full bg-zynk/10 flex items-center justify-center text-zynk">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                            </svg>
+                        </div>
+                        <span class="font-medium text-lg">Security and Account Access</span>
+                    </div>
+                    <svg class="text-gray-400 group-hover:text-zynk transition" xmlns="http://www.w3.org/2000/svg"
+                        width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="9 18 15 12 9 6" />
+                    </svg>
+                </button>
+
+                <button onclick="switchMenu('settingsNotifications', 'settingsMain')"
+                    class="w-full flex items-center justify-between p-4 rounded-xl hover:bg-white dark:hover:bg-[#121212] border border-transparent hover:border-gray-200 dark:hover:border-gray-800 transition group text-left">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-full bg-zynk/10 flex items-center justify-center text-zynk">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                                <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                            </svg>
+                        </div>
+                        <span class="font-medium text-lg">Notifications</span>
+                    </div>
+                    <svg class="text-gray-400 group-hover:text-zynk transition" xmlns="http://www.w3.org/2000/svg"
+                        width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="9 18 15 12 9 6" />
+                    </svg>
+                </button>
+
+                <button onclick="switchMenu('settingsAccessibility', 'settingsMain')"
+                    class="w-full flex items-center justify-between p-4 rounded-xl hover:bg-white dark:hover:bg-[#121212] border border-transparent hover:border-gray-200 dark:hover:border-gray-800 transition group text-left">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-full bg-zynk/10 flex items-center justify-center text-zynk">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10" />
+                                <line x1="2" y1="12" x2="22" y2="12" />
+                                <path
+                                    d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1-4-10z" />
+                            </svg>
+                        </div>
+                        <span class="font-medium text-lg">Accessibility, display and languages</span>
+                    </div>
+                    <svg class="text-gray-400 group-hover:text-zynk transition" xmlns="http://www.w3.org/2000/svg"
+                        width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="9 18 15 12 9 6" />
+                    </svg>
+                </button>
+
+                <button
+                    class="w-full flex items-center justify-between p-4 rounded-xl hover:bg-white dark:hover:bg-[#121212] border border-transparent hover:border-gray-200 dark:hover:border-gray-800 transition group text-left">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-full bg-zynk/10 flex items-center justify-center text-zynk">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10" />
+                                <line x1="12" y1="8" x2="12" y2="12" />
+                                <line x1="12" y1="16" x2="12.01" y2="16" />
+                            </svg>
+                        </div>
+                        <span class="font-medium text-lg">Additional Features</span>
+                    </div>
+                    <svg class="text-gray-400 group-hover:text-zynk transition" xmlns="http://www.w3.org/2000/svg"
+                        width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="9 18 15 12 9 6" />
+                    </svg>
+                </button>
+
+                <button
+                    class="w-full flex items-center justify-between p-4 rounded-xl hover:bg-white dark:hover:bg-[#121212] border border-transparent hover:border-gray-200 dark:hover:border-gray-800 transition group text-left">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-full bg-zynk/10 flex items-center justify-center text-zynk">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10" />
+                                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+                                <line x1="12" y1="17" x2="12.01" y2="17" />
+                            </svg>
+                        </div>
+                        <span class="font-medium text-lg">Help Center</span>
+                    </div>
+                    <svg class="text-gray-400 group-hover:text-zynk transition" xmlns="http://www.w3.org/2000/svg"
+                        width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="9 18 15 12 9 6" />
+                    </svg>
+                </button>
             </div>
-
-            <!-- Items -->
-            <button
-                class="w-full flex items-center justify-between p-4 rounded-xl hover:bg-white dark:hover:bg-[#121212] border border-transparent hover:border-gray-200 dark:hover:border-gray-800 transition group text-left">
-                <div class="flex items-start gap-4">
-                    <div class="mt-1 text-gray-400">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                            <circle cx="12" cy="7" r="4" />
-                        </svg>
-                    </div>
-                    <div>
-                        <div class="font-medium text-lg">Account information</div>
-                        <div class="text-sm text-gray-500">See your account information like your phone number and email
-                            address.</div>
-                    </div>
-                </div>
-                <svg class="text-gray-400 group-hover:text-zynk transition" xmlns="http://www.w3.org/2000/svg"
-                    width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="9 18 15 12 9 6" />
-                </svg>
-            </button>
-
-            <button
-                class="w-full flex items-center justify-between p-4 rounded-xl hover:bg-white dark:hover:bg-[#121212] border border-transparent hover:border-gray-200 dark:hover:border-gray-800 transition group text-left">
-                <div class="flex items-start gap-4">
-                    <div class="mt-1 text-gray-400">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-                            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-                        </svg>
-                    </div>
-                    <div>
-                        <div class="font-medium text-lg">Change your password</div>
-                        <div class="text-sm text-gray-500">Change your password at any time.</div>
-                    </div>
-                </div>
-                <svg class="text-gray-400 group-hover:text-zynk transition" xmlns="http://www.w3.org/2000/svg"
-                    width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="9 18 15 12 9 6" />
-                </svg>
-            </button>
-
-            <button
-                class="w-full flex items-center justify-between p-4 rounded-xl hover:bg-white dark:hover:bg-[#121212] border border-transparent hover:border-gray-200 dark:hover:border-gray-800 transition group text-left">
-                <div class="flex items-start gap-4">
-                    <div class="mt-1 text-gray-400">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                            <polyline points="7 10 12 15 17 10" />
-                            <line x1="12" y1="15" x2="12" y2="3" />
-                        </svg>
-                    </div>
-                    <div>
-                        <div class="font-medium text-lg">Download an archive of your data</div>
-                        <div class="text-sm text-gray-500">Get insights into the type of information stored for your
-                            account.</div>
-                    </div>
-                </div>
-                <svg class="text-gray-400 group-hover:text-zynk transition" xmlns="http://www.w3.org/2000/svg"
-                    width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="9 18 15 12 9 6" />
-                </svg>
-            </button>
-
-            <button
-                class="w-full flex items-center justify-between p-4 rounded-xl hover:bg-white dark:hover:bg-[#121212] border border-transparent hover:border-gray-200 dark:hover:border-gray-800 transition group text-left">
-                <div class="flex items-start gap-4">
-                    <div class="mt-1 text-gray-400">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path
-                                d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
-                            </path>
-                            <line x1="2" y1="2" x2="22" y2="22" />
-                        </svg>
-                    </div>
-                    <div>
-                        <div class="font-medium text-lg">Deactivate your account</div>
-                        <div class="text-sm text-gray-500">Find out how you can deactivate your account.</div>
-                    </div>
-                </div>
-                <svg class="text-gray-400 group-hover:text-zynk transition" xmlns="http://www.w3.org/2000/svg"
-                    width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="9 18 15 12 9 6" />
-                </svg>
-            </button>
         </div>
+
+
 
         <!-- SECURITY SUBMENU (Initially Hidden) -->
         <div id="settingsSecurity" class="hidden space-y-2 transition-opacity duration-300">
@@ -1046,17 +951,224 @@
 
     <!-- SCRIPT FOR SETTINGS NAVIGATION -->
     <script>
+        // Initialize: Show Main Settings by default
+        document.addEventListener('DOMContentLoaded', () => {
+            openSettingsMain();
+        });
+
+        const centerContent = document.getElementById('centerContent');
+        const mainSettingsListTemplate = document.getElementById('mainSettingsListTemplate');
+
+        // --- DYNAMIC VIEWS ---
+
+        function openSettingsMain() {
+            // Check if there are other static menus open and hide them
+            hideAllStaticSubmenus();
+            // Inject the main list
+            centerContent.innerHTML = mainSettingsListTemplate.innerHTML;
+            centerContent.classList.remove('hidden');
+        }
+
+        function openAccountInformation() {
+            hideAllStaticSubmenus();
+            centerContent.innerHTML = `
+                <div class="flex items-center gap-4 mb-6">
+                    <button onclick="openSettingsMain()"
+                        class="p-2 -ml-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="19" y1="12" x2="5" y2="12" />
+                            <polyline points="12 19 5 12 12 5" />
+                        </svg>
+                    </button>
+                    <h2 class="text-2xl font-bold">Account information</h2>
+                </div>
+
+                <div class="space-y-2">
+                    <button class="w-full flex items-center justify-between p-4 rounded-xl hover:bg-white dark:hover:bg-[#121212] border border-transparent hover:border-gray-200 dark:hover:border-gray-800 transition group text-left">
+                        <div class="flex items-start gap-4">
+                            <div class="mt-1 text-gray-400">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                            </div>
+                            <div>
+                                <div class="font-medium text-lg">Account information</div>
+                                <div class="text-sm text-gray-500">See your account information like your phone number and email address.</div>
+                            </div>
+                        </div>
+                        <svg class="text-gray-400 group-hover:text-zynk transition" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                    </button>
+
+                    <button onclick="openChangePassword()" class="w-full flex items-center justify-between p-4 rounded-xl hover:bg-white dark:hover:bg-[#121212] border border-transparent hover:border-gray-200 dark:hover:border-gray-800 transition group text-left">
+                        <div class="flex items-start gap-4">
+                            <div class="mt-1 text-gray-400">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                            </div>
+                            <div>
+                                <div class="font-medium text-lg">Change your password</div>
+                                <div class="text-sm text-gray-500">Change your password at any time.</div>
+                            </div>
+                        </div>
+                        <svg class="text-gray-400 group-hover:text-zynk transition" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                    </button>
+
+                     <button class="w-full flex items-center justify-between p-4 rounded-xl hover:bg-white dark:hover:bg-[#121212] border border-transparent hover:border-gray-200 dark:hover:border-gray-800 transition group text-left">
+                        <div class="flex items-start gap-4">
+                            <div class="mt-1 text-gray-400">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            </div>
+                            <div>
+                                <div class="font-medium text-lg">Download an archive of your data</div>
+                                <div class="text-sm text-gray-500">Get insights into the type of information stored for your account.</div>
+                            </div>
+                        </div>
+                        <svg class="text-gray-400 group-hover:text-zynk transition" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                    </button>
+                </div>
+            `;
+            centerContent.classList.remove('hidden');
+        }
+
+        function openChangePassword() {
+            hideAllStaticSubmenus();
+            centerContent.innerHTML = `
+                <div class="flex items-center gap-4 mb-6">
+                    <button onclick="openAccountInformation()"
+                        class="p-2 -ml-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="19" y1="12" x2="5" y2="12" />
+                            <polyline points="12 19 5 12 12 5" />
+                        </svg>
+                    </button>
+                    <h2 class="text-2xl font-bold">Change your password</h2>
+                </div>
+
+                <div class="max-w-md space-y-4">
+                     <!-- Current Password -->
+                    <div>
+                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Current password</label>
+                         <input type="password" id="currentPwd" class="w-full p-3 rounded-lg bg-gray-100 dark:bg-[#121212] border border-transparent focus:border-zynk focus:ring-1 focus:ring-zynk outline-none transition" placeholder="Current password">
+                         <div class="text-right mt-1">
+                             <a href="#" class="text-sm text-zynk hover:underline">Forgot password?</a>
+                         </div>
+                    </div>
+
+                    <div class="h-px bg-gray-200 dark:bg-gray-800 my-4"></div>
+
+                    <!-- New Password -->
+                    <div>
+                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">New password</label>
+                         <input type="password" id="newPwd" class="w-full p-3 rounded-lg bg-gray-100 dark:bg-[#121212] border border-transparent focus:border-zynk focus:ring-1 focus:ring-zynk outline-none transition" placeholder="New password">
+                    </div>
+
+                    <!-- Confirm Password -->
+                    <div>
+                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Confirm password</label>
+                         <input type="password" id="confirmPwd" class="w-full p-3 rounded-lg bg-gray-100 dark:bg-[#121212] border border-transparent focus:border-zynk focus:ring-1 focus:ring-zynk outline-none transition" placeholder="Confirm password">
+                    </div>
+
+                    <!-- Error Message -->
+                    <div id="pwdError" class="text-red-500 text-sm hidden"></div>
+
+                    <!-- Save Button -->
+                    <div class="pt-4  flex justify-end border-t border-gray-200 dark:border-gray-800 mt-6">
+                        <button onclick="changePassword()" class="px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-full transition disabled:opacity-50">
+                            Save
+                        </button>
+                    </div>
+                </div>
+            `;
+            centerContent.classList.remove('hidden');
+        }
+
+        function changePassword() {
+            const currentObj = document.getElementById("currentPwd");
+            const newObj = document.getElementById("newPwd");
+            const confirmObj = document.getElementById("confirmPwd");
+            const errorObj = document.getElementById("pwdError");
+
+            const current = currentObj.value;
+            const newPwd = newObj.value;
+            const confirm = confirmObj.value;
+
+            // Reset error
+            errorObj.classList.add("hidden");
+            errorObj.innerText = "";
+
+            const savedPwd = localStorage.getItem("zynkPassword") || 'admin123';
+
+            // current password check
+            if (current !== savedPwd) {
+                errorObj.innerText = "Current password is incorrect";
+                errorObj.classList.remove("hidden");
+                return;
+            }
+
+            // match check
+            if (newPwd !== confirm) {
+                errorObj.innerText = "Passwords do not match";
+                errorObj.classList.remove("hidden");
+                return;
+            }
+
+            // strength check (basic)
+            if (newPwd.length < 6) {
+                errorObj.innerText = "Password must be at least 6 characters";
+                errorObj.classList.remove("hidden");
+                return;
+            }
+
+            // save new password
+            localStorage.setItem("zynkPassword", newPwd);
+
+            alert("Password changed successfully");
+
+            // Clear inputs
+            currentObj.value = '';
+            newObj.value = '';
+            confirmObj.value = '';
+
+            // Go back
+            openAccountInformation();
+        }
+
+        // --- STATIC MENU HELPERS (Legacy Support) ---
+
+        function hideAllStaticSubmenus() {
+            const staticMenus = ['settingsPrivacy', 'settingsSecurity', 'settingsNotifications', 'settingsAccessibility'];
+            staticMenus.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.classList.add('hidden');
+            });
+        }
+
         function showSubmenu(id) {
-            document.getElementById('settingsMain').classList.add('hidden');
+            // Hide dynamic content
+            centerContent.innerHTML = '';
+            centerContent.classList.add('hidden');
+
+            // Hide other static menus just in case
+            hideAllStaticSubmenus();
+
+            // Show target static menu
             document.getElementById(id).classList.remove('hidden');
         }
 
         function goBack(id) {
+            // Hide the static menu
             document.getElementById(id).classList.add('hidden');
-            document.getElementById('settingsMain').classList.remove('hidden');
+
+            // Return to main dynamic view
+            openSettingsMain();
         }
 
         function switchMenu(showId, hideId) {
+            // If we are switching TO Main, we act like goBack
+            if (showId === 'settingsMain') {
+                goBack(hideId);
+                return;
+            }
+
             document.getElementById(hideId).classList.add('hidden');
             document.getElementById(showId).classList.remove('hidden');
         }
