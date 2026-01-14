@@ -157,9 +157,18 @@
                 Living in the moment. No stats, just vibes. 🌊
             </p>
 
-            <!-- METRICS (NO FOLLOWERS OR COUNTS) -->
+            <!-- METRICS -->
             <div class="flex gap-6 mt-4 text-gray-500 text-sm">
-                <!-- All metrics hidden as per philosophy -->
+                <div class="flex items-center gap-1 cursor-pointer hover:text-white transition group"
+                    onclick="alert('Followers list coming soon!')">
+                    <span id="followersCount" class="font-bold text-white">0</span>
+                    <span class="group-hover:underline">Followers</span>
+                </div>
+                <div class="flex items-center gap-1 cursor-pointer hover:text-white transition group"
+                    onclick="alert('Following list coming soon!')">
+                    <span id="followingCount" class="font-bold text-white">0</span>
+                    <span class="group-hover:underline">Following</span>
+                </div>
             </div>
         </div>
 
@@ -257,6 +266,7 @@
     </div>
 
     <!-- SCRIPT -->
+    <script src="../utils/social.js"></script>
     <script src="../utils/profile.js"></script>
 
     <script>
@@ -397,8 +407,10 @@
             const streakBadge = document.getElementById('streakBadge');
 
             // Filter posts from last 7 days
-            const recentPosts = posts.filter(p => (now - p.timestamp) < oneWeekMs); // Count meaningful posts // Meaningful:
-            Length > 50 OR Intent is 'thoughts', 'teach', 'debate'
+            const recentPosts = posts.filter(p => (now - p.timestamp) < oneWeekMs);
+
+            // Count meaningful posts
+            // Meaningful: Length > 50 OR Intent is 'thoughts', 'teach', 'debate'
             const deepIntents = ['thoughts', 'teach', 'debate'];
 
             const meaningfulCount = recentPosts.reduce((count, post) => {
@@ -415,6 +427,19 @@
         }
 
         loadProfilePosts();
+
+        // Load Social Stats
+        function loadSocialStats() {
+            const followers = getFollowers().length;
+            const following = getFollowing().length;
+
+            const followersEl = document.getElementById('followersCount');
+            const followingEl = document.getElementById('followingCount');
+
+            if (followersEl) followersEl.textContent = followers;
+            if (followingEl) followingEl.textContent = following;
+        }
+        loadSocialStats();
     </script>
 
 </body>

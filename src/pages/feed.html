@@ -25,6 +25,7 @@
     }
   </script>
   <script src="../utils/theme.js"></script>
+  <script src="../utils/social.js"></script>
   <script src="../utils/sidebar.js"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <script>
@@ -352,6 +353,21 @@
     function loadPosts() {
       const posts = JSON.parse(localStorage.getItem('zynk_posts') || '[]');
       const now = Date.now();
+
+      // Clear current feed
+      const feedContainer = document.getElementById('feedPosts'); // Need to target this? NO, renderPost appends...
+      // Previous loadPosts logic didn't clear! It just appended? 
+      // Actually there's a bug in previous logic: "Add static dummy posts... validPosts.forEach(renderPost)".
+      // If I call loadPosts again, it will duplicate. 
+      // I need to clear the container first.
+
+      // Let's find the container. It's likely <div id="feedPosts">...</div> but wait, 
+      // in HTML structure (line 447 in viewing code) it variables `feedPosts`.
+      // I need to clear it.
+
+      const container = document.getElementById('feedPosts');
+      if (container) container.innerHTML = '';
+
       // Keep if expiry is null (Never) OR expiry is in future
       const validPosts = posts.filter(p => !p.expiry || p.expiry > now);
 
@@ -360,14 +376,20 @@
         localStorage.setItem('zynk_posts', JSON.stringify(validPosts));
       }
 
-      // Add static dummy posts if storage is empty (optional, for demo feel)
-      // For now we just keep the static HTML ones or prepend user posts
+      // Filter by Tab
+      let postsToRender = validPosts;
+      if (currentFeedTab === 'following') {
+        const followingList = getFollowing();
+        // Filter: Author handle is in following list OR it's my own post
+        postsToRender = validPosts.filter(p => followingList.includes(p.handle) || p.handle === '@you' || p.handle === savedProfile?.username);
 
-      // Add current avatar to old posts if missing (migration fix)
-      // Actually renderPost handles missing avatar by showing placeholder.
-      // But we could force "You" posts to use current avatar if we wanted live sync for old posts.
+        if (postsToRender.length === 0) {
+          if (container) container.innerHTML = `<div class="p-8 text-center text-gray-500">You're not following anyone yet, or they haven't posted.</div>`;
+          return;
+        }
+      }
 
-      validPosts.forEach(post => {
+      postsToRender.forEach(post => {
         // Quick fix: if it's "You" and has no avatar, try to use current one
         if ((post.author === 'You' || post.handle === '@you') && !post.avatar) {
           const currentAvatar = localStorage.getItem("zynkAvatar");
@@ -415,6 +437,14 @@
                   <span class="${(post.author === 'You' || post.handle === '@you' || post.identity === 'public') ? 'post-handle' : ''} text-sm text-gray-500">${post.handle}</span>
                   <span class="text-xs ${intentStyle.class} px-2 py-0.5 rounded-full">${intentStyle.label}</span>
                   ${post.frozen ? '<span class="text-xs bg-gray-200 dark:bg-gray-800 text-gray-500 px-2 py-0.5 rounded-full border border-gray-300 dark:border-gray-700">Frozen ❄️</span>' : ''}
+                  
+                  <!-- FOLLOW BUTTON -->
+                  ${(post.handle !== '@you' && post.handle !== savedProfile?.username) ?
+          `<button onclick="toggleFollowBtn('${post.handle}', this)" class="text-xs border border-zynk text-zynk px-2 py-0.5 rounded-full hover:bg-zynk hover:text-black transition">
+                        ${isFollowing(post.handle) ? 'Following' : 'Follow'}
+                     </button>`
+          : ''}
+
                 </div>
                 <span class="expiry-countdown text-xs font-mono text-orange-500 bg-orange-500/10 px-2 py-0.5 rounded-full transition-colors duration-500" 
                       title="${expiryTitle}"
@@ -676,10 +706,28 @@
       updateIcon(isDark);
     });
 
+    // FOLLOW LOGIC (Feed)
+    function toggleFollowBtn(handle, btn) {
+      event.stopPropagation(); // Prevent post click
+      const nowFollowing = toggleFollow(handle);
+
+      if (nowFollowing) {
+        btn.textContent = 'Following';
+        btn.classList.add('bg-zynk', 'text-black');
+        btn.classList.remove('text-zynk');
+      } else {
+        btn.textContent = 'Follow';
+        btn.classList.remove('bg-zynk', 'text-black');
+        btn.classList.add('text-zynk');
+      }
+    }
+
     // REPLY LOGIC
 
-    // Feed Switching Logic
+    let currentFeedTab = 'foryou';
+
     function switchFeed(type) {
+      currentFeedTab = type;
       const forYouTab = document.getElementById('tab-foryou');
       const followingTab = document.getElementById('tab-following');
 
@@ -706,6 +754,9 @@
         forYouSpan.className = 'font-medium text-gray-500 group-hover:text-gray-900 dark:text-gray-500 dark:group-hover:text-gray-300';
         forYouLine.className = 'absolute bottom-0 left-0 w-full h-1 bg-transparent rounded-full';
       }
+
+      // Reload posts with filter
+      loadPosts();
     }
 
     const replyModal = document.getElementById('replyModal');
