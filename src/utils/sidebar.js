@@ -59,6 +59,14 @@ function renderSidebar(activePage) {
             .side-item.active {
                 color: #12e6e6;
             }
+            
+            /* Icon Zoom on Hover */
+            .side-item svg {
+                transition: transform 0.2s ease;
+            }
+            .side-item:hover svg {
+                transform: scale(1.1);
+            }
 
             /* Theme Toggle Animation */
             @keyframes spin-scale {
