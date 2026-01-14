@@ -1,77 +1,75 @@
 // Social Graph Utils
 const SOCIAL_KEYS = {
-    FOLLOWING: 'zynk_following', // Users I follow
-    FOLLOWERS: 'zynk_followers'  // Users following me (Mock/Local)
+    IN_ORBIT: 'zynk_in_orbit', // Users I am tracking ("Following")
+    ORBIT: 'zynk_orbit'        // Users tracking me ("Followers")
 };
 
-// Get list of handles I follow
-function getFollowing() {
-    return JSON.parse(localStorage.getItem(SOCIAL_KEYS.FOLLOWING) || '[]');
+// Get list of handles I am tracking (In Orbit)
+function getInOrbit() {
+    return JSON.parse(localStorage.getItem(SOCIAL_KEYS.IN_ORBIT) || '[]');
 }
 
-// Get list of handles following me (Mock logic since we don't have a real backend)
-// For a local-only app, we can just store a number or a dummy list.
-// Let's store a list to be future-proof.
-function getFollowers() {
-    return JSON.parse(localStorage.getItem(SOCIAL_KEYS.FOLLOWERS) || '[]');
+// Get list of handles tracking me (Orbit)
+function getOrbit() {
+    return JSON.parse(localStorage.getItem(SOCIAL_KEYS.ORBIT) || '[]');
 }
 
-// Check if I follow a user
-function isFollowing(handle) {
-    const following = getFollowing();
-    return following.includes(handle);
+// Check if I am tracking a user (Is in my Orbit?)
+function isInOrbit(handle) {
+    const inOrbit = getInOrbit();
+    return inOrbit.includes(handle);
 }
 
-// Follow a user
-function followUser(handle) {
-    if (!handle || handle === '@you') return; // Can't follow self (yet)
+// Add user to Orbit (Follow)
+function addToOrbit(handle) {
+    if (!handle || handle === '@you') return; // Can't orbit self (yet)
 
-    const following = getFollowing();
-    if (!following.includes(handle)) {
-        following.push(handle);
-        localStorage.setItem(SOCIAL_KEYS.FOLLOWING, JSON.stringify(following));
+    const inOrbit = getInOrbit();
+    if (!inOrbit.includes(handle)) {
+        inOrbit.push(handle);
+        localStorage.setItem(SOCIAL_KEYS.IN_ORBIT, JSON.stringify(inOrbit));
 
         // Dispatch event for UI updates
-        window.dispatchEvent(new CustomEvent('zynkSocialUpdate', { detail: { type: 'follow', handle } }));
+        window.dispatchEvent(new CustomEvent('zynkSocialUpdate', { detail: { type: 'orbit', handle } }));
         return true;
     }
     return false;
 }
 
-// Unfollow a user
-function unfollowUser(handle) {
-    let following = getFollowing();
-    if (following.includes(handle)) {
-        following = following.filter(h => h !== handle);
-        localStorage.setItem(SOCIAL_KEYS.FOLLOWING, JSON.stringify(following));
+// Remove user from Orbit (Unfollow)
+function removeFromOrbit(handle) {
+    let inOrbit = getInOrbit();
+    if (inOrbit.includes(handle)) {
+        inOrbit = inOrbit.filter(h => h !== handle);
+        localStorage.setItem(SOCIAL_KEYS.IN_ORBIT, JSON.stringify(inOrbit));
 
         // Dispatch event for UI updates
-        window.dispatchEvent(new CustomEvent('zynkSocialUpdate', { detail: { type: 'unfollow', handle } }));
+        window.dispatchEvent(new CustomEvent('zynkSocialUpdate', { detail: { type: 'unorbit', handle } }));
         return true;
     }
     return false;
 }
 
-// Toggle Follow
-function toggleFollow(handle) {
-    if (isFollowing(handle)) {
-        unfollowUser(handle);
-        return false; // Now not following
+// Toggle Orbit
+function toggleOrbit(handle) {
+    if (isInOrbit(handle)) {
+        removeFromOrbit(handle);
+        return false; // Now not in orbit
     } else {
-        followUser(handle);
-        return true; // Now following
+        addToOrbit(handle);
+        return true; // Now in orbit
     }
 }
 
 // Initialize with some dummy data if empty (for demo)
 function initSocial() {
-    if (!localStorage.getItem(SOCIAL_KEYS.FOLLOWING)) {
-        // Maybe follow the 'admin' or 'zynk' bot by default?
-        localStorage.setItem(SOCIAL_KEYS.FOLLOWING, JSON.stringify(['@zynk', '@gagan2020jadon']));
+    if (!localStorage.getItem(SOCIAL_KEYS.IN_ORBIT)) {
+        // Maybe orbit the 'admin' or 'zynk' bot by default?
+        localStorage.setItem(SOCIAL_KEYS.IN_ORBIT, JSON.stringify(['@zynk', '@gagan2020jadon']));
     }
-    if (!localStorage.getItem(SOCIAL_KEYS.FOLLOWERS)) {
-        // Dummy followers
-        localStorage.setItem(SOCIAL_KEYS.FOLLOWERS, JSON.stringify(['@fan1', '@fan2', '@stranger']));
+    if (!localStorage.getItem(SOCIAL_KEYS.ORBIT)) {
+        // Dummy orbiters
+        localStorage.setItem(SOCIAL_KEYS.ORBIT, JSON.stringify(['@fan1', '@fan2', '@stranger']));
     }
 }
 

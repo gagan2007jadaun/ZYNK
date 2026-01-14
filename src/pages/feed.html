@@ -249,8 +249,24 @@
     const feedPosts = document.getElementById('feedPosts');
     const LIMIT = 280;
 
-    // Load posts on startup
-    loadPosts();
+    // Global User Profile (Safe Parse)
+    let savedProfile = null;
+    try {
+      savedProfile = JSON.parse(localStorage.getItem("zynkProfile"));
+    } catch (e) {
+      console.error("Zynk: Error parsing profile", e);
+    }
+
+    // Load posts on startup (Safe Load)
+    try {
+      if (typeof loadPosts === 'function') {
+        loadPosts();
+      } else {
+        console.error("Zynk: loadPosts is not a function");
+      }
+    } catch (err) {
+      console.error("Zynk: Error loading posts", err);
+    }
 
     input.addEventListener('input', () => {
       const length = input.value.length;
