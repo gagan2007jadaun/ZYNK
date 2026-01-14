@@ -57,10 +57,11 @@
         <span class="font-bold text-gray-900 dark:text-white">For you</span>
         <div class="absolute bottom-0 left-0 w-full h-1 bg-zynk rounded-full"></div>
       </button>
-      <button onclick="switchFeed('following')" id="tab-following"
+      <button onclick="switchFeed('inOrbit')" id="tab-inOrbit"
         class="flex-1 p-4 hover:bg-gray-100 dark:hover:bg-white/5 transition relative group">
         <span
-          class="font-medium text-gray-500 group-hover:text-gray-900 dark:text-gray-500 dark:group-hover:text-gray-300">Following</span>
+          class="font-medium text-gray-500 group-hover:text-gray-900 dark:text-gray-500 dark:group-hover:text-gray-300">In
+          Orbit</span>
         <div class="absolute bottom-0 left-0 w-full h-1 bg-transparent rounded-full"></div>
       </button>
     </div>
@@ -378,13 +379,13 @@
 
       // Filter by Tab
       let postsToRender = validPosts;
-      if (currentFeedTab === 'following') {
-        const followingList = getFollowing();
-        // Filter: Author handle is in following list OR it's my own post
-        postsToRender = validPosts.filter(p => followingList.includes(p.handle) || p.handle === '@you' || p.handle === savedProfile?.username);
+      if (currentFeedTab === 'inOrbit') {
+        const inOrbitList = getInOrbit();
+        // Filter: Author handle is in Orbit list OR it's my own post
+        postsToRender = validPosts.filter(p => inOrbitList.includes(p.handle) || p.handle === '@you' || p.handle === savedProfile?.username);
 
         if (postsToRender.length === 0) {
-          if (container) container.innerHTML = `<div class="p-8 text-center text-gray-500">You're not following anyone yet, or they haven't posted.</div>`;
+          if (container) container.innerHTML = `<div class="p-8 text-center text-gray-500">Your Orbit is empty. Start orbiting others to see their thoughts here.</div>`;
           return;
         }
       }
@@ -438,10 +439,10 @@
                   <span class="text-xs ${intentStyle.class} px-2 py-0.5 rounded-full">${intentStyle.label}</span>
                   ${post.frozen ? '<span class="text-xs bg-gray-200 dark:bg-gray-800 text-gray-500 px-2 py-0.5 rounded-full border border-gray-300 dark:border-gray-700">Frozen ❄️</span>' : ''}
                   
-                  <!-- FOLLOW BUTTON -->
+                  <!-- ORBIT BUTTON -->
                   ${(post.handle !== '@you' && post.handle !== savedProfile?.username) ?
-          `<button onclick="toggleFollowBtn('${post.handle}', this)" class="text-xs border border-zynk text-zynk px-2 py-0.5 rounded-full hover:bg-zynk hover:text-black transition">
-                        ${isFollowing(post.handle) ? 'Following' : 'Follow'}
+          `<button onclick="toggleOrbitBtn('${post.handle}', this)" class="text-xs border border-zynk text-zynk px-2 py-0.5 rounded-full hover:bg-zynk hover:text-black transition">
+                        ${isInOrbit(post.handle) ? 'In Orbit' : 'Orbit'}
                      </button>`
           : ''}
 
@@ -706,17 +707,17 @@
       updateIcon(isDark);
     });
 
-    // FOLLOW LOGIC (Feed)
-    function toggleFollowBtn(handle, btn) {
+    // ORBIT LOGIC (Feed)
+    function toggleOrbitBtn(handle, btn) {
       event.stopPropagation(); // Prevent post click
-      const nowFollowing = toggleFollow(handle);
+      const nowInOrbit = toggleOrbit(handle);
 
-      if (nowFollowing) {
-        btn.textContent = 'Following';
+      if (nowInOrbit) {
+        btn.textContent = 'In Orbit';
         btn.classList.add('bg-zynk', 'text-black');
         btn.classList.remove('text-zynk');
       } else {
-        btn.textContent = 'Follow';
+        btn.textContent = 'Orbit';
         btn.classList.remove('bg-zynk', 'text-black');
         btn.classList.add('text-zynk');
       }
@@ -729,26 +730,26 @@
     function switchFeed(type) {
       currentFeedTab = type;
       const forYouTab = document.getElementById('tab-foryou');
-      const followingTab = document.getElementById('tab-following');
+      const inOrbitTab = document.getElementById('tab-inOrbit');
 
       const forYouSpan = forYouTab.querySelector('span');
-      const followingSpan = followingTab.querySelector('span');
+      const inOrbitSpan = inOrbitTab.querySelector('span');
 
       const forYouLine = forYouTab.querySelector('div');
-      const followingLine = followingTab.querySelector('div');
+      const inOrbitLine = inOrbitTab.querySelector('div');
 
       if (type === 'foryou') {
         // Active: For You
         forYouSpan.className = 'font-bold text-gray-900 dark:text-white';
         forYouLine.className = 'absolute bottom-0 left-0 w-full h-1 bg-zynk rounded-full';
 
-        // Inactive: Following
-        followingSpan.className = 'font-medium text-gray-500 group-hover:text-gray-900 dark:text-gray-500 dark:group-hover:text-gray-300';
-        followingLine.className = 'absolute bottom-0 left-0 w-full h-1 bg-transparent rounded-full';
+        // Inactive: In Orbit
+        inOrbitSpan.className = 'font-medium text-gray-500 group-hover:text-gray-900 dark:text-gray-500 dark:group-hover:text-gray-300';
+        inOrbitLine.className = 'absolute bottom-0 left-0 w-full h-1 bg-transparent rounded-full';
       } else {
-        // Active: Following
-        followingSpan.className = 'font-bold text-gray-900 dark:text-white';
-        followingLine.className = 'absolute bottom-0 left-0 w-full h-1 bg-zynk rounded-full';
+        // Active: In Orbit
+        inOrbitSpan.className = 'font-bold text-gray-900 dark:text-white';
+        inOrbitLine.className = 'absolute bottom-0 left-0 w-full h-1 bg-zynk rounded-full';
 
         // Inactive: For You
         forYouSpan.className = 'font-medium text-gray-500 group-hover:text-gray-900 dark:text-gray-500 dark:group-hover:text-gray-300';
