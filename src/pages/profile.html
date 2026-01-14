@@ -25,6 +25,13 @@
         }
     </script>
     <script src="../utils/theme.js"></script>
+    <script src="../utils/sidebar.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            renderSidebar('Profile');
+        });
+    </script>
 
     <!-- Protected Page Check -->
     <script>
@@ -40,22 +47,8 @@
     <aside class="hidden md:flex flex-col w-64 p-6 border-r border-gray-200 dark:border-gray-800 sticky top-0 h-screen">
         <h1 class="text-2xl font-bold text-zynk mb-8">ZYNK</h1>
 
-        <nav class="space-y-4 text-gray-600 dark:text-gray-300">
-            <a href="feed.html" class="block hover:text-zynk">Feed</a>
-            <a href="explore.html" class="block hover:text-zynk">Explore</a>
-            <a href="chat.html" class="block hover:text-zynk">Chat</a>
-            <a href="notifications.html" class="block hover:text-zynk">Notifications</a>
-            <a href="topics.html" class="block hover:text-zynk">Topics</a>
-            <a href="bookmarks.html" class="block hover:text-zynk">Bookmarks</a>
-            <a href="profile.html" class="block text-zynk font-semibold">Profile</a>
-            <a href="more.html" class="block hover:text-zynk">More</a>
-
-            <a href="settings.html" class="block hover:text-zynk">Settings</a>
-            <a href="auth.html" class="block hover:text-red-500 cursor-pointer transition text-red-400">Logout</a>
-            <button id="themeToggle" class="flex items-center gap-2 hover:text-zynk transition mt-4">
-                <span id="themeIcon">🌙</span>
-                <span>Theme</span>
-            </button>
+        <nav id="sidebar" class="space-y-4 text-gray-600 dark:text-gray-300">
+            <!-- Sidebar rendered by JS -->
         </nav>
     </aside>
 

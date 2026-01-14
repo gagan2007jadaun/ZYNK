@@ -41,7 +41,20 @@ function renderSidebar(activePage) {
     `;
 
     sidebar.innerHTML = html;
-    lucide.createIcons();
+
+    if (window.lucide) {
+        window.lucide.createIcons();
+    } else {
+        console.warn('Lucide icons not loaded yet, retrying...');
+        const script = document.querySelector('script[src*="lucide"]');
+        if (script) {
+            script.addEventListener('load', () => window.lucide.createIcons());
+        }
+        // Fallback retry
+        setTimeout(() => {
+            if (window.lucide) window.lucide.createIcons();
+        }, 1000);
+    }
 
     // Re-attach theme toggle listener if needed, but since we just replaced the button, 
     // we need to make sure the event listener in the main file can find it.
