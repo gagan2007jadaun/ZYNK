@@ -38,6 +38,29 @@ function renderSidebar(activePage) {
 
     html += `
         <style>
+            /* Sidebar Item Styles */
+            .side-item {
+                display: flex;
+                align-items: center;
+                gap: 14px;
+                padding: 10px 14px;
+                border-radius: 999px;
+                cursor: pointer;
+                transition: background .2s;
+                text-decoration: none;
+                color: inherit;
+            }
+            .side-item:hover {
+                background: #e5e7eb;
+            }
+            html.dark .side-item:hover {
+                background: #141414;
+            }
+            .side-item.active {
+                color: #12e6e6;
+            }
+
+            /* Theme Toggle Animation */
             @keyframes spin-scale {
                 0% { transform: scale(1) rotate(0deg); }
                 50% { transform: scale(0.8) rotate(180deg); }
