@@ -25,7 +25,39 @@
         }
     </script>
     <script src="../utils/theme.js"></script>
-</head>
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        .side-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 10px 14px;
+            border-radius: 999px;
+            cursor: pointer;
+            transition: background .2s;
+            text-decoration: none;
+            /* Ensure links don't have underlines */
+            color: inherit;
+            /* Inherit text color */
+        }
+
+        .side-item:hover {
+            background: #e5e7eb;
+            /* Light mode hover */
+        }
+
+        html.dark .side-item:hover {
+            background: #141414;
+            /* Dark mode hover */
+        }
+
+        .side-item.active {
+            color: #12e6e6;
+        }
+    </style>
 
 <body class="bg-gray-50 text-gray-900 dark:bg-dark dark:text-white min-h-screen flex transition-colors duration-300">
 
@@ -33,20 +65,59 @@
     <aside class="hidden md:flex flex-col w-64 p-6 border-r border-gray-200 dark:border-gray-800">
         <h1 class="text-2xl font-bold text-zynk mb-8">ZYNK</h1>
 
-        <nav class="space-y-4 text-gray-600 dark:text-gray-300">
-            <a href="feed.html" class="block hover:text-zynk">Feed</a>
-            <a href="explore.html" class="block hover:text-zynk">Explore</a>
-            <a href="chat.html" class="block hover:text-zynk">Chat</a>
-            <a href="notifications.html" class="block hover:text-zynk">Notifications</a>
-            <a href="topics.html" class="block hover:text-zynk">Topics</a>
-            <a href="bookmarks.html" class="block hover:text-zynk">Bookmarks</a>
-            <a href="profile.html" class="block hover:text-zynk">Profile</a>
-            <a href="more.html" class="block hover:text-zynk">More</a>
+        <nav class="space-y-2 text-gray-600 dark:text-gray-300">
+            <a href="feed.html" class="side-item">
+                <i data-lucide="home"></i>
+                <span>Feed</span>
+            </a>
 
-            <a href="settings.html" class="block text-zynk font-semibold">Settings</a>
-            <a href="auth.html" class="block hover:text-red-500 cursor-pointer transition text-red-400">Logout</a>
-            <button id="themeToggle" class="flex items-center gap-2 hover:text-zynk transition mt-4">
-                <span id="themeIcon">🌙</span>
+            <a href="explore.html" class="side-item">
+                <i data-lucide="search"></i>
+                <span>Explore</span>
+            </a>
+
+            <a href="chat.html" class="side-item">
+                <i data-lucide="message-circle"></i>
+                <span>Chat</span>
+            </a>
+
+            <a href="notifications.html" class="side-item">
+                <i data-lucide="bell"></i>
+                <span>Notifications</span>
+            </a>
+
+            <a href="topics.html" class="side-item">
+                <i data-lucide="hash"></i>
+                <span>Topics</span>
+            </a>
+
+            <a href="bookmarks.html" class="side-item">
+                <i data-lucide="bookmark"></i>
+                <span>Bookmarks</span>
+            </a>
+
+            <a href="profile.html" class="side-item">
+                <i data-lucide="user"></i>
+                <span>Profile</span>
+            </a>
+
+            <a href="more.html" class="side-item">
+                <i data-lucide="more-horizontal"></i>
+                <span>More</span>
+            </a>
+
+            <a href="settings.html" class="side-item active">
+                <i data-lucide="settings"></i>
+                <span>Settings</span>
+            </a>
+
+            <a href="auth.html" class="side-item" style="color:#ff4d4d">
+                <i data-lucide="log-out"></i>
+                <span>Logout</span>
+            </a>
+
+            <button id="themeToggle" class="side-item w-full">
+                <i data-lucide="moon"></i>
                 <span>Theme</span>
             </button>
         </nav>
@@ -1174,21 +1245,23 @@
         }
     </script>
 
-    <!-- SCRIPT FOR THEME TOGGLE (Reused) -->
+    <!-- Initialize Lucide Icons -->
+    <script>
+        lucide.createIcons();
+    </script>
+
+    <!-- SCRIPT FOR THEME TOGGLE (Updated for Lucide) -->
     <script>
         const themeToggle = document.getElementById('themeToggle');
-        const themeIcon = document.getElementById('themeIcon');
-
-        function updateIcon(isDark) {
-            themeIcon.textContent = isDark ? '🌙' : '☀️';
+        // Initial check
+        if (document.documentElement.classList.contains('dark')) {
+            // Default is moon, maybe switch to Sun for 'light mode' toggle visual? 
+            // Leaving as is per user request "Theme -> Moon icon"
         }
 
-        // Set initial icon
-        updateIcon(document.documentElement.classList.contains('dark'));
-
         themeToggle.addEventListener('click', () => {
-            const isDark = theme.toggle();
-            updateIcon(isDark);
+            theme.toggle();
+            // Optional: You could swap the icon attribute and re-run lucide.createIcons() here if you wanted a Sun icon.
         });
     </script>
 
