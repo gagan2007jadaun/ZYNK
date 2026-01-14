@@ -61,23 +61,7 @@
         </div>
     </main>
 
-    <!-- SCRIPT FOR THEME TOGGLE (Reused) -->
-    <script>
-        const themeToggle = document.getElementById('themeToggle');
-        const themeIcon = document.getElementById('themeIcon');
 
-        function updateIcon(isDark) {
-            themeIcon.textContent = isDark ? '🌙' : '☀️';
-        }
-
-        // Set initial icon
-        updateIcon(document.documentElement.classList.contains('dark'));
-
-        themeToggle.addEventListener('click', () => {
-            const isDark = theme.toggle();
-            updateIcon(isDark);
-        });
-    </script>
 
 </body>
 

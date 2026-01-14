@@ -42,6 +42,17 @@ function renderSidebar(activePage) {
 
     sidebar.innerHTML = html;
 
+    // Attach Theme Toggle Listener
+    const themeBtn = document.getElementById('themeToggle');
+    if (themeBtn) {
+        themeBtn.addEventListener('click', () => {
+            const isDark = theme.toggle();
+            // Update icon if needed - currently always 'moon' per design, 
+            // but we could switch to 'sun' if requested.
+            // For now, just ensuring the toggle works is the priority.
+        });
+    }
+
     if (window.lucide) {
         window.lucide.createIcons();
     } else {
