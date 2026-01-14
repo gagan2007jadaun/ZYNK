@@ -65,61 +65,8 @@
     <aside class="hidden md:flex flex-col w-64 p-6 border-r border-gray-200 dark:border-gray-800">
         <h1 class="text-2xl font-bold text-zynk mb-8">ZYNK</h1>
 
-        <nav class="space-y-2 text-gray-600 dark:text-gray-300">
-            <a href="feed.html" class="side-item">
-                <i data-lucide="home"></i>
-                <span>Feed</span>
-            </a>
-
-            <a href="explore.html" class="side-item">
-                <i data-lucide="search"></i>
-                <span>Explore</span>
-            </a>
-
-            <a href="chat.html" class="side-item">
-                <i data-lucide="message-circle"></i>
-                <span>Chat</span>
-            </a>
-
-            <a href="notifications.html" class="side-item">
-                <i data-lucide="bell"></i>
-                <span>Notifications</span>
-            </a>
-
-            <a href="topics.html" class="side-item">
-                <i data-lucide="hash"></i>
-                <span>Topics</span>
-            </a>
-
-            <a href="bookmarks.html" class="side-item">
-                <i data-lucide="bookmark"></i>
-                <span>Bookmarks</span>
-            </a>
-
-            <a href="profile.html" class="side-item">
-                <i data-lucide="user"></i>
-                <span>Profile</span>
-            </a>
-
-            <a href="more.html" class="side-item">
-                <i data-lucide="more-horizontal"></i>
-                <span>More</span>
-            </a>
-
-            <a href="settings.html" class="side-item active">
-                <i data-lucide="settings"></i>
-                <span>Settings</span>
-            </a>
-
-            <a href="auth.html" class="side-item" style="color:#ff4d4d">
-                <i data-lucide="log-out"></i>
-                <span>Logout</span>
-            </a>
-
-            <button id="themeToggle" class="side-item w-full">
-                <i data-lucide="moon"></i>
-                <span>Theme</span>
-            </button>
+        <nav id="sidebar" class="space-y-2 text-gray-600 dark:text-gray-300">
+            <!-- Sidebar will be rendered here by JS -->
         </nav>
     </aside>
 
@@ -1245,9 +1192,12 @@
         }
     </script>
 
-    <!-- Initialize Lucide Icons -->
+    <script src="../utils/sidebar.js"></script>
+
+    <!-- Initialize Sidebar -->
     <script>
-        lucide.createIcons();
+        // Render sidebar with 'Settings' as active
+        renderSidebar('Settings');
     </script>
 
     <!-- SCRIPT FOR THEME TOGGLE (Updated for Lucide) -->
