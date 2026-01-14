@@ -32,10 +32,25 @@ function renderSidebar(activePage) {
         </a>
     `;
 
-    // Add Theme Toggle
+    // Add Theme Toggle (with animation style)
+    const isDark = document.documentElement.classList.contains('dark');
+    const initialIcon = isDark ? 'moon' : 'sun';
+
     html += `
+        <style>
+            @keyframes spin-scale {
+                0% { transform: scale(1) rotate(0deg); }
+                50% { transform: scale(0.8) rotate(180deg); }
+                100% { transform: scale(1) rotate(360deg); }
+            }
+            .theme-animate {
+                animation: spin-scale 0.5s ease-in-out;
+            }
+        </style>
         <button id="themeToggle" class="side-item w-full">
-            <i data-lucide="moon"></i>
+            <div id="themeIconWrap" class="flex items-center justify-center">
+                <i data-lucide="${initialIcon}"></i>
+            </div>
             <span>Theme</span>
         </button>
     `;
@@ -46,10 +61,25 @@ function renderSidebar(activePage) {
     const themeBtn = document.getElementById('themeToggle');
     if (themeBtn) {
         themeBtn.addEventListener('click', () => {
+            const wrapper = document.getElementById('themeIconWrap');
+            wrapper.classList.add('theme-animate');
+
+            // Toggle logic
             const isDark = theme.toggle();
-            // Update icon if needed - currently always 'moon' per design, 
-            // but we could switch to 'sun' if requested.
-            // For now, just ensuring the toggle works is the priority.
+            const newIcon = isDark ? 'moon' : 'sun';
+
+            // Wait for half animation to swap icon
+            setTimeout(() => {
+                wrapper.innerHTML = `<i data-lucide="${newIcon}"></i>`;
+                if (window.lucide) {
+                    window.lucide.createIcons({ root: wrapper });
+                }
+            }, 250);
+
+            // Cleanup class
+            setTimeout(() => {
+                wrapper.classList.remove('theme-animate');
+            }, 500);
         });
     }
 
