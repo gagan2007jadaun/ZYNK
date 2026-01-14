@@ -160,14 +160,14 @@
             <!-- METRICS -->
             <div class="flex gap-6 mt-4 text-gray-500 text-sm">
                 <div class="flex items-center gap-1 cursor-pointer hover:text-white transition group"
-                    onclick="alert('Followers list coming soon!')">
-                    <span id="followersCount" class="font-bold text-white">0</span>
-                    <span class="group-hover:underline">Followers</span>
+                    onclick="alert('Orbit list coming soon!')">
+                    <span id="orbitCount" class="font-bold text-white">0</span>
+                    <span class="group-hover:underline">Orbit</span>
                 </div>
                 <div class="flex items-center gap-1 cursor-pointer hover:text-white transition group"
-                    onclick="alert('Following list coming soon!')">
-                    <span id="followingCount" class="font-bold text-white">0</span>
-                    <span class="group-hover:underline">Following</span>
+                    onclick="alert('In Orbit list coming soon!')">
+                    <span id="inOrbitCount" class="font-bold text-white">0</span>
+                    <span class="group-hover:underline">In Orbit</span>
                 </div>
             </div>
         </div>
@@ -429,15 +429,16 @@
         loadProfilePosts();
 
         // Load Social Stats
+        // Load Social Stats
         function loadSocialStats() {
-            const followers = getFollowers().length;
-            const following = getFollowing().length;
+            const orbit = getOrbit().length;
+            const inOrbit = getInOrbit().length;
 
-            const followersEl = document.getElementById('followersCount');
-            const followingEl = document.getElementById('followingCount');
+            const orbitEl = document.getElementById('orbitCount');
+            const inOrbitEl = document.getElementById('inOrbitCount');
 
-            if (followersEl) followersEl.textContent = followers;
-            if (followingEl) followingEl.textContent = following;
+            if (orbitEl) orbitEl.textContent = orbit;
+            if (inOrbitEl) inOrbitEl.textContent = inOrbit;
         }
         loadSocialStats();
     </script>
