@@ -61,6 +61,19 @@ function toggleOrbit(handle) {
     }
 }
 
+// Remove someone from MY Orbit (Remove Follower)
+function removeOrbiter(handle) {
+    let orbit = getOrbit();
+    if (orbit.includes(handle)) {
+        orbit = orbit.filter(h => h !== handle);
+        localStorage.setItem(SOCIAL_KEYS.ORBIT, JSON.stringify(orbit));
+        // Dispatch event
+        window.dispatchEvent(new CustomEvent('zynkSocialUpdate', { detail: { type: 'removeOrbit', handle } }));
+        return true;
+    }
+    return false;
+}
+
 // Initialize with some dummy data if empty (for demo)
 function initSocial() {
     if (!localStorage.getItem(SOCIAL_KEYS.IN_ORBIT)) {
