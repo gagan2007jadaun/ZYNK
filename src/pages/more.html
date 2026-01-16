@@ -46,19 +46,173 @@
     </aside>
 
     <!-- MAIN AREA -->
-    <main class="flex-1 flex flex-col justify-center items-center p-6 text-center">
-        <div class="max-w-md">
-            <h2 class="text-3xl font-bold mb-4">More <span class="text-zynk">Coming Soon</span></h2>
-            <p class="text-gray-500 dark:text-gray-400 mb-8">
-                Lists, Analytics, Professional Tools, and more extra features will live here.
-            </p>
+    <main class="flex-1 flex flex-col p-6 overflow-hidden">
+        <div class="max-w-4xl mx-auto w-full h-full flex flex-col min-h-0">
+            <!-- Header -->
+            <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4 flex-shrink-0">
+                <div>
+                    <h2 class="text-3xl font-bold">Orbit Manager 🪐</h2>
+                    <p class="text-gray-500 dark:text-gray-400">Manage your connections in the Zynkverse.</p>
+                </div>
 
-            <a href="feed.html"
-                class="px-6 py-2 bg-gray-200 dark:bg-gray-800 rounded-xl hover:bg-gray-300 dark:hover:bg-gray-700 transition">
-                Back to Feed
-            </a>
+                <!-- Search -->
+                <div class="relative w-full md:w-64">
+                    <input type="text" id="searchInput" placeholder="Search handles..."
+                        class="w-full bg-white dark:bg-[#1A1A1A] border border-gray-200 dark:border-gray-800 rounded-xl px-4 py-2 pl-10 focus:outline-none focus:border-zynk transition">
+                    <svg class="absolute left-3 top-2.5 text-gray-400" xmlns="http://www.w3.org/2000/svg" width="18"
+                        height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="flex gap-4 border-b border-gray-200 dark:border-gray-800 mb-6 flex-shrink-0">
+                <button onclick="switchManagerTab('inOrbit')" id="tab-inOrbit"
+                    class="pb-3 px-2 font-bold border-b-2 border-zynk text-gray-900 dark:text-white transition">
+                    In Orbit <span id="count-inOrbit"
+                        class="ml-2 text-xs bg-gray-200 dark:bg-gray-800 px-2 py-0.5 rounded-full text-gray-500">0</span>
+                </button>
+                <button onclick="switchManagerTab('orbit')" id="tab-orbit"
+                    class="pb-3 px-2 font-medium text-gray-500 hover:text-gray-900 dark:hover:text-gray-300 transition border-b-2 border-transparent">
+                    Orbit <span id="count-orbit"
+                        class="ml-2 text-xs bg-gray-200 dark:bg-gray-800 px-2 py-0.5 rounded-full text-gray-500">0</span>
+                </button>
+            </div>
+
+            <!-- Grid Container -->
+            <div id="managerGrid"
+                class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 overflow-y-auto pb-20 flex-1">
+                <!-- Cards injected here -->
+            </div>
         </div>
     </main>
+
+    <!-- SCRIPTS -->
+    <script src="../utils/social.js"></script>
+    <script>
+        let currentManagerTab = 'inOrbit';
+
+        try {
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                searchInput.addEventListener('input', () => renderManager());
+            }
+
+            // Initial Load
+            if (typeof renderManager === 'function') {
+                renderManager();
+            } else {
+                console.warn("Zynk: renderManager function needed init");
+            }
+        } catch (e) {
+            console.error("Zynk Manager Error:", e);
+        }
+
+        function switchManagerTab(tab) {
+            currentManagerTab = tab;
+
+            // UI Updates
+            const tabs = ['inOrbit', 'orbit'];
+            tabs.forEach(t => {
+                const btn = document.getElementById(`tab-${t}`);
+                if (t === tab) {
+                    btn.className = 'pb-3 px-2 font-bold border-b-2 border-zynk text-gray-900 dark:text-white transition';
+                    btn.classList.remove('text-gray-500');
+                } else {
+                    btn.className = 'pb-3 px-2 font-medium text-gray-500 hover:text-gray-900 dark:hover:text-gray-300 transition border-b-2 border-transparent';
+                }
+            });
+
+            renderManager();
+        }
+
+        function renderManager() {
+            if (typeof getInOrbit !== 'function' || typeof getOrbit !== 'function') {
+                console.error("Orbit functions missing. Check social.js");
+                return;
+            }
+
+            const list = currentManagerTab === 'inOrbit' ? getInOrbit() : getOrbit();
+            const query = document.getElementById('searchInput')?.value.toLowerCase() || '';
+            const grid = document.getElementById('managerGrid');
+
+            // Update Counts
+            const inOrbitCountEl = document.getElementById('count-inOrbit');
+            const orbitCountEl = document.getElementById('count-orbit');
+            if (inOrbitCountEl) inOrbitCountEl.textContent = getInOrbit().length;
+            if (orbitCountEl) orbitCountEl.textContent = getOrbit().length;
+
+            if (!grid) return;
+            grid.innerHTML = '';
+
+            const filtered = list.filter(handle => handle.toLowerCase().includes(query));
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full text-center py-20 text-gray-500">
+                        <p class="text-xl mb-2">🔭</p>
+                        <p>No connections found.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            filtered.forEach(handle => {
+                const card = document.createElement('div');
+                card.className = 'bg-white dark:bg-[#1A1A1A] p-4 rounded-xl border border-gray-200 dark:border-gray-800 flex items-center justify-between hover:border-zynk transition group relative overflow-hidden';
+
+                // Initials avatar
+                const initials = handle.substring(1, 3).toUpperCase();
+
+                const actionBtn = currentManagerTab === 'inOrbit'
+                    ? `<button onclick="handleUnorbit('${handle}')" class="text-xs bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white px-3 py-1.5 rounded-lg transition font-medium">Unorbit</button>`
+                    : `<button onclick="handleRemove('${handle}')" class="text-xs bg-gray-200 dark:bg-gray-800 text-gray-500 hover:bg-red-500 hover:text-white px-3 py-1.5 rounded-lg transition font-medium">Remove</button>`;
+
+                card.innerHTML = `
+                    <div class="absolute inset-0 bg-gradient-to-r from-zynk/5 to-transparent opacity-0 group-hover:opacity-100 transition duration-500"></div>
+                    <div class="flex items-center gap-3 relative z-10">
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center text-white font-bold text-sm shadow-md">
+                            ${initials}
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-900 dark:text-white leading-tight">${handle}</h3>
+                            <span class="text-xs text-gray-500">Zynk User</span>
+                        </div>
+                    </div>
+                    <div class="relative z-10">
+                        ${actionBtn}
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function handleUnorbit(handle) {
+            if (confirm(`Stop orbiting ${handle}?`)) {
+                if (typeof removeFromOrbit === 'function') {
+                    removeFromOrbit(handle);
+                    renderManager();
+                }
+            }
+        }
+
+        function handleRemove(handle) {
+            if (confirm(`Remove ${handle} from your Orbit?`)) {
+                if (typeof removeOrbiter === 'function') {
+                    removeOrbiter(handle);
+                    renderManager();
+                } else {
+                    console.error("removeOrbiter function missing");
+                }
+            }
+        }
+
+        // Call render immediately
+        renderManager();
+    </script>
 
 
 
