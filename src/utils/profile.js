@@ -301,6 +301,13 @@ function renderProfilePosts() {
                 <p id="text-${post.id}" class="${post.text.length > 150 ? 'line-clamp-3' : ''} whitespace-pre-wrap transition-all">${post.text}</p>
                 ${post.text.length > 150 ? `<button onclick="toggleExpand('${post.id}')" class="text-xs text-zynk hover:underline mt-1">Show more</button>` : ''}
               </div>
+
+               <!-- Render Attached Images -->
+              ${post.images && post.images.length > 0 ? `
+                  <div class="mt-3 flex gap-2 overflow-x-auto pb-2">
+                      ${post.images.map(img => `<img src="${img}" class="h-32 w-auto rounded-lg border border-gray-200 dark:border-gray-800 object-cover">`).join('')}
+                  </div>
+              ` : ''}
               
               <div class="flex gap-6 mt-4 text-gray-500 text-sm">
                 <span class="hover:text-zynk transition cursor-pointer">Reply</span>
