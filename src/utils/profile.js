@@ -275,7 +275,7 @@ function renderProfilePosts() {
         const intentStyle = intents[intent] || intents['vent'];
 
         return `
-        <div id="post-${post.id}" class="p-6 border-b border-gray-200 dark:border-gray-800 transition-all hover:bg-gray-50 dark:hover:bg-white/5">
+        <div id="post-${post.id}" class="p-6 border-b border-gray-200 dark:border-gray-800 transition-all hover:bg-gray-50 dark:hover:bg-white/5 cursor-pointer" onclick="window.location.href='post.html?id=${post.id}'">
           <div class="flex gap-4">
              <!-- Avatar -->
              <img src="${post.avatar || 'https://via.placeholder.com/40'}" 
@@ -299,7 +299,7 @@ function renderProfilePosts() {
               
               <div class="mt-2 text-gray-800 dark:text-gray-200">
                 <p id="text-${post.id}" class="${post.text.length > 150 ? 'line-clamp-3' : ''} whitespace-pre-wrap transition-all">${post.text}</p>
-                ${post.text.length > 150 ? `<button onclick="toggleExpand('${post.id}')" class="text-xs text-zynk hover:underline mt-1">Show more</button>` : ''}
+                ${post.text.length > 150 ? `<button onclick="event.stopPropagation(); toggleExpand('${post.id}')" class="text-xs text-zynk hover:underline mt-1">Show more</button>` : ''}
               </div>
 
                <!-- Render Attached Images -->
@@ -310,10 +310,10 @@ function renderProfilePosts() {
               ` : ''}
               
               <div class="flex gap-6 mt-4 text-gray-500 text-sm">
-                <span class="hover:text-zynk transition cursor-pointer">Reply</span>
-                <span class="${post.allowReposts !== false ? 'hover:text-zynk transition cursor-pointer' : 'opacity-50 cursor-not-allowed'}" title="${post.allowReposts !== false ? 'Repost' : 'Reposts disabled'}">Repost</span>
+                <span class="hover:text-zynk transition cursor-pointer" onclick="event.stopPropagation(); alert('Reply coming soon')">Reply</span>
+                <span class="${post.allowReposts !== false ? 'hover:text-zynk transition cursor-pointer' : 'opacity-50 cursor-not-allowed'}" onclick="event.stopPropagation()" title="${post.allowReposts !== false ? 'Repost' : 'Reposts disabled'}">Repost</span>
                 <div class="like-container relative">
-                   <button class="like-btn flex items-center gap-1 hover:text-zynk transition cursor-pointer select-none" onclick="toggleLike(this)">
+                   <button class="like-btn flex items-center gap-1 hover:text-zynk transition cursor-pointer select-none" onclick="event.stopPropagation(); toggleLike(this)">
                      <span class="like-fill"></span>
                      <span class="like-icon">Like</span>
                    </button>

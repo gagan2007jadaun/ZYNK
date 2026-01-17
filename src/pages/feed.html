@@ -665,15 +665,17 @@
 
       const replyAction = post.frozen
         ? `<span class="opacity-50 cursor-not-allowed text-gray-400" title="Replies disabled">Locked 🔒</span>`
-        : `<span class="hover:text-zynk transition transform hover:scale-105 cursor-pointer" onclick="openReply('${post.handle}', '${post.text.replace(/'/g, "\\'")}')">
+        : `<span class="hover:text-zynk transition transform hover:scale-105 cursor-pointer" onclick="event.stopPropagation(); openReply('${post.handle}', '${post.text.replace(/'/g, "\\'")}')">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
            </span>`;
 
-      const freezeAction = `<span onclick="toggleFreeze('${post.id}')" class="cursor-pointer hover:text-blue-500 transition select-none">${post.frozen ? 'Unfreeze ❄️' : 'Freeze 🧊'}</span>`;
+      const freezeAction = `<span onclick="event.stopPropagation(); toggleFreeze('${post.id}')" class="cursor-pointer hover:text-blue-500 transition select-none">${post.frozen ? 'Unfreeze ❄️' : 'Freeze 🧊'}</span>`;
       const expiryTitle = post.expiry ? `Exports at ${new Date(post.expiry).toLocaleString()}` : 'Never expires';
 
       const postHTML = `
-        <div id="post-${post.id}" class="post-card p-6 border-b border-gray-200 dark:border-gray-800 transition-all duration-300 ease-out hover:bg-gray-100 dark:hover:bg-[#141414] hover:-translate-y-0.5 ${animate ? 'animate-post' : ''} ${post.frozen ? 'bg-blue-50/30 dark:bg-blue-900/10' : ''}">
+        <div id="post-${post.id}" 
+             onclick="window.location.href='post.html?id=${post.id}'"
+             class="post-card cursor-pointer p-6 border-b border-gray-200 dark:border-gray-800 transition-all duration-300 ease-out hover:bg-gray-100 dark:hover:bg-[#141414] hover:-translate-y-0.5 ${animate ? 'animate-post' : ''} ${post.frozen ? 'bg-blue-50/30 dark:bg-blue-900/10' : ''}">
           <div class="flex gap-4">
              <!-- Avatar (Dynamic) -->
              <img src="${post.avatar || 'https://via.placeholder.com/40'}" 
@@ -689,7 +691,7 @@
                   
                   <!-- ORBIT BUTTON -->
                   ${(post.handle !== '@you' && post.handle !== savedProfile?.username) ?
-          `<button onclick="toggleOrbitBtn('${post.handle}', this)" class="text-xs border border-zynk text-zynk px-2 py-0.5 rounded-full hover:bg-zynk hover:text-black transition">
+          `<button onclick="event.stopPropagation(); toggleOrbitBtn('${post.handle}', this)" class="text-xs border border-zynk text-zynk px-2 py-0.5 rounded-full hover:bg-zynk hover:text-black transition">
                         ${isInOrbit(post.handle) ? 'In Orbit' : 'Orbit'}
                      </button>`
           : ''}
@@ -704,7 +706,7 @@
               
               <div class="mt-2 text-gray-800 dark:text-gray-200">
                 <p id="text-${post.id}" class="${post.text.length > 150 ? 'line-clamp-3' : ''} whitespace-pre-wrap transition-all">${post.text}</p>
-                ${post.text.length > 150 ? `<button onclick="toggleExpand('${post.id}')" class="text-xs text-zynk hover:underline mt-1">Show more</button>` : ''}
+                ${post.text.length > 150 ? `<button onclick="event.stopPropagation(); toggleExpand('${post.id}')" class="text-xs text-zynk hover:underline mt-1">Show more</button>` : ''}
               </div>
 
               <!-- Render Attached Images -->
@@ -722,7 +724,7 @@
                 </span>
                 
                 <div class="like-container relative">
-                   <button class="like-btn flex items-center gap-1 hover:text-zynk transition cursor-pointer select-none" onclick="toggleLike(this)">
+                   <button class="like-btn flex items-center gap-1 hover:text-zynk transition cursor-pointer select-none" onclick="event.stopPropagation(); toggleLike(this)">
                      <span class="like-fill"></span>
                      <span class="like-icon">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
