@@ -364,8 +364,7 @@
                 <div class="like-container relative">
                     <button
                         class="like-btn flex items-center gap-1 hover:text-zynk transition cursor-pointer select-none"
-                        onmousedown="startLike(this)" onmouseup="cancelLike(this)" onmouseleave="cancelLike(this)"
-                        ontouchstart="startLike(this)" ontouchend="cancelLike(this)">
+                        onclick="toggleLike(this)">
                         <span class="like-fill"></span>
                         <span class="like-icon">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
@@ -379,40 +378,18 @@
             }).join('');
         }
 
-        // SLOW LIKE LOGIC
-        let likeTimer;
-
-        function startLike(btn) {
+        // INSTANT LIKE LOGIC
+        function toggleLike(btn) {
             if (btn.classList.contains('liked')) {
                 btn.classList.remove('liked');
-                // btn.querySelector('.like-icon').textContent = 'Like';
-                return;
+            } else {
+                btn.classList.add('liked');
+                btn.classList.add('like-pop');
+                setTimeout(() => btn.classList.remove('like-pop'), 300);
+
+                // Haptic feedback
+                if (navigator.vibrate) navigator.vibrate(50);
             }
-
-            btn.classList.add('holding');
-
-            likeTimer = setTimeout(() => {
-                completeLike(btn);
-            }, 1000);
-        }
-
-        function cancelLike(btn) {
-            if (likeTimer) clearTimeout(likeTimer);
-            btn.classList.remove('holding');
-        }
-
-        function completeLike(btn) {
-            btn.classList.remove('holding');
-            btn.classList.add('liked');
-            btn.classList.add('like-pop');
-            // btn.querySelector('.like-icon').textContent = 'Liked ❤️'; 
-            // Don't change text, the color change indicates liked state. 
-            // Or maybe change the SVG fill? For now, color via CSS is enough as per Feed logic.
-
-            setTimeout(() => btn.classList.remove('like-pop'), 300);
-
-            // Haptic feedback
-            if (navigator.vibrate) navigator.vibrate(50);
         }
 
         function getTimeLeft(expiry) {

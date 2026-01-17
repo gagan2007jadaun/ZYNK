@@ -313,7 +313,7 @@ function renderProfilePosts() {
                 <span class="hover:text-zynk transition cursor-pointer">Reply</span>
                 <span class="${post.allowReposts !== false ? 'hover:text-zynk transition cursor-pointer' : 'opacity-50 cursor-not-allowed'}" title="${post.allowReposts !== false ? 'Repost' : 'Reposts disabled'}">Repost</span>
                 <div class="like-container relative">
-                   <button class="like-btn flex items-center gap-1 hover:text-zynk transition cursor-pointer select-none" onmousedown="startLike(this)" onmouseup="cancelLike(this)" onmouseleave="cancelLike(this)" ontouchstart="startLike(this)" ontouchend="cancelLike(this)">
+                   <button class="like-btn flex items-center gap-1 hover:text-zynk transition cursor-pointer select-none" onclick="toggleLike(this)">
                      <span class="like-fill"></span>
                      <span class="like-icon">Like</span>
                    </button>
