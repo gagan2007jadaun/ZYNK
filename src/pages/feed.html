@@ -287,6 +287,40 @@
 
     // State
     let selectedImages = [];
+    let currentFeedTab = 'foryou';
+
+    function switchFeed(type) {
+      currentFeedTab = type;
+      const forYouTab = document.getElementById('tab-foryou');
+      const inOrbitTab = document.getElementById('tab-inOrbit');
+
+      const forYouSpan = forYouTab.querySelector('span');
+      const inOrbitSpan = inOrbitTab.querySelector('span');
+
+      const forYouLine = forYouTab.querySelector('div');
+      const inOrbitLine = inOrbitTab.querySelector('div');
+
+      if (type === 'foryou') {
+        // Active: For You
+        forYouSpan.className = 'font-bold text-gray-900 dark:text-white';
+        forYouLine.className = 'absolute bottom-0 left-0 w-full h-1 bg-zynk rounded-full';
+
+        // Inactive: In Orbit
+        inOrbitSpan.className = 'font-medium text-gray-500 group-hover:text-gray-900 dark:text-gray-500 dark:group-hover:text-gray-300';
+        inOrbitLine.className = 'absolute bottom-0 left-0 w-full h-1 bg-transparent rounded-full';
+      } else {
+        // Active: In Orbit
+        inOrbitSpan.className = 'font-bold text-gray-900 dark:text-white';
+        inOrbitLine.className = 'absolute bottom-0 left-0 w-full h-1 bg-zynk rounded-full';
+
+        // Inactive: For You
+        forYouSpan.className = 'font-medium text-gray-500 group-hover:text-gray-900 dark:text-gray-500 dark:group-hover:text-gray-300';
+        forYouLine.className = 'absolute bottom-0 left-0 w-full h-1 bg-transparent rounded-full';
+      }
+
+      // Reload posts with filter
+      loadPosts();
+    }
 
     function updatePostButtonState() {
       const text = input.value.trim();
@@ -927,40 +961,7 @@
 
     // REPLY LOGIC
 
-    let currentFeedTab = 'foryou';
 
-    function switchFeed(type) {
-      currentFeedTab = type;
-      const forYouTab = document.getElementById('tab-foryou');
-      const inOrbitTab = document.getElementById('tab-inOrbit');
-
-      const forYouSpan = forYouTab.querySelector('span');
-      const inOrbitSpan = inOrbitTab.querySelector('span');
-
-      const forYouLine = forYouTab.querySelector('div');
-      const inOrbitLine = inOrbitTab.querySelector('div');
-
-      if (type === 'foryou') {
-        // Active: For You
-        forYouSpan.className = 'font-bold text-gray-900 dark:text-white';
-        forYouLine.className = 'absolute bottom-0 left-0 w-full h-1 bg-zynk rounded-full';
-
-        // Inactive: In Orbit
-        inOrbitSpan.className = 'font-medium text-gray-500 group-hover:text-gray-900 dark:text-gray-500 dark:group-hover:text-gray-300';
-        inOrbitLine.className = 'absolute bottom-0 left-0 w-full h-1 bg-transparent rounded-full';
-      } else {
-        // Active: In Orbit
-        inOrbitSpan.className = 'font-bold text-gray-900 dark:text-white';
-        inOrbitLine.className = 'absolute bottom-0 left-0 w-full h-1 bg-zynk rounded-full';
-
-        // Inactive: For You
-        forYouSpan.className = 'font-medium text-gray-500 group-hover:text-gray-900 dark:text-gray-500 dark:group-hover:text-gray-300';
-        forYouLine.className = 'absolute bottom-0 left-0 w-full h-1 bg-transparent rounded-full';
-      }
-
-      // Reload posts with filter
-      loadPosts();
-    }
 
     const replyModal = document.getElementById('replyModal');
     const replyModalContent = document.getElementById('replyModalContent');
