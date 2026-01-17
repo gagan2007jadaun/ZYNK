@@ -284,32 +284,143 @@
     </ul>
   </aside>
   <script>
-    const input = document.getElementById('postInput');
-    const counter = document.getElementById('charCount');
-    const postBtn = document.getElementById('postBtn');
-
-    const identitySelect = document.getElementById('identitySelect');
-    const intentSelect = document.getElementById('intentSelect');
-    const allowRepostsCheckbox = document.getElementById('allowReposts');
-    const feedPosts = document.getElementById('feedPosts');
-    const LIMIT = 280;
 
     // State
     let selectedImages = [];
 
-    function updatePostButtonState() {
-      const text = input.value.trim();
-      const length = input.value.length;
-      const hasImages = selectedImages.length > 0;
+    // Global declarations for access in functions
+    let input, counter, postBtn, identitySelect, intentSelect, allowRepostsCheckbox, feedPosts;
+    const LIMIT = 280;
 
-      counter.textContent = `${length} / ${LIMIT}`;
+    document.addEventListener('DOMContentLoaded', () => {
+      // Initialize DOM elements after load
+      input = document.getElementById('postInput');
+      counter = document.getElementById('charCount');
+      postBtn = document.getElementById('postBtn');
+      identitySelect = document.getElementById('identitySelect');
+      intentSelect = document.getElementById('intentSelect');
+      allowRepostsCheckbox = document.getElementById('allowReposts');
+      feedPosts = document.getElementById('feedPosts');
 
-      if (length > LIMIT) {
-        counter.classList.add('text-red-500');
-        postBtn.disabled = true;
-      } else {
-        counter.classList.remove('text-red-500');
-        postBtn.disabled = length === 0 && !hasImages;
+      // Init listeners that depend on these elements
+      if (input) {
+        input.addEventListener('input', () => {
+          updatePostButtonState();
+          detectMood(input.value);
+        });
+      }
+
+      if (postBtn) {
+        postBtn.addEventListener('click', handlePostClick);
+      }
+
+      // Load posts on startup (Safe Load)
+      try {
+        if (typeof loadPosts === 'function') {
+          loadPosts();
+        } else {
+          console.error("Zynk: loadPosts is not a function");
+        }
+      } catch (err) {
+        console.error("Zynk: Error loading posts", err);
+      }
+    });
+
+    // Separated handler for cleanliness and hoisting
+    async function handlePostClick() {
+      try {
+        const text = input.value.trim();
+
+        // Allow post if there are images, even if no text
+        if (!text && selectedImages.length === 0) {
+          alert("Post empty hai bhai");
+          return;
+        }
+
+        postBtn.disabled = true; // Disable immediately to prevent double clicks
+
+        const expiryVal = expirySelect.value;
+        const identity = identitySelect.value;
+        const intent = intentSelect.value;
+        const allowReposts = allowRepostsCheckbox.checked;
+        const now = Date.now();
+
+        let expiryTime = null; // Default to never/null
+
+        if (expiryVal !== 'never') {
+          let hours = 0;
+          if (expiryVal === 'custom') {
+            const val = parseFloat(document.getElementById('customTimeInput').value) || 0;
+            const unit = document.getElementById('customUnitSelect').value;
+            hours = unit === 'days' ? val * 24 : val;
+          } else {
+            hours = parseFloat(expiryVal);
+          }
+
+          if (hours > 0) {
+            expiryTime = now + (hours * 60 * 60 * 1000);
+          } else {
+            if (expiryVal === 'custom' && hours <= 0) {
+              alert("Please enter a valid time");
+              postBtn.disabled = false; // Re-enable
+              return;
+            }
+          }
+        }
+
+        let author = 'You';
+        let handle = '@you';
+        let avatar = localStorage.getItem("zynkAvatar") || "";
+
+        const savedProfile = JSON.parse(localStorage.getItem("zynkProfile"));
+        if (savedProfile) {
+          author = savedProfile.name || 'You';
+          handle = savedProfile.username || '@you';
+        }
+
+        if (identity === 'semi') {
+          author = 'Zynk Member';
+          handle = '@hidden';
+          avatar = "";
+        } else if (identity === 'anon') {
+          author = 'Anonymous';
+          handle = `@${Math.random().toString(36).substring(2, 7)}`;
+          avatar = "";
+        }
+
+        // Convert images to Base64 with Compression
+        const imageAttachments = await Promise.all(selectedImages.map(file => compressImage(file)));
+
+        const post = {
+          id: crypto.randomUUID(),
+          text: text,
+          images: imageAttachments, // Add images
+          timestamp: now,
+          expiry: expiryTime,
+          author: author,
+          handle: handle,
+          avatar: avatar,
+          identity: identity,
+          intent: intent,
+          allowReposts: allowReposts,
+          frozen: false
+        };
+
+        savePost(post);
+        renderPost(post, true);
+
+        // Reset
+        input.value = '';
+        selectedImages = [];
+        renderImagePreview();
+        updatePostButtonState();
+      } catch (err) {
+        console.error("Post failed:", err);
+        // Alert handled in savePost for storage, but handle others
+        if (err.name !== 'QuotaExceededError') {
+          alert("Failed to post: " + err.message);
+        }
+        postBtn.disabled = false; // Re-enable on error
       }
     }
 
@@ -319,25 +430,7 @@
       savedProfile = JSON.parse(localStorage.getItem("zynkProfile"));
     } catch (e) {
       console.error("Zynk: Error parsing profile", e);
-    }
-
-    // Load posts on startup (Safe Load)
-    try {
-      if (typeof loadPosts === 'function') {
-        loadPosts();
-      } else {
-        console.error("Zynk: loadPosts is not a function");
-      }
-    } catch (err) {
-      console.error("Zynk: Error loading posts", err);
-    }
-
-    input.addEventListener('input', () => {
-      updatePostButtonState();
-      detectMood(input.value);
-    });
-
-    postBtn.addEventListener('click', async () => {
+    } postBtn.addEventListener('click', async () => {
       try {
         const text = input.value.trim();
 
