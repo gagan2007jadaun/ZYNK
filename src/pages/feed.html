@@ -338,95 +338,107 @@
     });
 
     postBtn.addEventListener('click', async () => {
-      const text = input.value.trim();
+      try {
+        const text = input.value.trim();
 
-      // Allow post if there are images, even if no text
-      if (!text && selectedImages.length === 0) {
-        alert("Post empty hai bhai");
-        return;
-      }
-
-      const expiryVal = expirySelect.value;
-      const identity = identitySelect.value;
-      const intent = intentSelect.value;
-      const allowReposts = allowRepostsCheckbox.checked;
-      const now = Date.now();
-
-      let expiryTime = null; // Default to never/null
-
-      if (expiryVal !== 'never') {
-        let hours = 0;
-        if (expiryVal === 'custom') {
-          const val = parseFloat(document.getElementById('customTimeInput').value) || 0;
-          const unit = document.getElementById('customUnitSelect').value;
-          hours = unit === 'days' ? val * 24 : val;
-        } else {
-          hours = parseFloat(expiryVal);
+        // Allow post if there are images, even if no text
+        if (!text && selectedImages.length === 0) {
+          alert("Post empty hai bhai");
+          return;
         }
 
-        if (hours > 0) {
-          expiryTime = now + (hours * 60 * 60 * 1000);
-        } else {
-          if (expiryVal === 'custom' && hours <= 0) {
-            alert("Please enter a valid time");
-            return;
+        postBtn.disabled = true; // Disable immediately to prevent double clicks
+
+        const expiryVal = expirySelect.value;
+        const identity = identitySelect.value;
+        const intent = intentSelect.value;
+        const allowReposts = allowRepostsCheckbox.checked;
+        const now = Date.now();
+
+        let expiryTime = null; // Default to never/null
+
+        if (expiryVal !== 'never') {
+          let hours = 0;
+          if (expiryVal === 'custom') {
+            const val = parseFloat(document.getElementById('customTimeInput').value) || 0;
+            const unit = document.getElementById('customUnitSelect').value;
+            hours = unit === 'days' ? val * 24 : val;
+          } else {
+            hours = parseFloat(expiryVal);
+          }
+
+          if (hours > 0) {
+            expiryTime = now + (hours * 60 * 60 * 1000);
+          } else {
+            if (expiryVal === 'custom' && hours <= 0) {
+              alert("Please enter a valid time");
+              postBtn.disabled = false; // Re-enable
+              return;
+            }
           }
         }
+
+        let author = 'You';
+        let handle = '@you';
+        let avatar = localStorage.getItem("zynkAvatar") || "";
+
+        const savedProfile = JSON.parse(localStorage.getItem("zynkProfile"));
+        if (savedProfile) {
+          author = savedProfile.name || 'You';
+          handle = savedProfile.username || '@you';
+        }
+
+        if (identity === 'semi') {
+          author = 'Zynk Member';
+          handle = '@hidden';
+          avatar = "";
+        } else if (identity === 'anon') {
+          author = 'Anonymous';
+          handle = `@${Math.random().toString(36).substring(2, 7)}`;
+          avatar = "";
+        }
+
+        // Convert images to Base64
+        const imageAttachments = await Promise.all(selectedImages.map(file => {
+          return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+          });
+        }));
+
+        const post = {
+          id: crypto.randomUUID(),
+          text: text,
+          images: imageAttachments, // Add images
+          timestamp: now,
+          expiry: expiryTime,
+          author: author,
+          handle: handle,
+          avatar: avatar,
+          identity: identity,
+          intent: intent,
+          allowReposts: allowReposts,
+          frozen: false
+        };
+
+        savePost(post);
+        renderPost(post, true);
+
+        // Reset
+        input.value = '';
+        selectedImages = [];
+        renderImagePreview();
+        updatePostButtonState();
+      } catch (err) {
+        console.error("Post failed:", err);
+        // Alert handled in savePost for storage, but handle others
+        if (err.name !== 'QuotaExceededError') {
+          alert("Failed to post: " + err.message);
+        }
+        postBtn.disabled = false; // Re-enable on error
       }
-
-      let author = 'You';
-      let handle = '@you';
-      let avatar = localStorage.getItem("zynkAvatar") || "";
-
-      const savedProfile = JSON.parse(localStorage.getItem("zynkProfile"));
-      if (savedProfile) {
-        author = savedProfile.name || 'You';
-        handle = savedProfile.username || '@you';
-      }
-
-      if (identity === 'semi') {
-        author = 'Zynk Member';
-        handle = '@hidden';
-        avatar = "";
-      } else if (identity === 'anon') {
-        author = 'Anonymous';
-        handle = `@${Math.random().toString(36).substring(2, 7)}`;
-        avatar = "";
-      }
-
-      // Convert images to Base64
-      const imageAttachments = await Promise.all(selectedImages.map(file => {
-        return new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = () => resolve(reader.result);
-          reader.onerror = reject;
-          reader.readAsDataURL(file);
-        });
-      }));
-
-      const post = {
-        id: crypto.randomUUID(),
-        text: text,
-        images: imageAttachments, // Add images
-        timestamp: now,
-        expiry: expiryTime,
-        author: author,
-        handle: handle,
-        avatar: avatar,
-        identity: identity,
-        intent: intent,
-        allowReposts: allowReposts,
-        frozen: false
-      };
-
-      savePost(post);
-      renderPost(post, true);
-
-      // Reset
-      input.value = '';
-      selectedImages = [];
-      renderImagePreview();
-      updatePostButtonState();
     });
 
 
@@ -485,9 +497,17 @@
     }
 
     function savePost(post) {
-      const posts = JSON.parse(localStorage.getItem('zynk_posts') || '[]');
-      posts.unshift(post);
-      localStorage.setItem('zynk_posts', JSON.stringify(posts));
+      try {
+        const posts = JSON.parse(localStorage.getItem('zynk_posts') || '[]');
+        posts.unshift(post);
+        localStorage.setItem('zynk_posts', JSON.stringify(posts));
+      } catch (e) {
+        console.error("Storage error:", e);
+        if (e.name === 'QuotaExceededError') {
+          alert("Storage full! Images are too large for this demo. Try smaller images or clear space.");
+          throw e; // Re-throw to stop processing
+        }
+      }
     }
 
     function loadPosts() {
