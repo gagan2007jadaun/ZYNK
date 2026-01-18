@@ -50,6 +50,77 @@
     border: 1px solid #333;
   }
 
+  /* POLL CSS */
+  .poll-card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 16px;
+    max-width: 100%;
+    font-family: sans-serif;
+    border: 1px solid #e5e7eb;
+  }
+
+  .dark .poll-card {
+    background: #121212;
+    border-color: #333;
+  }
+
+  .poll-question {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+
+  .poll-option {
+    position: relative;
+    background: #f3f5f7;
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    overflow: hidden;
+    transition: all 0.2s;
+  }
+
+  .dark .poll-option {
+    background: #1A1A1A;
+  }
+
+  .poll-option .label {
+    position: relative;
+    z-index: 2;
+  }
+
+  .poll-option .bar {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #4fd1c5, #38bdf8);
+    opacity: 0.25;
+    transition: width 0.4s ease;
+  }
+
+  .poll-option .percent {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 12px;
+    opacity: 0;
+  }
+
+  .poll-card[data-voted="true"] .percent {
+    opacity: 1;
+  }
+
+  .poll-footer {
+    margin-top: 10px;
+    font-size: 12px;
+    color: #888;
+  }
+
   .image-box {
     position: relative;
   }
@@ -116,6 +187,7 @@
       <!-- Image Preview Container -->
       <div id="imagePreview" class="image-preview hidden"></div>
       <div id="gifPreview" class="gif-preview hidden mt-2"></div>
+      <div id="pollPreview" class="mt-4 hidden"></div>
 
       <style>
         .gif-preview img {
@@ -148,7 +220,8 @@
             <path d="M15 17h2" />
           </svg>
         </button>
-        <button class="text-zynk hover:text-white transition p-1.5 rounded-full hover:bg-zynk/10" title="Poll">
+        <button onclick="openPollPicker()"
+          class="text-zynk hover:text-white transition p-1.5 rounded-full hover:bg-zynk/10" title="Poll">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M8 6h13" />
@@ -297,9 +370,9 @@
   <script>
 
     // State
-    // State
     let selectedImages = [];
     let selectedGif = null;
+    let selectedPoll = null; // { question: "", options: ["", ""] }
     let currentFeedTab = localStorage.getItem('zynk_active_tab') || 'foryou';
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -468,6 +541,7 @@
           text: text,
           images: imageAttachments, // Add images
           gif: selectedGif, // Add GIF
+          poll: selectedPoll, // Add Poll
           timestamp: now,
           expiry: expiryTime,
           author: author,
@@ -487,9 +561,12 @@
         input.value = '';
         selectedImages = [];
         selectedGif = null;
+        selectedPoll = null;
         renderImagePreview();
         document.getElementById("gifPreview").innerHTML = "";
         document.getElementById("gifPreview").classList.add("hidden");
+        document.getElementById("pollPreview").innerHTML = "";
+        document.getElementById("pollPreview").classList.add("hidden");
         updatePostButtonState();
       } catch (err) {
         console.error("Post failed:", err);
@@ -709,6 +786,96 @@
       updatePostButtonState();
     }
 
+    /* POLL LOGIC */
+    function openPollPicker() {
+      // Create Overlay
+      const overlay = document.createElement("div");
+      overlay.id = 'pollCreatorOverlay';
+      overlay.className = 'fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4';
+      overlay.onclick = (e) => {
+        if (e.target === overlay) overlay.remove();
+      };
+
+      const modal = document.createElement("div");
+      modal.className = 'bg-white dark:bg-[#121212] w-full max-w-sm rounded-2xl border border-gray-200 dark:border-gray-800 shadow-2xl p-6';
+
+      modal.innerHTML = `
+        <h3 class="font-bold text-lg mb-4">Create Poll</h3>
+        
+        <input id="pollQuestion" type="text" placeholder="Ask a question..." class="w-full mb-3 bg-gray-100 dark:bg-gray-900 border-none rounded-xl px-4 py-3 focus:ring-1 focus:ring-zynk outline-none">
+        
+        <div id="pollOptionsInputs" class="space-y-2 mb-4">
+             <input type="text" placeholder="Option 1" class="poll-opt-input w-full bg-gray-50 dark:bg-black border border-gray-200 dark:border-gray-800 rounded-lg px-4 py-2 focus:border-zynk outline-none">
+             <input type="text" placeholder="Option 2" class="poll-opt-input w-full bg-gray-50 dark:bg-black border border-gray-200 dark:border-gray-800 rounded-lg px-4 py-2 focus:border-zynk outline-none">
+        </div>
+
+        <button onclick="addPollOptionInput()" class="text-sm text-zynk font-medium mb-6 hover:underline">+ Add Option</button>
+
+        <div class="flex gap-3">
+            <button onclick="document.getElementById('pollCreatorOverlay').remove()" class="flex-1 py-2.5 rounded-xl font-medium bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 transition">Cancel</button>
+             <button onclick="submitPollCreation()" class="flex-1 py-2.5 rounded-xl font-bold bg-zynk text-black hover:opacity-90 transition">Add Poll</button>
+        </div>
+      `;
+
+      overlay.appendChild(modal);
+      document.body.appendChild(overlay);
+    }
+
+    function addPollOptionInput() {
+      const container = document.getElementById('pollOptionsInputs');
+      if (container.children.length >= 4) return;
+
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.placeholder = `Option ${container.children.length + 1}`;
+      input.className = 'poll-opt-input w-full bg-gray-50 dark:bg-black border border-gray-200 dark:border-gray-800 rounded-lg px-4 py-2 focus:border-zynk outline-none';
+      container.appendChild(input);
+    }
+
+    function submitPollCreation() {
+      const question = document.getElementById('pollQuestion').value.trim();
+      const inputs = Array.from(document.querySelectorAll('.poll-opt-input'));
+      const options = inputs.map(i => i.value.trim()).filter(v => v);
+
+      if (!question || options.length < 2) {
+        alert("Please enter a question and at least 2 options.");
+        return;
+      }
+
+      selectedPoll = {
+        question: question,
+        options: options.map(opt => ({ label: opt, votes: 0 })),
+        totalVotes: 0,
+        voters: [] // list of user handles who voted
+      };
+
+      // Render Preview
+      const preview = document.getElementById('pollPreview');
+      preview.innerHTML = `
+            <div class="poll-card relative">
+                 <button onclick="removePoll()" class="absolute top-2 right-2 text-red-500 hover:bg-red-500/10 p-1 rounded-full"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+                 <div class="poll-question">${selectedPoll.question}</div>
+                 <div class="poll-options">
+                    ${selectedPoll.options.map(opt => `
+                        <div class="poll-option">
+                            <span class="label">${opt.label}</span>
+                        </div>
+                    `).join('')}
+                 </div>
+            </div>
+        `;
+      preview.classList.remove('hidden');
+      document.getElementById('pollCreatorOverlay').remove();
+      updatePostButtonState();
+    }
+
+    function removePoll() {
+      selectedPoll = null;
+      document.getElementById('pollPreview').innerHTML = '';
+      document.getElementById('pollPreview').classList.add('hidden');
+      updatePostButtonState();
+    }
+
     function savePost(post) {
       try {
         const posts = JSON.parse(localStorage.getItem('zynk_posts') || '[]');
@@ -850,6 +1017,32 @@
 
               <!-- Render Attached GIF -->
               ${post.gif ? `<img src="${post.gif}" class="mt-2 rounded-xl border border-gray-200 dark:border-gray-800 max-h-60 object-cover">` : ''}
+
+              <!-- Render Attached Poll -->
+              ${post.poll ? (() => {
+          const totalVotes = post.poll.options.reduce((acc, opt) => acc + opt.votes, 0);
+          const userVoted = post.poll.voters && post.poll.voters.includes(savedProfile?.username || 'user');
+
+          return `
+                  <div class="poll-card mt-3" data-voted="${userVoted}">
+                      <div class="poll-question">${post.poll.question}</div>
+                      <div class="poll-options">
+                        ${post.poll.options.map((opt, i) => {
+            const percent = totalVotes > 0 ? Math.round((opt.votes / totalVotes) * 100) : 0;
+            return `
+                             <div class="poll-option" onclick="event.stopPropagation(); votePoll('${post.id}', ${i})" data-index="${i}">
+                                <span class="label">${opt.label}</span>
+                                <div class="bar" style="width: ${userVoted ? percent : 0}%"></div>
+                                <span class="percent">${percent}%</span>
+                             </div>`;
+          }).join('')}
+                      </div>
+                       <div class="poll-footer">
+                        <span class="poll-meta">⏳ ${getTimeLeft(post.expiry)} · ${totalVotes} votes</span>
+                      </div>
+                  </div>
+                  `;
+        })() : ''}
               
                 <div class="flex gap-6 mt-4 text-gray-500">
                 ${replyAction}
@@ -940,6 +1133,50 @@
           // Let's just reload logic.
           location.reload();
         }
+      }
+    }
+    function votePoll(postId, optionIndex) {
+      const posts = JSON.parse(localStorage.getItem('zynk_posts') || '[]');
+      const postIndex = posts.findIndex(p => p.id === postId);
+      if (postIndex === -1) return;
+
+      const post = posts[postIndex];
+      const user = JSON.parse(localStorage.getItem("zynkProfile"))?.username || 'user';
+
+      if (!post.poll) return;
+      if (!post.poll.voters) post.poll.voters = [];
+
+      if (post.poll.voters.includes(user)) {
+        alert("You already voted!");
+        return;
+      }
+
+      // Register Vote
+      post.poll.options[optionIndex].votes++;
+      post.poll.voters.push(user);
+
+      // Save
+      posts[postIndex] = post;
+      localStorage.setItem('zynk_posts', JSON.stringify(posts));
+
+      // Re-render UI (Find card and update)
+      // Simplest way: reload or re-render functional component?
+      // Let's do a targeted DOM update for smoothness.
+      const card = document.querySelector(`#post-${postId} .poll-card`);
+      if (card) {
+        card.dataset.voted = "true";
+        const totalVotes = post.poll.options.reduce((acc, opt) => acc + opt.votes, 0);
+
+        const options = card.querySelectorAll('.poll-option');
+        options.forEach((opt, i) => {
+          const votes = post.poll.options[i].votes;
+          const percent = Math.round((votes / totalVotes) * 100);
+
+          opt.querySelector('.bar').style.width = percent + '%';
+          opt.querySelector('.percent').innerText = percent + '%';
+        });
+
+        card.querySelector('.poll-meta').innerText = `⏳ ${getTimeLeft(post.expiry)} · ${totalVotes} votes`;
       }
     }
 

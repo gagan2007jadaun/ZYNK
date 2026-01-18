@@ -309,6 +309,32 @@ function renderProfilePosts() {
                   </div>
               ` : ''}
 
+               <!-- Render Attached Poll -->
+               ${post.poll ? (() => {
+                const totalVotes = post.poll.options.reduce((acc, opt) => acc + opt.votes, 0);
+                const userVoted = post.poll.voters && post.poll.voters.includes(savedProfile?.username || 'user');
+
+                return `
+                  <div class="poll-card mt-3" data-voted="${userVoted}">
+                      <div class="poll-question">${post.poll.question}</div>
+                      <div class="poll-options">
+                        ${post.poll.options.map((opt, i) => {
+                    const percent = totalVotes > 0 ? Math.round((opt.votes / totalVotes) * 100) : 0;
+                    return `
+                             <div class="poll-option" onclick="event.stopPropagation(); voteProfilePoll('${post.id}', ${i})" data-index="${i}">
+                                <span class="label">${opt.label}</span>
+                                <div class="bar" style="width: ${userVoted ? percent : 0}%"></div>
+                                <span class="percent">${percent}%</span>
+                             </div>`;
+                }).join('')}
+                      </div>
+                       <div class="poll-footer">
+                        <span class="poll-meta">⏳ ${getTimeLeft(post.expiry)} · ${totalVotes} votes</span>
+                      </div>
+                  </div>
+                  `;
+            })() : ''}
+
                <!-- Render Attached GIF -->
                ${post.gif ? `<img src="${post.gif}" class="mt-2 rounded-xl border border-gray-200 dark:border-gray-800 max-h-60 object-cover">` : ''}
               
@@ -377,4 +403,60 @@ window.uploadCover = function (event) {
         localStorage.setItem("zynkCover", base64Image);
     };
     reader.readAsDataURL(file);
+}
+
+/** 
+ * POLL VOTING FOR PROFILE 
+ */
+window.voteProfilePoll = function (postId, optionIndex) {
+    const posts = JSON.parse(localStorage.getItem('zynk_posts') || '[]');
+    const postIndex = posts.findIndex(p => p.id === postId);
+    if (postIndex === -1) return;
+
+    const post = posts[postIndex];
+    const user = JSON.parse(localStorage.getItem("zynkProfile"))?.username || 'user';
+
+    if (!post.poll) return;
+    if (!post.poll.voters) post.poll.voters = [];
+
+    if (post.poll.voters.includes(user)) {
+        alert("You already voted!");
+        return;
+    }
+
+    // Register Vote
+    post.poll.options[optionIndex].votes++;
+    post.poll.voters.push(user);
+
+    // Save
+    posts[postIndex] = post;
+    localStorage.setItem('zynk_posts', JSON.stringify(posts));
+
+    // Re-render UI
+    const card = document.querySelector(`#post-${postId} .poll-card`);
+    if (card) {
+        card.dataset.voted = "true";
+        const totalVotes = post.poll.options.reduce((acc, opt) => acc + opt.votes, 0);
+
+        const options = card.querySelectorAll('.poll-option');
+        options.forEach((opt, i) => {
+            const votes = post.poll.options[i].votes;
+            const percent = Math.round((votes / totalVotes) * 100);
+
+            opt.querySelector('.bar').style.width = percent + '%';
+            opt.querySelector('.percent').innerText = percent + '%';
+        });
+
+        card.querySelector('.poll-meta').innerText = `⏳ ${getTimeLeft(post.expiry)} · ${totalVotes} votes`;
+    }
+}
+
+// Reuse helper or ensure it exists
+function getTimeLeft(expiry) {
+    if (!expiry) return 'Forever ♾️';
+    const now = Date.now();
+    const diff = expiry - now;
+    if (diff <= 0) return 'Expired';
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    return days > 0 ? `${days}d left` : `${Math.floor(diff / 60000)}m left`;
 }

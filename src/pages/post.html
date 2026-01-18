@@ -129,6 +129,32 @@
             <!-- GIF -->
             ${post.gif ? `<div class="mb-6"><img src="${post.gif}" class="w-full rounded-xl border border-gray-200 dark:border-gray-800"></div>` : ''}
 
+            <!-- POLL -->
+             ${post.poll ? (() => {
+                    const totalVotes = post.poll.options.reduce((acc, opt) => acc + opt.votes, 0);
+                    const userVoted = post.poll.voters && post.poll.voters.includes(savedProfile?.username || 'user');
+
+                    return `
+                  <div class="poll-card mb-6" data-voted="${userVoted}">
+                      <div class="poll-question text-lg">${post.poll.question}</div>
+                      <div class="poll-options mt-4">
+                        ${post.poll.options.map((opt, i) => {
+                        const percent = totalVotes > 0 ? Math.round((opt.votes / totalVotes) * 100) : 0;
+                        return `
+                             <div class="poll-option py-3" onclick="votePoll('${post.id}', ${i})" data-index="${i}">
+                                <span class="label font-medium">${opt.label}</span>
+                                <div class="bar" style="width: ${userVoted ? percent : 0}%"></div>
+                                <span class="percent font-bold">${percent}%</span>
+                             </div>`;
+                    }).join('')}
+                      </div>
+                       <div class="poll-footer flex justify-between items-center mt-3">
+                        <span class="poll-meta text-sm text-gray-500">⏳ ${getTimeLeft(post.expiry)} · ${totalVotes} votes</span>
+                      </div>
+                  </div>
+                  `;
+                })() : ''}
+
             <!-- Actions -->
             <div class="flex justify-between items-center py-4 border-t border-gray-100 dark:border-gray-800">
                  <div class="like-container relative">
@@ -182,6 +208,59 @@
                 setTimeout(() => btn.classList.remove('like-pop'), 300);
                 if (navigator.vibrate) navigator.vibrate(50);
             }
+        }
+
+        function votePoll(postId, optionIndex) {
+            const posts = JSON.parse(localStorage.getItem('zynk_posts') || '[]');
+            const postIndex = posts.findIndex(p => p.id === postId);
+            if (postIndex === -1) return;
+
+            const post = posts[postIndex];
+            const user = JSON.parse(localStorage.getItem("zynkProfile"))?.username || 'user';
+
+            if (!post.poll) return;
+            if (!post.poll.voters) post.poll.voters = [];
+
+            if (post.poll.voters.includes(user)) {
+                alert("You already voted!");
+                return;
+            }
+
+            // Register Vote
+            post.poll.options[optionIndex].votes++;
+            post.poll.voters.push(user);
+
+            // Save
+            posts[postIndex] = post;
+            localStorage.setItem('zynk_posts', JSON.stringify(posts));
+
+            // Re-render UI (Target the only card on page)
+            const card = document.querySelector('.poll-card');
+            if (card) {
+                card.dataset.voted = "true";
+                const totalVotes = post.poll.options.reduce((acc, opt) => acc + opt.votes, 0);
+
+                const options = card.querySelectorAll('.poll-option');
+                options.forEach((opt, i) => {
+                    const votes = post.poll.options[i].votes;
+                    const percent = Math.round((votes / totalVotes) * 100);
+
+                    opt.querySelector('.bar').style.width = percent + '%';
+                    opt.querySelector('.percent').innerText = percent + '%';
+                });
+
+                card.querySelector('.poll-meta').innerText = `⏳ ${getTimeLeft(post.expiry)} · ${totalVotes} votes`;
+            }
+        }
+
+        // Reuse helper
+        function getTimeLeft(expiry) {
+            if (!expiry) return 'Forever ♾️';
+            const now = Date.now();
+            const diff = expiry - now;
+            if (diff <= 0) return 'Expired';
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            return days > 0 ? `${days}d left` : `${Math.floor(diff / 60000)}m left`;
         }
     </script>
 </body>
