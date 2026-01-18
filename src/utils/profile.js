@@ -308,6 +308,9 @@ function renderProfilePosts() {
                       ${post.images.map(img => `<img src="${img}" class="h-32 w-auto rounded-lg border border-gray-200 dark:border-gray-800 object-cover">`).join('')}
                   </div>
               ` : ''}
+
+               <!-- Render Attached GIF -->
+               ${post.gif ? `<img src="${post.gif}" class="mt-2 rounded-xl border border-gray-200 dark:border-gray-800 max-h-60 object-cover">` : ''}
               
               <div class="flex gap-6 mt-4 text-gray-500 text-sm">
                 <span class="hover:text-zynk transition cursor-pointer" onclick="event.stopPropagation(); alert('Reply coming soon')">Reply</span>

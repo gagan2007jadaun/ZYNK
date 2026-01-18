@@ -115,6 +115,15 @@
 
       <!-- Image Preview Container -->
       <div id="imagePreview" class="image-preview hidden"></div>
+      <div id="gifPreview" class="gif-preview hidden mt-2"></div>
+
+      <style>
+        .gif-preview img {
+          max-width: 200px;
+          border-radius: 12px;
+          border: 1px solid #333;
+        }
+      </style>
 
       <!-- Input Options Toolbar -->
       <div class="flex items-center gap-4 mt-3 border-t border-gray-100 dark:border-gray-800/50 pt-3">
@@ -127,7 +136,8 @@
             <polyline points="21 15 16 10 5 21"></polyline>
           </svg>
         </button>
-        <button class="text-zynk hover:text-white transition p-1.5 rounded-full hover:bg-zynk/10" title="GIF">
+        <button onclick="openGifPicker()"
+          class="text-zynk hover:text-white transition p-1.5 rounded-full hover:bg-zynk/10" title="GIF">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 8V4H8" />
@@ -288,6 +298,7 @@
 
     // State
     let selectedImages = [];
+    let selectedGif = null;
     let currentFeedTab = 'foryou';
 
     function switchFeed(type) {
@@ -446,6 +457,7 @@
           id: crypto.randomUUID(),
           text: text,
           images: imageAttachments, // Add images
+          gif: selectedGif, // Add GIF
           timestamp: now,
           expiry: expiryTime,
           author: author,
@@ -462,8 +474,12 @@
 
         // Reset
         input.value = '';
+        input.value = '';
         selectedImages = [];
+        selectedGif = null;
         renderImagePreview();
+        document.getElementById("gifPreview").innerHTML = "";
+        document.getElementById("gifPreview").classList.add("hidden");
         updatePostButtonState();
       } catch (err) {
         console.error("Post failed:", err);
@@ -582,6 +598,71 @@
         };
         reader.onerror = (err) => reject(err);
       });
+    }
+
+    function openGifPicker() {
+      const gifs = [
+        "https://media.giphy.com/media/ICOgUNjpvO0PC/giphy.gif",
+        "https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif",
+        "https://media.giphy.com/media/3oriO0OEd9QIDdllqo/giphy.gif",
+        "https://media.giphy.com/media/26BRv0ThflsHCqDrG/giphy.gif",
+        "https://media.giphy.com/media/Isbrpx0u4qYCY/giphy.gif"
+      ];
+
+      // Remove existing picker if any
+      const existing = document.getElementById('gifPickerOverlay');
+      if (existing) existing.remove();
+
+      const picker = document.createElement("div");
+      picker.id = 'gifPickerOverlay';
+      picker.style = `
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #111;
+            padding: 10px;
+            display: flex;
+            gap: 10px;
+            z-index: 999;
+            border-radius: 12px;
+            border: 1px solid #333;
+            overflow-x: auto;
+            max-width: 90%;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        `;
+
+      gifs.forEach(gif => {
+        picker.innerHTML += `<img src="${gif}" style="cursor:pointer;border-radius:8px;width:80px;height:80px;object-cover;" onclick="selectGif('${gif}')">`;
+      });
+
+      // Close button
+      const closeBtn = document.createElement('button');
+      closeBtn.innerHTML = '✕';
+      closeBtn.style = "position:absolute; top:-10px; right:-10px; background:red; color:white; border-radius:50%; width:24px; height:24px; border:none; cursor:pointer;";
+      closeBtn.onclick = () => picker.remove();
+      picker.appendChild(closeBtn);
+
+      document.body.appendChild(picker);
+    }
+
+    function selectGif(gifUrl) {
+      selectedGif = gifUrl;
+      const preview = document.getElementById("gifPreview");
+      preview.innerHTML = `<div class="relative inline-block"><img src="${gifUrl}"><button onclick="removeGif()" class="absolute top-1 right-1 bg-black/50 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-500 transition">✕</button></div>`;
+      preview.classList.remove("hidden");
+
+      const picker = document.getElementById('gifPickerOverlay');
+      if (picker) picker.remove();
+
+      updatePostButtonState();
+    }
+
+    function removeGif() {
+      selectedGif = null;
+      document.getElementById("gifPreview").innerHTML = "";
+      document.getElementById("gifPreview").classList.add("hidden");
+      updatePostButtonState();
     }
 
     function savePost(post) {
@@ -716,6 +797,9 @@
                       ${post.images.map(img => `<img src="${img}" class="h-32 w-auto rounded-lg border border-gray-200 dark:border-gray-800 object-cover">`).join('')}
                   </div>
               ` : ''}
+
+              <!-- Render Attached GIF -->
+              ${post.gif ? `<img src="${post.gif}" class="mt-2 rounded-xl border border-gray-200 dark:border-gray-800 max-h-60 object-cover">` : ''}
               
                 <div class="flex gap-6 mt-4 text-gray-500">
                 ${replyAction}
