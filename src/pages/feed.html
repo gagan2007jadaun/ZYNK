@@ -606,50 +606,84 @@
         "https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif",
         "https://media.giphy.com/media/3oriO0OEd9QIDdllqo/giphy.gif",
         "https://media.giphy.com/media/26BRv0ThflsHCqDrG/giphy.gif",
-        "https://media.giphy.com/media/Isbrpx0u4qYCY/giphy.gif"
+        "https://media.giphy.com/media/Isbrpx0u4qYCY/giphy.gif",
+        "https://media.giphy.com/media/13CoXDiaCcCoyk/giphy.gif",
+        "https://media.giphy.com/media/Cmr1OMJ2FN0B2/giphy.gif",
+        "https://media.giphy.com/media/vRxGshgN7sMpy/giphy.gif",
+        "https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif"
       ];
 
       // Remove existing picker if any
       const existing = document.getElementById('gifPickerOverlay');
       if (existing) existing.remove();
 
-      const picker = document.createElement("div");
-      picker.id = 'gifPickerOverlay';
-      picker.style = `
-            position: fixed;
-            bottom: 80px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #111;
-            padding: 10px;
-            display: flex;
-            gap: 10px;
-            z-index: 999;
-            border-radius: 12px;
-            border: 1px solid #333;
-            overflow-x: auto;
-            max-width: 90%;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-        `;
+      // Create Overlay
+      const overlay = document.createElement("div");
+      overlay.id = 'gifPickerOverlay';
+      overlay.className = 'fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4';
+      overlay.onclick = (e) => {
+        if (e.target === overlay) overlay.remove();
+      };
+
+      // Create Modal
+      const modal = document.createElement("div");
+      modal.className = 'bg-white dark:bg-[#121212] w-full max-w-md rounded-2xl border border-gray-200 dark:border-gray-800 shadow-2xl flex flex-col max-h-[80vh]';
+
+      // Header
+      const header = document.createElement("div");
+      header.className = 'p-4 border-b border-gray-200 dark:border-gray-800 flex justify-between items-center';
+      header.innerHTML = `
+        <h3 class="font-bold text-lg">Select a GIF</h3>
+        <button onclick="document.getElementById('gifPickerOverlay').remove()" class="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      `;
+      modal.appendChild(header);
+
+      // Search (Fake for now)
+      const searchContainer = document.createElement("div");
+      searchContainer.className = 'p-4 pb-0';
+      searchContainer.innerHTML = `
+        <div class="relative">
+            <input type="text" placeholder="Search GIFs..." class="w-full bg-gray-100 dark:bg-gray-900 border-none rounded-xl px-4 py-2.5 pl-10 focus:ring-1 focus:ring-zynk outline-none transition placeholder-gray-500">
+             <svg class="absolute left-3 top-2.5 text-gray-500" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        </div>
+      `;
+      modal.appendChild(searchContainer);
+
+      // Scrollable Grid
+      const grid = document.createElement("div");
+      grid.className = 'p-4 grid grid-cols-3 gap-2 overflow-y-auto';
 
       gifs.forEach(gif => {
-        picker.innerHTML += `<img src="${gif}" style="cursor:pointer;border-radius:8px;width:80px;height:80px;object-cover;" onclick="selectGif('${gif}')">`;
+        const img = document.createElement("img");
+        img.src = gif;
+        img.className = 'w-full h-24 object-cover rounded-lg cursor-pointer hover:opacity-80 transition hover:scale-105 transform duration-200 border-2 border-transparent hover:border-zynk';
+        img.onclick = () => selectGif(gif);
+        grid.appendChild(img);
       });
+      modal.appendChild(grid);
 
-      // Close button
-      const closeBtn = document.createElement('button');
-      closeBtn.innerHTML = '✕';
-      closeBtn.style = "position:absolute; top:-10px; right:-10px; background:red; color:white; border-radius:50%; width:24px; height:24px; border:none; cursor:pointer;";
-      closeBtn.onclick = () => picker.remove();
-      picker.appendChild(closeBtn);
+      // Footer
+      const footer = document.createElement("div");
+      footer.className = 'p-3 border-t border-gray-200 dark:border-gray-800 text-center text-xs text-gray-500';
+      footer.innerText = 'Powered by GIPHY (Demo)';
+      modal.appendChild(footer);
 
-      document.body.appendChild(picker);
+      overlay.appendChild(modal);
+      document.body.appendChild(overlay);
     }
 
     function selectGif(gifUrl) {
       selectedGif = gifUrl;
       const preview = document.getElementById("gifPreview");
-      preview.innerHTML = `<div class="relative inline-block"><img src="${gifUrl}"><button onclick="removeGif()" class="absolute top-1 right-1 bg-black/50 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-500 transition">✕</button></div>`;
+      preview.innerHTML = `
+        <div class="relative inline-block group">
+            <img src="${gifUrl}" class="shadow-lg">
+            <button onclick="removeGif()" class="absolute top-2 right-2 bg-black/60 text-white rounded-full w-8 h-8 flex items-center justify-center hover:bg-red-500 transition opacity-0 group-hover:opacity-100 backdrop-blur-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+        </div>`;
       preview.classList.remove("hidden");
 
       const picker = document.getElementById('gifPickerOverlay');
