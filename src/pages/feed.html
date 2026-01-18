@@ -297,12 +297,20 @@
   <script>
 
     // State
+    // State
     let selectedImages = [];
     let selectedGif = null;
-    let currentFeedTab = 'foryou';
+    let currentFeedTab = localStorage.getItem('zynk_active_tab') || 'foryou';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Initialize Tab UI
+      switchFeed(currentFeedTab);
+    });
 
     function switchFeed(type) {
       currentFeedTab = type;
+      localStorage.setItem('zynk_active_tab', type);
+
       const forYouTab = document.getElementById('tab-foryou');
       const inOrbitTab = document.getElementById('tab-inOrbit');
 
@@ -331,7 +339,9 @@
       }
 
       // Reload posts with filter
-      loadPosts();
+      if (typeof loadPosts === 'function') {
+        loadPosts();
+      }
     }
 
     function updatePostButtonState() {
@@ -742,9 +752,15 @@
       // Filter by Tab
       let postsToRender = validPosts;
       if (currentFeedTab === 'inOrbit') {
-        const inOrbitList = getInOrbit();
+        const inOrbitList = typeof getInOrbit === 'function' ? getInOrbit() : [];
+        console.log("Filtering In Orbit:", inOrbitList);
+
         // Filter: Author handle is in Orbit list OR it's my own post
-        postsToRender = validPosts.filter(p => inOrbitList.includes(p.handle) || p.handle === '@you' || p.handle === savedProfile?.username);
+        postsToRender = validPosts.filter(p => {
+          const isTraitor = inOrbitList.includes(p.handle); // Is following
+          const isMe = p.handle === '@you' || p.handle === (savedProfile?.username || '');
+          return isTraitor || isMe;
+        });
 
         if (postsToRender.length === 0) {
           if (container) container.innerHTML = `<div class="p-8 text-center text-gray-500">Your Orbit is empty. Start orbiting others to see their thoughts here.</div>`;
