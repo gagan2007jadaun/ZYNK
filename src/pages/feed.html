@@ -242,7 +242,8 @@
             <line x1="15" x2="15.01" y1="9" y2="9" />
           </svg>
         </button>
-        <button class="text-zynk hover:text-white transition p-1.5 rounded-full hover:bg-zynk/10" title="Schedule">
+        <button onclick="openSchedulePicker()"
+          class="text-zynk hover:text-white transition p-1.5 rounded-full hover:bg-zynk/10" title="Schedule">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
@@ -374,6 +375,7 @@
     let selectedImages = [];
     let selectedGif = null;
     let selectedPoll = null; // { question: "", options: ["", ""] }
+    let selectedSchedule = null;
     let currentFeedTab = localStorage.getItem('zynk_active_tab') || 'foryou';
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -952,11 +954,71 @@
       updatePostButtonState();
     }
 
+    /* SCHEDULE LOGIC */
+    function openSchedulePicker() {
+      // Create Overlay
+      const overlay = document.createElement("div");
+      overlay.id = 'scheduleOverlay';
+      overlay.className = 'fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4';
+
+      overlay.onclick = (e) => {
+        if (e.target === overlay) overlay.remove();
+      };
+
+      const modal = document.createElement("div");
+      modal.className = 'bg-white dark:bg-[#121212] w-full max-w-sm rounded-2xl border border-gray-200 dark:border-gray-800 shadow-2xl p-6';
+
+      modal.innerHTML = `
+            <h3 class="font-bold text-lg mb-4">Schedule Post</h3>
+            
+            <label class="block text-sm text-gray-500 mb-2">Pick a date & time</label>
+            <input type="datetime-local" id="scheduleInput" class="w-full bg-gray-100 dark:bg-gray-900 border-none rounded-xl px-4 py-3 focus:ring-1 focus:ring-zynk outline-none mb-6">
+            
+            <div class="flex gap-3">
+                <button onclick="document.getElementById('scheduleOverlay').remove()" class="flex-1 py-2.5 rounded-xl font-medium bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 transition">Cancel</button>
+                 <button onclick="confirmSchedule()" class="flex-1 py-2.5 rounded-xl font-bold bg-zynk text-black hover:opacity-90 transition">Schedule</button>
+            </div>
+        `;
+
+      overlay.appendChild(modal);
+      document.body.appendChild(overlay);
+
+      // Set min to now
+      const now = new Date();
+      now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+      document.getElementById('scheduleInput').min = now.toISOString().slice(0, 16);
+    }
+
+    function confirmSchedule() {
+      const input = document.getElementById('scheduleInput').value;
+      if (!input) return;
+
+      selectedSchedule = new Date(input).getTime();
+
+      // Update UI
+      const btn = document.getElementById('postBtn');
+      btn.innerHTML = `<span class="flex items-center gap-2">⏰ Scheduled</span>`;
+      btn.classList.add('bg-blue-500', 'text-white');
+
+      document.getElementById('scheduleOverlay').remove();
+    }
+
     function savePost(post) {
       try {
+        if (selectedSchedule) {
+          post.scheduledFor = selectedSchedule;
+          post.timestamp = selectedSchedule; // Show future time as timestamp?? Or hidden?
+          // Let's keep original timestamp as created, but sort/filter by scheduledFor
+        }
+
         const posts = JSON.parse(localStorage.getItem('zynk_posts') || '[]');
         posts.unshift(post);
         localStorage.setItem('zynk_posts', JSON.stringify(posts));
+
+        // Reset Schedule
+        selectedSchedule = null;
+        document.getElementById('postBtn').innerHTML = 'Post'; // Reset button text
+        document.getElementById('postBtn').classList.remove('bg-blue-500'); // Reset color (Post button has logic in updatePostButtonState anyway so this might be overwritten on next input)
       } catch (e) {
         console.error("Storage error:", e);
         if (e.name === 'QuotaExceededError') {
@@ -967,8 +1029,12 @@
     }
 
     function loadPosts() {
-      const posts = JSON.parse(localStorage.getItem('zynk_posts') || '[]');
+      let posts = JSON.parse(localStorage.getItem('zynk_posts') || '[]');
       const now = Date.now();
+
+      // Filter out future posts (unless it's the author? user said "enable for working condition", usually means simulate backend scheduler. Hidden until time.)
+      // Let's hide them.
+      posts = posts.filter(p => !p.scheduledFor || p.scheduledFor <= now);
 
       // Clear current feed
       const feedContainer = document.getElementById('feedPosts'); // Need to target this? NO, renderPost appends...
