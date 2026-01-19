@@ -240,8 +240,8 @@ function renderProfilePosts() {
     const now = Date.now();
 
     // Filter valid posts (not expired)
-    // Since this is a local-only app, all posts in 'zynk_posts' are considered "My Posts"
-    const validPosts = posts.filter(p => !p.expiry || p.expiry > now);
+    // Show scheduled posts in profile (scheduledFor > now)
+    const validPosts = posts.filter(p => (!p.expiry || p.expiry > now));
 
     if (validPosts.length === 0) {
         postsContainer.innerHTML = '';
@@ -259,7 +259,17 @@ function renderProfilePosts() {
         else if (post.identity === 'anon') identityBadge = '👻 Anon';
         else identityBadge = '👤 Public';
 
-        const expiryTitle = post.expiry ? `Exports at ${new Date(post.expiry).toLocaleString()}` : 'Never expires';
+        const isScheduled = post.scheduledFor && post.scheduledFor > now;
+        let rightBadge = '';
+
+        if (isScheduled) {
+            const date = new Date(post.scheduledFor);
+            const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            rightBadge = `<span class="text-xs font-mono text-blue-500 bg-blue-500/10 px-2 py-0.5 rounded-full" title="Scheduled for ${date.toLocaleString()}">⏰ ${timeStr}</span>`;
+        } else {
+            const expiryTitle = post.expiry ? `Exports at ${new Date(post.expiry).toLocaleString()}` : 'Never expires';
+            rightBadge = `<span class="expiry-countdown text-xs font-mono text-orange-500 bg-orange-500/10 px-2 py-0.5 rounded-full transition-colors duration-500" title="${expiryTitle}" data-expiry="${post.expiry || ''}">🔥 ${timeLeft}</span>`;
+        }
 
         // Intent styling
         const intent = post.intent || 'vent';
@@ -290,11 +300,7 @@ function renderProfilePosts() {
                   <span class="text-xs bg-gray-200 dark:bg-gray-800 px-1.5 py-0.5 rounded text-gray-500">${identityBadge}</span>
                    <span class="text-xs ${intentStyle.class} px-2 py-0.5 rounded-full">${intentStyle.label}</span>
                 </div>
-                <span class="expiry-countdown text-xs font-mono text-orange-500 bg-orange-500/10 px-2 py-0.5 rounded-full transition-colors duration-500" 
-                      title="${expiryTitle}"
-                      data-expiry="${post.expiry || ''}">
-                  🔥 ${timeLeft}
-                </span>
+                ${rightBadge}
               </div>
               
               <div class="mt-2 text-gray-800 dark:text-gray-200">
