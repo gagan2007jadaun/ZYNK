@@ -232,7 +232,8 @@
             <path d="M3 18h.01" />
           </svg>
         </button>
-        <button class="text-zynk hover:text-white transition p-1.5 rounded-full hover:bg-zynk/10" title="Emoji">
+        <button onclick="openEmojiPicker()"
+          class="text-zynk hover:text-white transition p-1.5 rounded-full hover:bg-zynk/10" title="Emoji">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="10" />
@@ -873,6 +874,81 @@
       selectedPoll = null;
       document.getElementById('pollPreview').innerHTML = '';
       document.getElementById('pollPreview').classList.add('hidden');
+      updatePostButtonState();
+    }
+
+    /* EMOJI LOGIC */
+    function openEmojiPicker() {
+      // Remove existing
+      const existing = document.getElementById('emojiPickerOverlay');
+      if (existing) { existing.remove(); return; }
+
+      // Create Overlay
+      const overlay = document.createElement("div");
+      overlay.id = 'emojiPickerOverlay';
+      overlay.className = 'fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4';
+
+      overlay.onclick = (e) => {
+        if (e.target === overlay) overlay.remove();
+      };
+
+      const modal = document.createElement("div");
+      modal.className = 'bg-white dark:bg-[#121212] w-full max-w-sm rounded-2xl border border-gray-200 dark:border-gray-800 shadow-2xl flex flex-col h-[400px]';
+
+      // Header
+      modal.innerHTML = `
+            <div class="px-4 py-3 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center">
+                <h3 class="font-bold">Emotions</h3>
+                <button onclick="document.getElementById('emojiPickerOverlay').remove()" class="p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition">✕</button>
+            </div>
+        `;
+
+      // Emoji Lists
+      const categories = {
+        "Smileys": ["😀", "😃", "😄", "😅", "😂", "🤣", "😊", "😇", "🙂", "🙃", "😉", "😌", "😍", "🥰", "😘", "😗", "😙", "😚", "😋", "😛", "😝", "😜", "🤪", "🤨", "🧐", "🤓", "😎", "🤩", "🥳", "😏", "😒", "😞", "😔", "😟", "😕", "🙁", "☹️", "😣", "😖", "😫", "😩", "🥺", "😢", "😭", "😤", "😠", "😡", "🤬", "🤯", "😳", "🥵", "🥶", "😱", "😨", "😰", "😥", "😓", "🤗", "🤔", "🤭", "🤫", "🤥", "😶", "😐", "😑", "😬", "🙄", "😯", "😦", "😧", "😮", "😲", "🥱", "😴", "🤤", "😪", "😵", "🤐", "🥴", "🤢", "🤮", "🤧", "😷", "🤒", "🤕", "🤑", "🤠", "😈", "👿", "👹", "👺", "🤡", "💩", "👻", "💀", "☠️", "👽", "👾", "🤖"],
+        "Hands": ["👋", "🤚", "🖐", "✋", "🖖", "👌", "🤏", "✌️", "🤞", "🤟", "🤘", "🤙", "👈", "👉", "👆", "👇", "☝️", "👍", "👎", "✊", "👊", "🤛", "🤜", "👏", "🙌", "👐", "🤲", "🤝", "🙏", "💪", "🧠", "🦷", "🦴", "👀", "👁", "👅", "👄", "💋"],
+        "Heart": ["💌", "💘", "💝", "💖", "💗", "💓", "💞", "💕", "💟", "❣️", "💔", "❤️", "🧡", "💛", "💚", "💙", "💜", "🤎", "🖤", "🤍", "💯", "💢", "💥", "💫", "💦", "💨", "🕳", "💣", "💬", "👁️‍🗨️", "🗨️", "💭", "💤"],
+        "Nature": ["💐", "🌸", "💮", "🏵️", "🌹", "🥀", "🌺", "🌻", "🌼", "🌷", "🌱", "🌲", "🌳", "🌴", "🌵", "🌾", "🌿", "☘️", "🍀", "🍁", "🍂", "🍃", "🍄", "🌰", "🌑", "🌒", "🌓", "🌔", "🌕", "🌖", "🌗", "🌘", "🌙", "🌚", "🌛", "🌜", "☀️", "🌝", "🌞", "⭐", "🌟", "🌠", "☁️", "⛅", "⛈️", "🌤️", "🌥️", "🌦️", "🌧️", "🌨️", "🌩️", "🌪️", "🌫️", "🌬️", "🌀", "🌈", "🌂", "☂️", "☔", "⛱️", "⚡", "❄️", "☃️", "⛄", "☄️", "🔥", "💧", "🌊"]
+      };
+
+      const grid = document.createElement('div');
+      grid.className = 'flex-1 overflow-y-auto p-2';
+
+      Object.keys(categories).forEach(cat => {
+        const title = document.createElement('div');
+        title.className = 'text-xs font-bold text-gray-500 uppercase tracking-widest mt-4 mb-2 px-2';
+        title.innerText = cat;
+        grid.appendChild(title);
+
+        const row = document.createElement('div');
+        row.className = 'grid grid-cols-8 gap-1';
+        categories[cat].forEach(emoji => {
+          const btn = document.createElement('button');
+          btn.className = 'text-2xl hover:bg-gray-100 dark:hover:bg-white/10 p-1 rounded-lg transition h-10 w-10 flex items-center justify-center';
+          btn.innerText = emoji;
+          btn.onclick = () => insertEmoji(emoji);
+          row.appendChild(btn);
+        });
+        grid.appendChild(row);
+      });
+
+      modal.appendChild(grid);
+      overlay.appendChild(modal);
+      document.body.appendChild(overlay);
+    }
+
+    function insertEmoji(emoji) {
+      const input = document.getElementById('postInput');
+      const start = input.selectionStart;
+      const end = input.selectionEnd;
+      const text = input.value;
+      const before = text.substring(0, start);
+      const after = text.substring(end, text.length);
+
+      input.value = before + emoji + after;
+      input.selectionStart = input.selectionEnd = start + emoji.length;
+      input.focus();
+
       updatePostButtonState();
     }
 
