@@ -955,6 +955,7 @@
     }
 
     /* SCHEDULE LOGIC */
+    /* SCHEDULE LOGIC */
     function openSchedulePicker() {
       // Create Overlay
       const overlay = document.createElement("div");
@@ -971,8 +972,23 @@
       modal.innerHTML = `
             <h3 class="font-bold text-lg mb-4">Schedule Post</h3>
             
-            <label class="block text-sm text-gray-500 mb-2">Pick a date & time</label>
-            <input type="datetime-local" id="scheduleInput" class="w-full bg-gray-100 dark:bg-gray-900 border-none rounded-xl px-4 py-3 focus:ring-1 focus:ring-zynk outline-none mb-6">
+            <label class="block text-sm text-gray-500 mb-2">Pick a date</label>
+            <input type="date" id="scheduleDate" class="w-full bg-gray-100 dark:bg-gray-900 border-none rounded-xl px-4 py-3 focus:ring-1 focus:ring-zynk outline-none mb-4" min="${new Date().toISOString().split('T')[0]}">
+
+            <label class="block text-sm text-gray-500 mb-2">Pick a time</label>
+            <div class="flex gap-2 mb-6">
+                <select id="scheduleHour" class="flex-1 bg-gray-100 dark:bg-gray-900 border-none rounded-xl px-2 py-3 focus:ring-1 focus:ring-zynk outline-none text-center appearance-none cursor-pointer">
+                    ${Array.from({ length: 12 }, (_, i) => `<option value="${i + 1}">${i + 1}</option>`).join('')}
+                </select>
+                <div class="flex items-center text-xl font-bold">:</div>
+                <select id="scheduleMinute" class="flex-1 bg-gray-100 dark:bg-gray-900 border-none rounded-xl px-2 py-3 focus:ring-1 focus:ring-zynk outline-none text-center appearance-none cursor-pointer">
+                     ${Array.from({ length: 60 }, (_, i) => `<option value="${i.toString().padStart(2, '0')}">${i.toString().padStart(2, '0')}</option>`).join('')}
+                </select>
+                <select id="scheduleAmPm" class="flex-1 bg-gray-100 dark:bg-gray-900 border-none rounded-xl px-2 py-3 focus:ring-1 focus:ring-zynk outline-none text-center appearance-none cursor-pointer">
+                    <option value="AM">AM</option>
+                    <option value="PM">PM</option>
+                </select>
+            </div>
             
             <div class="flex gap-3">
                 <button onclick="document.getElementById('scheduleOverlay').remove()" class="flex-1 py-2.5 rounded-xl font-medium bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 transition">Cancel</button>
@@ -983,21 +999,50 @@
       overlay.appendChild(modal);
       document.body.appendChild(overlay);
 
-      // Set min to now
+      // Default to next hour/reasonable time
       const now = new Date();
-      now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-      document.getElementById('scheduleInput').min = now.toISOString().slice(0, 16);
+      const nextHour = new Date(now.getTime() + 60 * 60 * 1000);
+      document.getElementById('scheduleDate').value = now.toISOString().split('T')[0];
+
+      let h = nextHour.getHours();
+      const m = nextHour.getMinutes();
+      const ampm = h >= 12 ? 'PM' : 'AM';
+      h = h % 12;
+      h = h ? h : 12; // 0 should be 12
+
+      document.getElementById('scheduleHour').value = h;
+      document.getElementById('scheduleMinute').value = m.toString().padStart(2, '0');
+      document.getElementById('scheduleAmPm').value = ampm;
     }
 
     function confirmSchedule() {
-      const input = document.getElementById('scheduleInput').value;
-      if (!input) return;
+      const dateStr = document.getElementById('scheduleDate').value;
+      const hourStr = document.getElementById('scheduleHour').value;
+      const minStr = document.getElementById('scheduleMinute').value;
+      const ampm = document.getElementById('scheduleAmPm').value;
 
-      selectedSchedule = new Date(input).getTime();
+      if (!dateStr) return;
+
+      // Parse time
+      let hour = parseInt(hourStr);
+      const min = parseInt(minStr);
+
+      if (ampm === 'PM' && hour < 12) hour += 12;
+      if (ampm === 'AM' && hour === 12) hour = 0;
+
+      const scheduleDate = new Date(dateStr);
+      scheduleDate.setHours(hour, min, 0, 0);
+
+      if (scheduleDate.getTime() <= Date.now()) {
+        alert("Please pick a future time!");
+        return;
+      }
+
+      selectedSchedule = scheduleDate.getTime();
 
       // Update UI
       const btn = document.getElementById('postBtn');
-      btn.innerHTML = `<span class="flex items-center gap-2">⏰ Scheduled</span>`;
+      btn.innerHTML = `<span class="flex items-center gap-2">⏰ ${hourStr}:${minStr} ${ampm}</span>`;
       btn.classList.add('bg-blue-500', 'text-white');
 
       document.getElementById('scheduleOverlay').remove();
