@@ -300,8 +300,7 @@ function renderProfilePosts() {
 
                 <div class="mt-2 text-gray-800 dark:text-gray-200 break-words">
                     <p id="text-${post.id}"
-                        class="${post.text.length > 150 ? 'line-clamp-3' : ''} whitespace-pre-wrap transition-all">
-                        ${post.text}</p>
+                        class="${post.text.length > 150 ? 'line-clamp-3' : ''} whitespace-pre-wrap transition-all">${post.text}</p>
                     ${post.text.length > 150 ? `<button onclick="event.stopPropagation(); toggleExpand('${post.id}')"
                         class="text-xs text-zynk hover:underline mt-1">Show more</button>` : ''}
                 </div>
