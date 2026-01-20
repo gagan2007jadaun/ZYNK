@@ -216,7 +216,19 @@ function renderProfilePosts() {
 
     if (currentTab === 'thoughts') {
         // My posts
-        displayPosts = validPosts.filter(p => p.handle === '@you' || p.author === 'You');
+        const savedProfile = JSON.parse(localStorage.getItem("zynkProfile")) || defaultProfile;
+        const myHandle = savedProfile.username || '@you';
+        const myName = savedProfile.name || 'You';
+
+        // Match current handle/name OR default 'You' (for old posts or before profile update)
+        // Note: Anon/Semi posts created by me result in different handles/authors so they won't show here unless we stored 'ownerId' or similar. 
+        // For now, this fixes the issue for Public posts after profile update.
+        displayPosts = validPosts.filter(p =>
+            p.handle === myHandle ||
+            p.author === myName ||
+            p.handle === '@you' ||
+            p.author === 'You'
+        );
     } else if (currentTab === 'likes') {
         // Liked posts
         displayPosts = validPosts.filter(p => likedIds.includes(p.id));
