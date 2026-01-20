@@ -71,11 +71,6 @@ function loadProfile() {
     if (savedProfile.image) {
         avatarEl.src = savedProfile.image;
     } else {
-        // Default placeholder (using a data URI or just a color div logic, but here we use a placeholder logic)
-        // Since we changed the div to an img, we need a valid src or a fallback. 
-        // Let's use a generated placeholder or a blank one.
-        // Actually, the previous code had a div with bg-gray-700. Since we are using an img tag now, let's allow it to be empty/styled or use a transparent gif, 
-        // BUT better is to check if src is empty and maybe show a default SVG or keep the bg-color visible if src is empty.
         avatarEl.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236b7280'%3E%3Cpath d='M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z' /%3E%3C/svg%3E";
     }
 }
@@ -180,9 +175,6 @@ function saveProfile() {
         // Refresh UI
         loadProfile();
         closeEditModal();
-
-        // Optional: Alert success? 
-        // alert("Profile saved!");
     } catch (e) {
         if (e.name === 'QuotaExceededError') {
             alert("Image is too large! Please choose a smaller image.");
@@ -193,137 +185,87 @@ function saveProfile() {
     }
 }
 
-// Initial Load
-document.addEventListener("DOMContentLoaded", () => {
-    loadProfile();
+function switchTab(tab) {
+    currentTab = tab;
 
-    // Load cover image
-    const coverImage = localStorage.getItem("zynkCover");
-    if (coverImage) {
-        document.getElementById("coverBg").style.backgroundImage = `url(${coverImage})`;
-    }
+    // Update Tab UI
+    const tabs = ['thoughts', 'highlights', 'insights', 'likes', 'replies', 'media'];
+    tabs.forEach(t => {
+        const el = document.getElementById(`tab-${t}`);
+        if (t === tab) {
+            el.classList.remove('text-gray-500', 'border-transparent');
+            el.classList.add('border-zynk', 'text-gray-900', 'dark:text-white');
+        } else {
+            el.classList.add('text-gray-500', 'border-transparent');
+            el.classList.remove('border-zynk', 'text-gray-900', 'dark:text-white');
+        }
+    });
 
     renderProfilePosts();
-
-    // Listen for profile updates from other tabs
-    window.addEventListener("storage", (event) => {
-        if (event.key === "zynkProfileUpdated") {
-            loadProfile();
-        }
-        if (event.key === "zynkAvatarUpdated") {
-            // Also reload profile to get new avatar if saved in profile object (though we use separate key now)
-            // But loadProfile uses zynkProfile object which includes image.
-            // If zynkAvatarUpdated changed, zynkProfile might have too. 
-            // Just strictly reloading on profile update is enough usually, but let's be safe.
-            loadProfile();
-        }
-    });
-});
-
-// Helper to format time left string
-function formatTimeLeft(diff) {
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
-    if (days > 0) return `${days}d ${hours}h left`;
-    if (hours > 0) return `${hours}h ${minutes}m left`;
-    // Show seconds if under an hour
-    return `${minutes}m ${seconds}s left`;
-}
-
-// Helper to format time left (initial)
-function getTimeLeft(expiry) {
-    if (!expiry) return 'Forever ♾️';
-    const now = Date.now();
-    const diff = expiry - now;
-    if (diff <= 0) return 'Expired';
-    return formatTimeLeft(diff);
-}
-
-// Live Countdown Logic
-setInterval(updateCountdowns, 1000);
-
-function updateCountdowns() {
-    const badges = document.querySelectorAll('.expiry-countdown');
-    const now = Date.now();
-
-    badges.forEach(badge => {
-        const expiryStr = badge.getAttribute('data-expiry');
-
-        // Handle Never/Null
-        if (!expiryStr || expiryStr === 'null' || expiryStr === 'undefined') {
-            badge.innerText = 'Forever ♾️';
-            badge.classList.remove('animate-pulse', 'text-red-500', 'bg-red-500/10');
-            badge.classList.add('text-orange-500', 'bg-orange-500/10');
-            return;
-        }
-
-        const expiry = parseInt(expiryStr);
-        if (isNaN(expiry)) { // Handle invalid parse
-            badge.innerText = 'Forever ♾️';
-            return;
-        }
-
-        const diff = expiry - now;
-
-        if (diff <= 0) {
-            badge.innerText = 'Expired';
-            badge.classList.remove('animate-pulse', 'text-red-500', 'bg-red-500/10', 'text-orange-500', 'bg-orange-500/10');
-            badge.classList.add('text-gray-500', 'bg-gray-500/10');
-            return;
-        }
-
-        // URGENCY EFFECT (< 5 mins)
-        if (diff < 5 * 60 * 1000) {
-            badge.classList.add('animate-pulse', 'text-red-500', 'bg-red-500/10');
-            badge.classList.remove('text-orange-500', 'bg-orange-500/10');
-        } else {
-            badge.classList.remove('animate-pulse', 'text-red-500', 'bg-red-500/10');
-            badge.classList.add('text-orange-500', 'bg-orange-500/10');
-        }
-
-        badge.innerText = '🔥 ' + formatTimeLeft(diff);
-    });
 }
 
 function renderProfilePosts() {
-    const postsContainer = document.getElementById("profilePosts");
-    const noPostsMsg = document.getElementById("noPostsMsg");
-
-    // Fetch posts from localStorage
     const posts = JSON.parse(localStorage.getItem('zynk_posts') || '[]');
+    const likedIds = JSON.parse(localStorage.getItem('zynkLikedIds') || '[]');
     const now = Date.now();
 
-    // Filter valid posts (not expired)
-    // Show scheduled posts in profile (scheduledFor > now)
-    const validPosts = posts.filter(p => (!p.expiry || p.expiry > now));
+    // Show scheduled posts in profile (scheduledFor > now) if it's ME
+    const validPosts = posts.filter(p => !p.expiry || p.expiry > now);
 
-    if (validPosts.length === 0) {
-        postsContainer.innerHTML = '';
-        if (noPostsMsg) noPostsMsg.classList.remove('hidden');
-        return;
+    let displayPosts = [];
+
+    if (currentTab === 'thoughts') {
+        // My posts
+        displayPosts = validPosts.filter(p => p.handle === '@you' || p.author === 'You');
+    } else if (currentTab === 'likes') {
+        // Liked posts
+        displayPosts = validPosts.filter(p => likedIds.includes(p.id));
+    } else if (currentTab === 'highlights') {
+        // Placeholder
+        displayPosts = [];
+    } else if (currentTab === 'insights') {
+        // Placeholder
+        displayPosts = [];
+    } else if (currentTab === 'media') {
+        // My posts with media matches
+        displayPosts = validPosts.filter(p => (p.handle === '@you' || p.author === 'You') && (p.images?.length > 0 || p.gif));
+    } else if (currentTab === 'replies') {
+        // Placeholder for now
+        displayPosts = [];
     }
 
-    if (noPostsMsg) noPostsMsg.classList.add('hidden');
+    const profilePosts = document.getElementById('profilePosts');
+    const noPostsMsg = document.getElementById('noPostsMsg');
 
-    postsContainer.innerHTML = validPosts.map(post => {
+    if (displayPosts.length === 0) {
+        profilePosts.innerHTML = '';
+        noPostsMsg.innerHTML = currentTab === 'likes' ? "No liked thoughts yet. ❤️" :
+            currentTab === 'highlights' ? "Highlights coming soon! ✨" :
+                currentTab === 'insights' ? "Insights coming soon! 📊" :
+                    'No thoughts yet. <a href="feed.html" class="text-zynk hover:underline">Start thinking.</a>';
+        noPostsMsg.classList.remove('hidden');
+        return;
+    } else {
+        noPostsMsg.classList.add('hidden');
+    }
+
+    profilePosts.innerHTML = displayPosts.map(post => {
         const timeLeft = getTimeLeft(post.expiry);
-        // Identity Badge Logic
+        const isLiked = likedIds.includes(post.id);
+
+        let scheduledBadge = '';
+        if (post.scheduledFor && post.scheduledFor > now) {
+            const date = new Date(post.scheduledFor);
+            const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            scheduledBadge = `<span class="ml-2 text-xs bg-purple-500/10 text-purple-500 px-2 py-0.5 rounded-full border border-purple-500/20">⏰ ${timeStr}</span>`;
+        }
+
         let identityBadge = '';
         if (post.identity === 'semi') identityBadge = '🎭 Semi';
         else if (post.identity === 'anon') identityBadge = '👻 Anon';
         else identityBadge = '👤 Public';
 
-        const isScheduled = post.scheduledFor && post.scheduledFor > now;
-        let rightBadge = '';
-
-        if (isScheduled) {
-            const date = new Date(post.scheduledFor);
-            const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            rightBadge = `<span class="text-xs font-mono text-blue-500 bg-blue-500/10 px-2 py-0.5 rounded-full" title="Scheduled for ${date.toLocaleString()}">⏰ ${timeStr}</span>`;
-            return `
+        return `
     <div id="post-${post.id}"
         class="p-6 border-b border-gray-200 dark:border-gray-800 transition-all hover:bg-gray-50 dark:hover:bg-white/5"
         onclick="window.location.href='post.html?id=${post.id}'">
@@ -362,27 +304,27 @@ function renderProfilePosts() {
 
             <!-- Render Poll -->
              ${post.poll ? (() => {
-                    const totalVotes = post.poll.options.reduce((acc, opt) => acc + opt.votes, 0);
-                    const userVoted = post.poll.voters && post.poll.voters.includes(JSON.parse(localStorage.getItem("zynkProfile"))?.username || 'user');
-                    return `
+                const totalVotes = post.poll.options.reduce((acc, opt) => acc + opt.votes, 0);
+                const userVoted = post.poll.voters && post.poll.voters.includes(JSON.parse(localStorage.getItem("zynkProfile"))?.username || 'user');
+                return `
                   <div class="poll-card mt-3" data-voted="${userVoted}">
                       <div class="poll-question">${post.poll.question}</div>
                       <div class="poll-options">
                         ${post.poll.options.map((opt, i) => {
-                        const percent = totalVotes === 0 ? 0 : Math.round((opt.votes / totalVotes) * 100);
-                        return `<div class="poll-option" onclick="event.stopPropagation(); voteProfilePoll('${post.id}', ${i})">
+                    const percent = totalVotes === 0 ? 0 : Math.round((opt.votes / totalVotes) * 100);
+                    return `<div class="poll-option" onclick="event.stopPropagation(); voteProfilePoll('${post.id}', ${i})">
                                 <div class="bar" style="width: ${percent}%"></div>
                                 <span class="label">${opt.text}</span>
                                 <span class="percent">${percent}%</span>
                              </div>`;
-                    }).join('')}
+                }).join('')}
                       </div>
                        <div class="poll-footer">
                         <span class="poll-meta">⏳ ${getTimeLeft(post.expiry)} · ${totalVotes} votes</span>
                       </div>
                   </div>
                   `;
-                })() : ''}
+            })() : ''}
 
                <!-- Render Attached GIF -->
                ${post.gif ? `<img src="${post.gif}" class="mt-2 rounded-xl border border-gray-200 dark:border-gray-800 max-h-60 object-cover">` : ''}
@@ -404,7 +346,7 @@ function renderProfilePosts() {
           </div>
         </div>
         `;
-        }).join('');
+    }).join('');
 
     // Check for "Thought Streak"
     checkThoughtStreak(posts);
@@ -537,3 +479,85 @@ function getTimeLeft(expiry) {
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
     return days > 0 ? `${days}d left` : `${Math.floor(diff / 60000)}m left`;
 }
+
+// Helper to format time left string
+function formatTimeLeft(diff) {
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+    if (days > 0) return `${days}d ${hours}h left`;
+    if (hours > 0) return `${hours}h ${minutes}m left`;
+    // Show seconds if under an hour
+    return `${minutes}m ${seconds}s left`;
+}
+
+// Live Countdown Logic
+setInterval(updateCountdowns, 1000);
+
+function updateCountdowns() {
+    const badges = document.querySelectorAll('.expiry-countdown');
+    const now = Date.now();
+
+    badges.forEach(badge => {
+        const expiryStr = badge.getAttribute('data-expiry');
+
+        // Handle Never/Null
+        if (!expiryStr || expiryStr === 'null' || expiryStr === 'undefined') {
+            badge.innerText = 'Forever ♾️';
+            badge.classList.remove('animate-pulse', 'text-red-500', 'bg-red-500/10');
+            badge.classList.add('text-orange-500', 'bg-orange-500/10');
+            return;
+        }
+
+        const expiry = parseInt(expiryStr);
+        if (isNaN(expiry)) { // Handle invalid parse
+            badge.innerText = 'Forever ♾️';
+            return;
+        }
+
+        const diff = expiry - now;
+
+        if (diff <= 0) {
+            badge.innerText = 'Expired';
+            badge.classList.remove('animate-pulse', 'text-red-500', 'bg-red-500/10', 'text-orange-500', 'bg-orange-500/10');
+            badge.classList.add('text-gray-500', 'bg-gray-500/10');
+            return;
+        }
+
+        // URGENCY EFFECT (< 5 mins)
+        if (diff < 5 * 60 * 1000) {
+            badge.classList.add('animate-pulse', 'text-red-500', 'bg-red-500/10');
+            badge.classList.remove('text-orange-500', 'bg-orange-500/10');
+        } else {
+            badge.classList.remove('animate-pulse', 'text-red-500', 'bg-red-500/10');
+            badge.classList.add('text-orange-500', 'bg-orange-500/10');
+        }
+
+        badge.innerText = '🔥 ' + formatTimeLeft(diff);
+    });
+}
+
+// Initial Load
+document.addEventListener("DOMContentLoaded", () => {
+    loadProfile();
+
+    // Load cover image
+    const coverImage = localStorage.getItem("zynkCover");
+    if (coverImage) {
+        document.getElementById("coverBg").style.backgroundImage = `url(${coverImage})`;
+    }
+
+    renderProfilePosts();
+
+    // Listen for profile updates from other tabs
+    window.addEventListener("storage", (event) => {
+        if (event.key === "zynkProfileUpdated") {
+            loadProfile();
+        }
+        if (event.key === "zynkAvatarUpdated") {
+            loadProfile();
+        }
+    });
+});
