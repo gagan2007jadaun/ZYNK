@@ -50,6 +50,21 @@ function loadProfile() {
         dobEl.classList.remove("flex");
     }
 
+    // Update Joined Date
+    const joinedEl = document.getElementById("displayJoined");
+    if (!savedProfile.joinedIn) {
+        // If legacy user without joined date, set it to now and save silently
+        savedProfile.joinedIn = Date.now();
+        localStorage.setItem("zynkProfile", JSON.stringify(savedProfile));
+    }
+
+    if (savedProfile.joinedIn) {
+        joinedEl.classList.remove("hidden");
+        joinedEl.classList.add("flex");
+        const joinedDate = new Date(savedProfile.joinedIn);
+        joinedEl.querySelector("span").textContent = `Joined ${joinedDate.toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}`;
+    }
+
     // Update Image UI
     const avatarEl = document.getElementById("profileAvatar");
     if (savedProfile.image) {
@@ -147,6 +162,7 @@ function saveProfile() {
         location: document.getElementById("editLocation").value,
         website: document.getElementById("editWebsite").value,
         dob: document.getElementById("editDob").value,
+        joinedIn: (JSON.parse(localStorage.getItem("zynkProfile")) || {}).joinedIn || Date.now(),
         image: currentImage // Save the image string
     };
 
