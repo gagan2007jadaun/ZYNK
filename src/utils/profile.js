@@ -16,6 +16,40 @@ function loadProfile() {
     document.getElementById("displayUsername").textContent = savedProfile.username || defaultProfile.username;
     document.getElementById("displayBio").textContent = savedProfile.bio || defaultProfile.bio;
 
+    // Update Extended Info
+    const locEl = document.getElementById("displayLocation");
+    if (savedProfile.location) {
+        locEl.classList.remove("hidden");
+        locEl.classList.add("flex");
+        locEl.querySelector("span").textContent = savedProfile.location;
+    } else {
+        locEl.classList.add("hidden");
+        locEl.classList.remove("flex");
+    }
+
+    const webEl = document.getElementById("displayWebsite");
+    if (savedProfile.website) {
+        webEl.classList.remove("hidden");
+        webEl.classList.add("flex");
+        webEl.querySelector("span").textContent = savedProfile.website.replace(/^https?:\/\//, '');
+        webEl.href = savedProfile.website.startsWith('http') ? savedProfile.website : `https://${savedProfile.website}`;
+    } else {
+        webEl.classList.add("hidden");
+        webEl.classList.remove("flex");
+    }
+
+    const dobEl = document.getElementById("displayDob");
+    if (savedProfile.dob) {
+        dobEl.classList.remove("hidden");
+        dobEl.classList.add("flex");
+        // Format DOB nicely
+        const date = new Date(savedProfile.dob);
+        dobEl.querySelector("span").textContent = date.toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' });
+    } else {
+        dobEl.classList.add("hidden");
+        dobEl.classList.remove("flex");
+    }
+
     // Update Image UI
     const avatarEl = document.getElementById("profileAvatar");
     if (savedProfile.image) {
@@ -37,6 +71,9 @@ function openEditModal() {
     document.getElementById("editName").value = savedProfile.name || defaultProfile.name;
     document.getElementById("editUsername").value = savedProfile.username || defaultProfile.username;
     document.getElementById("editBio").value = savedProfile.bio || defaultProfile.bio;
+    document.getElementById("editLocation").value = savedProfile.location || "";
+    document.getElementById("editWebsite").value = savedProfile.website || "";
+    document.getElementById("editDob").value = savedProfile.dob || "";
 
     // Prefill Image
     currentImage = savedProfile.image || "";
@@ -107,6 +144,9 @@ function saveProfile() {
         name: document.getElementById("editName").value,
         username: document.getElementById("editUsername").value,
         bio: document.getElementById("editBio").value,
+        location: document.getElementById("editLocation").value,
+        website: document.getElementById("editWebsite").value,
+        dob: document.getElementById("editDob").value,
         image: currentImage // Save the image string
     };
 
