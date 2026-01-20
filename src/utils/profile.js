@@ -7,6 +7,7 @@ const defaultProfile = {
 };
 
 let currentImage = ""; // State to hold the new image data
+let currentTab = "thoughts"; // Default tab
 
 function loadProfile() {
     const savedProfile = JSON.parse(localStorage.getItem("zynkProfile")) || defaultProfile;
@@ -322,80 +323,66 @@ function renderProfilePosts() {
             const date = new Date(post.scheduledFor);
             const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             rightBadge = `<span class="text-xs font-mono text-blue-500 bg-blue-500/10 px-2 py-0.5 rounded-full" title="Scheduled for ${date.toLocaleString()}">⏰ ${timeStr}</span>`;
-        } else {
-            const expiryTitle = post.expiry ? `Exports at ${new Date(post.expiry).toLocaleString()}` : 'Never expires';
-            rightBadge = `<span class="expiry-countdown text-xs font-mono text-orange-500 bg-orange-500/10 px-2 py-0.5 rounded-full transition-colors duration-500" title="${expiryTitle}" data-expiry="${post.expiry || ''}">🔥 ${timeLeft}</span>`;
-        }
-
-        // Intent styling
-        const intent = post.intent || 'vent';
-        const intents = {
-            'vent': { label: '😤 Just Venting', class: 'bg-red-500/10 text-red-500' },
-            'thoughts': { label: '💭 Thoughts', class: 'bg-blue-500/10 text-blue-500' },
-            'question': { label: '❓ Question', class: 'bg-yellow-500/10 text-yellow-500' },
-            'advice': { label: '🆘 Advice', class: 'bg-orange-500/10 text-orange-500' },
-            'debate': { label: '⚔️ Debate', class: 'bg-purple-500/10 text-purple-500' },
-            'teach': { label: '🎓 Teach', class: 'bg-green-500/10 text-green-500' },
-            'showcase': { label: '🌟 Showcase', class: 'bg-pink-500/10 text-pink-500' }
-        };
-        const intentStyle = intents[intent] || intents['vent'];
-
-        return `
-        <div id="post-${post.id}" class="p-6 border-b border-gray-200 dark:border-gray-800 transition-all hover:bg-gray-50 dark:hover:bg-white/5 cursor-pointer" onclick="window.location.href='post.html?id=${post.id}'">
-          <div class="flex gap-4">
-             <!-- Avatar -->
-             <img src="${post.avatar || 'https://via.placeholder.com/40'}" 
-                  class="${(post.author === 'You' || post.handle === '@you' || post.identity === 'public') ? 'post-avatar' : ''} w-10 h-10 rounded-full object-cover bg-gray-700 flex-shrink-0" 
-                  alt="${post.author}">
-
+            return `
+    <div id="post-${post.id}"
+        class="p-6 border-b border-gray-200 dark:border-gray-800 transition-all hover:bg-gray-50 dark:hover:bg-white/5"
+        onclick="window.location.href='post.html?id=${post.id}'">
+        <div class="flex gap-4">
+            <div class="w-10 h-10 rounded-full bg-gray-700 overflow-hidden">
+                 <img src="${post.avatar || (post.handle === '@you' ? (currentImage || 'https://via.placeholder.com/40') : 'https://via.placeholder.com/40')}" class="w-full h-full object-cover">
+            </div>
             <div class="flex-1">
-              <div class="flex justify-between items-start">
-                <div class="flex items-center gap-2 flex-wrap">
-                  <span class="font-semibold">${post.author}</span>
-                  <span class="text-sm text-gray-500">${post.handle}</span>
-                  <span class="text-xs bg-gray-200 dark:bg-gray-800 px-1.5 py-0.5 rounded text-gray-500">${identityBadge}</span>
-                   <span class="text-xs ${intentStyle.class} px-2 py-0.5 rounded-full">${intentStyle.label}</span>
+                <div class="flex justify-between items-start">
+                    <div class="flex items-center gap-2">
+                        <span class="font-semibold">${post.author}</span>
+                        <span class="text-sm text-gray-500">${post.handle}</span>
+                        <span class="text-xs bg-gray-200 dark:bg-gray-800 px-1.5 py-0.5 rounded text-gray-500">${identityBadge}</span>
+                        ${scheduledBadge}
+                    </div>
+                    <span class="text-xs font-mono text-orange-500 bg-orange-500/10 px-2 py-0.5 rounded-full">
+                        🔥 ${timeLeft}
+                    </span>
                 </div>
-                ${rightBadge}
-              </div>
-              
-              <div class="mt-2 text-gray-800 dark:text-gray-200">
-                <p id="text-${post.id}" class="${post.text.length > 150 ? 'line-clamp-3' : ''} whitespace-pre-wrap transition-all">${post.text}</p>
-                ${post.text.length > 150 ? `<button onclick="event.stopPropagation(); toggleExpand('${post.id}')" class="text-xs text-zynk hover:underline mt-1">Show more</button>` : ''}
-              </div>
+            </div>
 
-               <!-- Render Attached Images -->
-              ${post.images && post.images.length > 0 ? `
-                  <div class="mt-3 flex gap-2 overflow-x-auto pb-2">
-                      ${post.images.map(img => `<img src="${img}" class="h-32 w-auto rounded-lg border border-gray-200 dark:border-gray-800 object-cover">`).join('')}
-                  </div>
-              ` : ''}
+            <div class="mt-2 text-gray-800 dark:text-gray-200">
+                <p id="text-${post.id}"
+                    class="${post.text.length > 150 ? 'line-clamp-3' : ''} whitespace-pre-wrap transition-all">
+                    ${post.text}</p>
+                ${post.text.length > 150 ? `<button onclick="event.stopPropagation(); toggleExpand('${post.id}')"
+                    class="text-xs text-zynk hover:underline mt-1">Show more</button>` : ''}
+            </div>
 
-               <!-- Render Attached Poll -->
-               ${post.poll ? (() => {
-                const totalVotes = post.poll.options.reduce((acc, opt) => acc + opt.votes, 0);
-                const userVoted = post.poll.voters && post.poll.voters.includes(savedProfile?.username || 'user');
+             <!-- Render Attached Images -->
+            ${post.images && post.images.length > 0 ? `
+                <div class="mt-3 flex gap-2 overflow-x-auto pb-2">
+                    ${post.images.map(img => `<img src="${img}" class="h-32 w-auto rounded-lg border border-gray-200 dark:border-gray-800 object-cover">`).join('')}
+                </div>
+            ` : ''}
 
-                return `
+            <!-- Render Poll -->
+             ${post.poll ? (() => {
+                    const totalVotes = post.poll.options.reduce((acc, opt) => acc + opt.votes, 0);
+                    const userVoted = post.poll.voters && post.poll.voters.includes(JSON.parse(localStorage.getItem("zynkProfile"))?.username || 'user');
+                    return `
                   <div class="poll-card mt-3" data-voted="${userVoted}">
                       <div class="poll-question">${post.poll.question}</div>
                       <div class="poll-options">
                         ${post.poll.options.map((opt, i) => {
-                    const percent = totalVotes > 0 ? Math.round((opt.votes / totalVotes) * 100) : 0;
-                    return `
-                             <div class="poll-option" onclick="event.stopPropagation(); voteProfilePoll('${post.id}', ${i})" data-index="${i}">
-                                <span class="label">${opt.label}</span>
-                                <div class="bar" style="width: ${userVoted ? percent : 0}%"></div>
+                        const percent = totalVotes === 0 ? 0 : Math.round((opt.votes / totalVotes) * 100);
+                        return `<div class="poll-option" onclick="event.stopPropagation(); voteProfilePoll('${post.id}', ${i})">
+                                <div class="bar" style="width: ${percent}%"></div>
+                                <span class="label">${opt.text}</span>
                                 <span class="percent">${percent}%</span>
                              </div>`;
-                }).join('')}
+                    }).join('')}
                       </div>
                        <div class="poll-footer">
                         <span class="poll-meta">⏳ ${getTimeLeft(post.expiry)} · ${totalVotes} votes</span>
                       </div>
                   </div>
                   `;
-            })() : ''}
+                })() : ''}
 
                <!-- Render Attached GIF -->
                ${post.gif ? `<img src="${post.gif}" class="mt-2 rounded-xl border border-gray-200 dark:border-gray-800 max-h-60 object-cover">` : ''}
@@ -404,9 +391,12 @@ function renderProfilePosts() {
                 <span class="hover:text-zynk transition cursor-pointer" onclick="event.stopPropagation(); alert('Reply coming soon')">Reply</span>
                 <span class="${post.allowReposts !== false ? 'hover:text-zynk transition cursor-pointer' : 'opacity-50 cursor-not-allowed'}" onclick="event.stopPropagation()" title="${post.allowReposts !== false ? 'Repost' : 'Reposts disabled'}">Repost</span>
                 <div class="like-container relative">
-                   <button class="like-btn flex items-center gap-1 hover:text-zynk transition cursor-pointer select-none" onclick="event.stopPropagation(); toggleLike(this)">
+                   <button class="like-btn flex items-center gap-1 transition cursor-pointer select-none ${isLiked ? 'liked' : ''} hover:text-zynk" 
+                        onclick="event.stopPropagation(); toggleLike(this, '${post.id}')">
                      <span class="like-fill"></span>
-                     <span class="like-icon">Like</span>
+                     <span class="like-icon">
+                       <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                     </span>
                    </button>
                 </div>
               </div>
@@ -414,10 +404,35 @@ function renderProfilePosts() {
           </div>
         </div>
         `;
-    }).join('');
+        }).join('');
 
     // Check for "Thought Streak"
     checkThoughtStreak(posts);
+}
+
+// Global Toggle Like with Persistence
+window.toggleLike = function (btn, postId) {
+    let likedIds = JSON.parse(localStorage.getItem('zynkLikedIds') || '[]');
+
+    if (likedIds.includes(postId)) {
+        // Unlike
+        likedIds = likedIds.filter(id => id !== postId);
+        btn.classList.remove('liked');
+    } else {
+        // Like
+        likedIds.push(postId);
+        btn.classList.add('liked');
+        btn.classList.add('like-pop');
+        setTimeout(() => btn.classList.remove('like-pop'), 300);
+    }
+
+    localStorage.setItem('zynkLikedIds', JSON.stringify(likedIds));
+
+    // If we are in 'Likes' tab, re-render to remove unliked item immediately? 
+    // Or just let it disappear on next reload? Better to re-render if un-liking in Likes tab.
+    if (currentTab === 'likes' && !likedIds.includes(postId)) {
+        renderProfilePosts();
+    }
 }
 
 function checkThoughtStreak(posts) {

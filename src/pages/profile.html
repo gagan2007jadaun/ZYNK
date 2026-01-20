@@ -202,17 +202,29 @@
         </div>
 
         <!-- TABS -->
-        <div class="flex border-b border-gray-200 dark:border-gray-800">
-            <div
-                class="flex-1 text-center py-4 font-semibold border-b-2 border-zynk text-gray-900 dark:text-white cursor-pointer hover:bg-gray-50 dark:hover:bg-white/5 transition">
+        <div class="flex border-b border-gray-200 dark:border-gray-800 overflow-x-auto no-scrollbar">
+            <div onclick="switchTab('thoughts')" id="tab-thoughts"
+                class="flex-1 min-w-[100px] text-center py-4 font-semibold border-b-2 border-zynk text-gray-900 dark:text-white cursor-pointer hover:bg-gray-50 dark:hover:bg-white/5 transition whitespace-nowrap">
                 Thoughts
             </div>
-            <div
-                class="flex-1 text-center py-4 font-semibold text-gray-500 cursor-pointer hover:bg-gray-50 dark:hover:bg-white/5 transition">
+            <div onclick="switchTab('highlights')" id="tab-highlights"
+                class="flex-1 min-w-[100px] text-center py-4 font-semibold text-gray-500 border-b-2 border-transparent cursor-pointer hover:bg-gray-50 dark:hover:bg-white/5 transition whitespace-nowrap">
+                Highlights
+            </div>
+            <div onclick="switchTab('insights')" id="tab-insights"
+                class="flex-1 min-w-[100px] text-center py-4 font-semibold text-gray-500 border-b-2 border-transparent cursor-pointer hover:bg-gray-50 dark:hover:bg-white/5 transition whitespace-nowrap">
+                Insights
+            </div>
+            <div onclick="switchTab('likes')" id="tab-likes"
+                class="flex-1 min-w-[100px] text-center py-4 font-semibold text-gray-500 border-b-2 border-transparent cursor-pointer hover:bg-gray-50 dark:hover:bg-white/5 transition whitespace-nowrap">
+                Likes
+            </div>
+            <div onclick="switchTab('replies')" id="tab-replies"
+                class="flex-1 min-w-[100px] text-center py-4 font-semibold text-gray-500 border-b-2 border-transparent cursor-pointer hover:bg-gray-50 dark:hover:bg-white/5 transition whitespace-nowrap">
                 Replies
             </div>
-            <div
-                class="flex-1 text-center py-4 font-semibold text-gray-500 cursor-pointer hover:bg-gray-50 dark:hover:bg-white/5 transition">
+            <div onclick="switchTab('media')" id="tab-media"
+                class="flex-1 min-w-[100px] text-center py-4 font-semibold text-gray-500 border-b-2 border-transparent cursor-pointer hover:bg-gray-50 dark:hover:bg-white/5 transition whitespace-nowrap">
                 Media
             </div>
         </div>
