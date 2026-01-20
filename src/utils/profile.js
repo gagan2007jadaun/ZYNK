@@ -282,74 +282,80 @@ function renderProfilePosts() {
         class="p-6 border-b border-gray-200 dark:border-gray-800 transition-all hover:bg-gray-50 dark:hover:bg-white/5"
         onclick="window.location.href='post.html?id=${post.id}'">
         <div class="flex gap-4">
-            <div class="w-10 h-10 rounded-full bg-gray-700 overflow-hidden">
+            <div class="w-10 h-10 rounded-full bg-gray-700 overflow-hidden shrink-0">
                  <img src="${post.avatar || (post.handle === '@you' ? (currentImage || 'https://via.placeholder.com/40') : 'https://via.placeholder.com/40')}" class="w-full h-full object-cover">
             </div>
-            <div class="flex-1">
+            <div class="flex-1 min-w-0">
                 <div class="flex justify-between items-start">
-                    <div class="flex items-center gap-2">
-                        <span class="font-semibold">${post.author}</span>
-                        <span class="text-sm text-gray-500">${post.handle}</span>
-                        <span class="text-xs bg-gray-200 dark:bg-gray-800 px-1.5 py-0.5 rounded text-gray-500">${identityBadge}</span>
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <span class="font-semibold text-gray-900 dark:text-white truncate">${post.author}</span>
+                        <span class="text-sm text-gray-500 truncate">${post.handle}</span>
+                        <span class="text-xs bg-gray-200 dark:bg-gray-800 px-1.5 py-0.5 rounded text-gray-500 whitespace-nowrap">${identityBadge}</span>
                         ${scheduledBadge}
                     </div>
-                    <span class="text-xs font-mono text-orange-500 bg-orange-500/10 px-2 py-0.5 rounded-full">
+                    <span class="text-xs font-mono text-orange-500 bg-orange-500/10 px-2 py-0.5 rounded-full whitespace-nowrap shrink-0">
                         🔥 ${timeLeft}
                     </span>
                 </div>
-            </div>
 
-            <div class="mt-2 text-gray-800 dark:text-gray-200">
-                <p id="text-${post.id}"
-                    class="${post.text.length > 150 ? 'line-clamp-3' : ''} whitespace-pre-wrap transition-all">
-                    ${post.text}</p>
-                ${post.text.length > 150 ? `<button onclick="event.stopPropagation(); toggleExpand('${post.id}')"
-                    class="text-xs text-zynk hover:underline mt-1">Show more</button>` : ''}
-            </div>
-
-             <!-- Render Attached Images -->
-            ${post.images && post.images.length > 0 ? `
-                <div class="mt-3 flex gap-2 overflow-x-auto pb-2">
-                    ${post.images.map(img => `<img src="${img}" class="h-32 w-auto rounded-lg border border-gray-200 dark:border-gray-800 object-cover">`).join('')}
+                <div class="mt-2 text-gray-800 dark:text-gray-200 break-words">
+                    <p id="text-${post.id}"
+                        class="${post.text.length > 150 ? 'line-clamp-3' : ''} whitespace-pre-wrap transition-all">
+                        ${post.text}</p>
+                    ${post.text.length > 150 ? `<button onclick="event.stopPropagation(); toggleExpand('${post.id}')"
+                        class="text-xs text-zynk hover:underline mt-1">Show more</button>` : ''}
                 </div>
-            ` : ''}
 
-            <!-- Render Poll -->
-             ${post.poll ? (() => {
+                <!-- Render Attached Images -->
+                ${post.images && post.images.length > 0 ? `
+                    <div class="mt-3 flex gap-2 overflow-x-auto pb-2">
+                        ${post.images.map(img => `<img src="${img}" class="h-32 w-auto rounded-lg border border-gray-200 dark:border-gray-800 object-cover shrink-0">`).join('')}
+                    </div>
+                ` : ''}
+
+                <!-- Render Poll -->
+                 ${post.poll ? (() => {
                 const totalVotes = post.poll.options.reduce((acc, opt) => acc + opt.votes, 0);
                 const userVoted = post.poll.voters && post.poll.voters.includes(JSON.parse(localStorage.getItem("zynkProfile"))?.username || 'user');
                 return `
-                  <div class="poll-card mt-3" data-voted="${userVoted}">
-                      <div class="poll-question">${post.poll.question}</div>
-                      <div class="poll-options">
-                        ${post.poll.options.map((opt, i) => {
+                      <div class="poll-card mt-3" data-voted="${userVoted}">
+                          <div class="poll-question">${post.poll.question}</div>
+                          <div class="poll-options">
+                            ${post.poll.options.map((opt, i) => {
                     const percent = totalVotes === 0 ? 0 : Math.round((opt.votes / totalVotes) * 100);
                     return `<div class="poll-option" onclick="event.stopPropagation(); voteProfilePoll('${post.id}', ${i})">
-                                <div class="bar" style="width: ${percent}%"></div>
-                                <span class="label">${opt.text}</span>
-                                <span class="percent">${percent}%</span>
-                             </div>`;
+                                    <div class="bar" style="width: ${percent}%"></div>
+                                    <span class="label">${opt.text}</span>
+                                    <span class="percent">${percent}%</span>
+                                 </div>`;
                 }).join('')}
+                          </div>
+                           <div class="poll-footer">
+                            <span class="poll-meta">⏳ ${getTimeLeft(post.expiry)} · ${totalVotes} votes</span>
+                          </div>
                       </div>
-                       <div class="poll-footer">
-                        <span class="poll-meta">⏳ ${getTimeLeft(post.expiry)} · ${totalVotes} votes</span>
-                      </div>
-                  </div>
-                  `;
+                      `;
             })() : ''}
 
                <!-- Render Attached GIF -->
                ${post.gif ? `<img src="${post.gif}" class="mt-2 rounded-xl border border-gray-200 dark:border-gray-800 max-h-60 object-cover">` : ''}
               
-              <div class="flex gap-6 mt-4 text-gray-500 text-sm">
-                <span class="hover:text-zynk transition cursor-pointer" onclick="event.stopPropagation(); alert('Reply coming soon')">Reply</span>
-                <span class="${post.allowReposts !== false ? 'hover:text-zynk transition cursor-pointer' : 'opacity-50 cursor-not-allowed'}" onclick="event.stopPropagation()" title="${post.allowReposts !== false ? 'Repost' : 'Reposts disabled'}">Repost</span>
+              <div class="flex gap-6 mt-4 text-gray-500 text-sm items-center">
+                <span class="hover:text-zynk transition cursor-pointer flex items-center gap-1" onclick="event.stopPropagation(); alert('Reply coming soon')">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                    Reply
+                </span>
+                <span class="${post.allowReposts !== false ? 'hover:text-zynk transition cursor-pointer flex items-center gap-1' : 'opacity-50 cursor-not-allowed flex items-center gap-1'}" onclick="event.stopPropagation()" title="${post.allowReposts !== false ? 'Repost' : 'Reposts disabled'}">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 1l4 4-4 4"></path><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><path d="M7 23l-4-4 4-4"></path><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg>
+                    Repost
+                </span>
                 <div class="like-container relative">
                    <button class="like-btn flex items-center gap-1 transition cursor-pointer select-none ${isLiked ? 'liked' : ''} hover:text-zynk" 
                         onclick="event.stopPropagation(); toggleLike(this, '${post.id}')">
                      <span class="like-fill"></span>
-                     <span class="like-icon">
+                     <span class="like-icon flex items-center gap-1">
                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                       Like
                      </span>
                    </button>
                 </div>
