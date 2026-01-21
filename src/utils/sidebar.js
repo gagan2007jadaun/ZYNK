@@ -6,7 +6,7 @@ function renderSidebar(activePage) {
         { name: 'Feed', icon: 'home', href: 'feed.html' },
         { name: 'Discover', icon: 'search', href: 'explore.html' },
         { name: 'Chat', icon: 'message-circle', href: 'chat.html' },
-        { name: 'Notifications', icon: 'bell', href: 'notifications.html' },
+        { name: 'Ping', icon: 'bell', href: 'notifications.html' },
         { name: 'Topics', icon: 'hash', href: 'topics.html' },
         { name: 'Bookmarks', icon: 'bookmark', href: 'bookmarks.html' },
         { name: 'Profile', icon: 'user', href: 'profile.html' },
