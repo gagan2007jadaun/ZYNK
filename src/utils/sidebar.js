@@ -4,7 +4,7 @@ function renderSidebar(activePage) {
 
     const items = [
         { name: 'Feed', icon: 'home', href: 'feed.html' },
-        { name: 'Explore', icon: 'search', href: 'explore.html' },
+        { name: 'Discover', icon: 'search', href: 'explore.html' },
         { name: 'Chat', icon: 'message-circle', href: 'chat.html' },
         { name: 'Notifications', icon: 'bell', href: 'notifications.html' },
         { name: 'Topics', icon: 'hash', href: 'topics.html' },
