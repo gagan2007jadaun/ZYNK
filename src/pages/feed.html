@@ -1814,7 +1814,9 @@
 
     window.addEventListener("zynkProfileUpdated", () => {
       updatePostIdentity();
+    });
 
+    document.addEventListener('DOMContentLoaded', () => {
       // Hook up Expiry Select
       const expirySelect = document.getElementById('expirySelect');
       if (expirySelect) {
@@ -1823,7 +1825,8 @@
             openExpiryPanel();
           } else {
             // Reset custom logic if needed, or just persist standard value
-            document.getElementById('customExpiryContainer').classList.add('hidden');
+            const customContainer = document.getElementById('customExpiryContainer');
+            if (customContainer) customContainer.classList.add('hidden');
           }
         });
       }
