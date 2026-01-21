@@ -1814,8 +1814,165 @@
 
     window.addEventListener("zynkProfileUpdated", () => {
       updatePostIdentity();
+
+      // Hook up Expiry Select
+      const expirySelect = document.getElementById('expirySelect');
+      if (expirySelect) {
+        expirySelect.addEventListener('change', (e) => {
+          if (e.target.value === 'custom') {
+            openExpiryPanel();
+          } else {
+            // Reset custom logic if needed, or just persist standard value
+            document.getElementById('customExpiryContainer').classList.add('hidden');
+          }
+        });
+      }
     });
+
+    // CUSTOM EXPIRY PANEL LOGIC
+    function openExpiryPanel() {
+      const panel = document.getElementById("customExpiryPanel");
+      const overlay = document.getElementById("expiryOverlay");
+
+      panel.classList.remove("translate-x-full");
+      overlay.classList.remove("hidden");
+      requestAnimationFrame(() => overlay.classList.remove("opacity-0"));
+    }
+
+    function closeExpiryPanel() {
+      const panel = document.getElementById("customExpiryPanel");
+      const overlay = document.getElementById("expiryOverlay");
+
+      panel.classList.add("translate-x-full");
+      overlay.classList.add("opacity-0");
+
+      setTimeout(() => overlay.classList.add("hidden"), 300);
+
+      // Reset select if cancelled (optional, but good UX if they didn't set anything?)
+      // actually let's keep it 'custom' but maybe fail safe to 24h if invalid?
+      // for now, do nothing.
+    }
+
+    function setPanelValues(val, unit) {
+      document.getElementById('panelDurationInput').value = val;
+      document.getElementById('panelUnitSelect').value = unit;
+    }
+
+    function applyCustomExpiry() {
+      const val = document.getElementById('panelDurationInput').value;
+      const unit = document.getElementById('panelUnitSelect').value;
+
+      // Update the select to show "Custom: X Units"
+      // We can't easily add new options dynamically that look native perfect every time, 
+      // but let's update the 'custom' option text.
+      const expirySelect = document.getElementById('expirySelect');
+      const customOption = expirySelect.querySelector('option[value="custom"]');
+
+      let label = `⚙️ ${val} ${unit}`;
+      // Capitalize unit
+      label = label.charAt(0).toUpperCase() + label.slice(1);
+
+      customOption.textContent = label;
+      customOption.selected = true; // Ensure selected
+
+      // Also update the hidden inputs that might be used by savePost logic
+      // The original code used #customTimeInput and #customUnitSelect in #customExpiryContainer
+      // We should sync to those so existing savePost logic works if possible, 
+      // OR update savePost to read from our panel? 
+      // Better: Sync to the hidden container inputs which we saw earlier!
+
+      const hiddenTime = document.getElementById('customTimeInput');
+      const hiddenUnit = document.getElementById('customUnitSelect');
+      const hiddenContainer = document.getElementById('customExpiryContainer');
+
+      if (hiddenTime && hiddenUnit) {
+        hiddenTime.value = val;
+        hiddenUnit.value = unit;
+        // We don't show the container, but we populate values.
+        // Actually, does savePost use them?
+        // savePost likely uses expirySelect.value. 
+        // If expirySelect.value is 'custom', it checks customTimeInput/Unit.
+        // So updating them is correct.
+      }
+
+      closeExpiryPanel();
+    }
+
   </script>
+  <!-- CUSTOM EXPIRY PANEL -->
+  <div id="customExpiryPanel"
+    class="fixed inset-y-0 right-0 w-full md:w-[400px] bg-white dark:bg-[#12141a] shadow-2xl transform translate-x-full transition-transform duration-300 z-50 overflow-y-auto">
+
+    <!-- Header -->
+    <div
+      class="sticky top-0 bg-white/80 dark:bg-[#12141a]/80 backdrop-blur-md p-4 border-b border-gray-200 dark:border-gray-800 flex justify-between items-center z-10">
+      <h2 class="text-xl font-bold">Custom Expiry</h2>
+      <button onclick="closeExpiryPanel()" class="p-2 hover:bg-gray-100 dark:hover:bg-white/5 rounded-full transition">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 6 6 18" />
+          <path d="m6 6 12 12" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Content -->
+    <div class="p-6 space-y-8">
+      <div>
+        <label class="block text-sm font-medium text-gray-500 mb-2">Duration</label>
+        <div class="flex items-center gap-3">
+          <input type="number" id="panelDurationInput" value="1" min="1"
+            class="w-20 bg-gray-50 dark:bg-black/20 border border-gray-200 dark:border-gray-800 rounded-xl px-4 py-3 text-center font-bold text-xl focus:outline-none focus:border-zynk transition">
+
+          <select id="panelUnitSelect"
+            class="flex-1 bg-gray-50 dark:bg-black/20 border border-gray-200 dark:border-gray-800 rounded-xl px-4 py-3 font-medium outline-none focus:border-zynk transition">
+            <option value="minutes">Minutes</option>
+            <option value="hours" selected>Hours</option>
+            <option value="days">Days</option>
+            <option value="weeks">Weeks</option>
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-500 mb-2">Preset Quick Picks</label>
+        <div class="grid grid-cols-2 gap-3">
+          <button onclick="setPanelValues(12, 'hours')"
+            class="p-3 rounded-xl border border-gray-200 dark:border-gray-800 hover:border-zynk hover:text-zynk transition text-sm font-medium text-center">12
+            Hours</button>
+          <button onclick="setPanelValues(3, 'days')"
+            class="p-3 rounded-xl border border-gray-200 dark:border-gray-800 hover:border-zynk hover:text-zynk transition text-sm font-medium text-center">3
+            Days</button>
+          <button onclick="setPanelValues(1, 'weeks')"
+            class="p-3 rounded-xl border border-gray-200 dark:border-gray-800 hover:border-zynk hover:text-zynk transition text-sm font-medium text-center">1
+            Week</button>
+          <button onclick="setPanelValues(1, 'months')"
+            class="p-3 rounded-xl border border-gray-200 dark:border-gray-800 hover:border-zynk hover:text-zynk transition text-sm font-medium text-center">1
+            Month</button>
+        </div>
+      </div>
+
+      <div
+        class="p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-xl text-yellow-600 dark:text-yellow-500 text-xs leading-relaxed">
+        <strong class="block mb-1">Note:</strong>
+        After this duration, your thought will be removed from the feed and everyone's view, including yours. It's
+        ephemeral.
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="p-6 border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-[#12141a] sticky bottom-0">
+      <button onclick="applyCustomExpiry()"
+        class="w-full bg-zynk text-black font-bold py-3 rounded-xl hover:opacity-90 transition shadow-lg shadow-zynk/20">
+        Set Duration
+      </button>
+    </div>
+  </div>
+
+  <!-- Overlay -->
+  <div id="expiryOverlay"
+    class="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 hidden transition-opacity duration-300 opacity-0"
+    onclick="closeExpiryPanel()"></div>
 </body>
 
 </html>
