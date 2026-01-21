@@ -1171,7 +1171,7 @@
       const postHTML = `
         <div id="post-${post.id}" 
              onclick="window.location.href='post.html?id=${post.id}'"
-             class="post-card cursor-pointer p-6 border-b border-gray-200 dark:border-gray-800 transition-all duration-300 ease-out hover:bg-gray-100 dark:hover:bg-[#141414] hover:-translate-y-0.5 ${animate ? 'animate-post' : ''} ${post.frozen ? 'bg-blue-50/30 dark:bg-blue-900/10' : ''}">
+             class="post-card cursor-pointer p-6 border-b border-gray-200 dark:border-gray-800 transition-all duration-300 ease-out ${animate ? 'animate-post' : ''} ${post.frozen ? 'bg-blue-50/30 dark:bg-blue-900/10' : ''}">
           <div class="flex gap-4">
              <!-- Avatar (Dynamic) -->
              <img src="${post.avatar || 'https://via.placeholder.com/40'}" 
